@@ -92,6 +92,19 @@ class PkgInfo:
     version: str
 
 
+def pick_project_dir(directory: Path) -> Path:
+    for entry in (e for e in directory.iterdir() if e.is_dir()):
+        project_directory = entry
+        break
+    else:
+        project_directory = directory
+
+    if (dir := project_directory / "src").is_dir():
+        return dir
+
+    return project_directory
+
+
 def download(package_name: str, directory: Path) -> Tuple[Path, PkgInfo]:
     with urlopen(f"https://pypi.org/pypi/{package_name}/json") as pypi:
         pkg_data = json.load(pypi)
@@ -107,7 +120,8 @@ def download(package_name: str, directory: Path) -> Tuple[Path, PkgInfo]:
     src_archive, _ = urlretrieve(src_url)
     with open_archive(src_archive) as opened:
         opened.extractall(directory)
-        return (directory / archive_list(opened)[0], PkgInfo(latest_version))
+
+        return (pick_project_dir(directory), PkgInfo(latest_version))
 
 
 def index_file(base_dir: Path, path: Path) -> Module:
