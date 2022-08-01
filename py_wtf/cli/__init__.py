@@ -113,10 +113,15 @@ def download(package_name: str, directory: Path) -> Tuple[Path, PkgInfo]:
 def index_file(base_dir: Path, path: Path) -> Module:
     name = ".".join(path.relative_to(base_dir).with_suffix("").parts)
     indexer = Indexer(name)
-    mod = cst.MetadataWrapper(
-        cst.parse_module(path.read_bytes()), unsafe_skip_copy=True
-    )
-    mod.visit(indexer)
+    try:
+        mod = cst.MetadataWrapper(
+            cst.parse_module(path.read_bytes()), unsafe_skip_copy=True
+        )
+        mod.visit(indexer)
+    except Exception as e:
+        err = Documentation(f"Failed to index {path.relative_to(base_dir)} due to {e}")
+        indexer.documentation = [err]
+        print(err)
     return Module(
         name,
         documentation=indexer.documentation,
