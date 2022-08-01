@@ -1,0 +1,4 @@
+index/
+node_modules/
+www/.next/
+__pycache__/
