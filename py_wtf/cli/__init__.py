@@ -2,10 +2,17 @@
 #
 # SPDX-License-Identifier: MIT
 from __future__ import annotations
+from dataclasses import dataclass
+from functools import partial
+import json
 import os
 from pathlib import Path
+from tarfile import is_tarfile, TarFile
+from tempfile import TemporaryDirectory
 from textwrap import dedent
-from typing import Protocol, TypeVar
+from typing import Iterable, Protocol, Tuple, TypeVar
+from urllib.request import urlopen, urlretrieve
+from zipfile import is_zipfile, ZipFile
 import click
 import rich
 import libcst as cst
@@ -38,28 +45,73 @@ def py_wtf(ctx: click.Context) -> None:
 @click.option("--package-name", required=True)
 @click.option("--pretty", is_flag=True)
 def index(package_name: str, directory: str, pretty: bool) -> None:
-
-    modules = list(
-        mod
-        for (_, mod) in trailrunner.run_iter(
-            paths=trailrunner.walk(Path(directory)), func=index_file
+    out_dir = Path(directory)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    with TemporaryDirectory() as tmpdir:
+        src_dir, info = download(package_name, Path(tmpdir))
+        modules = list(
+            mod
+            for (_, mod) in trailrunner.run_iter(
+                paths=trailrunner.walk(src_dir), func=partial(index_file, src_dir)
+            )
         )
-    )
 
     pkg = Package(
         package_name,
-        version="latest",
+        version=info.version,
         modules=modules,
         documentation=(),
     )
     if pretty:
         rich.print(pkg)
     else:
-        print(pkg.to_json())  # type: ignore
+        out = out_dir / f"{package_name}.json"
+        out.write_text(pkg.to_json())  # type: ignore
 
 
-def index_file(path: Path) -> Module:
-    name = ".".join(path.with_suffix("").parts)
+Archive = TarFile | ZipFile
+
+
+def open_archive(src: str) -> Archive:
+    if is_tarfile(src):
+        return TarFile.open(src)
+    if is_zipfile(src):
+        return ZipFile(src)
+    raise NotImplementedError()
+
+
+def archive_list(arc: Archive) -> list[str]:
+    if isinstance(arc, TarFile):
+        return arc.getnames()
+    else:
+        return arc.namelist()
+
+
+@dataclass
+class PkgInfo:
+    version: str
+
+
+def download(package_name: str, directory: Path) -> Tuple[Path, PkgInfo]:
+    with urlopen(f"https://pypi.org/pypi/{package_name}/json") as pypi:
+        pkg_data = json.load(pypi)
+    latest_version = pkg_data["info"]["version"]
+    src_url = None
+    for artifact in pkg_data["releases"][latest_version]:
+        if artifact["packagetype"] == "sdist":
+            src_url = artifact["url"]
+            # src_md5 = artifact['md5_digest']
+            break
+    if not src_url:
+        raise ValueError(f"Couldn't find sdist for {package_name}=={latest_version}")
+    src_archive, _ = urlretrieve(src_url)
+    with open_archive(src_archive) as opened:
+        opened.extractall(directory)
+        return (directory / archive_list(opened)[0], PkgInfo(latest_version))
+
+
+def index_file(base_dir: Path, path: Path) -> Module:
+    name = ".".join(path.relative_to(base_dir).with_suffix("").parts)
     indexer = Indexer(name)
     mod = cst.MetadataWrapper(
         cst.parse_module(path.read_bytes()), unsafe_skip_copy=True
