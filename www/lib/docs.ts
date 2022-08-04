@@ -4,7 +4,7 @@ const indexDirectory = path.join(process.cwd(), '..', 'index');
 
 export function getPackageIndex() {
     const fileNames = fs.readdirSync(indexDirectory);
-    return fileNames.map((name) => ({ name: name.replace(/\.json$/, ''), version: "unknown" }));
+    return fileNames.map((name) => ({ name: name.replace(/\.json$/, ''), version: "unknown", modules: JSON.parse(fs.readFileSync(`${indexDirectory}/${name}`)).modules }));
 }
 
 export type Pkg = {

@@ -2,6 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import React from 'react';
 import { getPackageIndex } from '../lib/docs';
+import { createTheme, WuiProvider } from "@welcome-ui/core";
 
 export async function getStaticProps() {
   const packages = getPackageIndex();
@@ -12,29 +13,32 @@ export async function getStaticProps() {
   }
 }
 
+const theme = createTheme();
+
 export default function Home({ packages }) {
   return (
-    <div className="container">
-      <Head>
-        <title>py.wtf</title>
-        {/*<link rel="icon" href="/favicon.ico" /> */}
-      </Head>
+    <WuiProvider theme={theme}>
+      <div className="container">
+        <Head>
+          <title>py.wtf</title>
+          {/*<link rel="icon" href="/favicon.ico" /> */}
+        </Head>
 
-      <main>
-        <ul>
-          {packages.map(({ name, version }) => (
-            <li key="{name}-{version}">
-              <Link href={'/' + name}><a>{name}</a></Link> ({version})
-            </li>
-          ))}
-        </ul>
-      </main>
+        <main>
+          <ul>
+            {packages.map(({ name, version }) => (
+              <li key="{name}-{version}">
+                <Link href={'/' + name}><a>{name}</a></Link> ({version})
+              </li>
+            ))}
+          </ul>
+        </main>
 
-      <footer>
-        Footer.
-      </footer>
+        <footer>
+          Footer.
+        </footer>
 
-      <style jsx>{`
+        <style jsx>{`
         .container {
           min-height: 100vh;
           padding: 0 0.5rem;
@@ -62,6 +66,7 @@ export default function Home({ packages }) {
           align-items: center;
         }
       `}</style>
-    </div>
+      </div>
+    </WuiProvider>
   )
 }
