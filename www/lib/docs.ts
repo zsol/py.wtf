@@ -33,7 +33,8 @@ export type Func = {
 
 export type Param = {
     name: string,
-    type: Typ,
+    type: Typ | null,
+    default: string | null,
 }
 
 export type Typ = string;

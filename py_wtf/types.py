@@ -20,7 +20,8 @@ class Variable:
 @dataclass(frozen=True)
 class Parameter:
     name: str
-    type: Type
+    type: Type | None
+    default: str | None
 
 
 @dataclass_json  # type: ignore

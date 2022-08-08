@@ -4,6 +4,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from functools import partial
+import itertools
 import json
 import os
 from pathlib import Path
@@ -67,6 +68,14 @@ def index(package_name: str, directory: str, pretty: bool) -> None:
     else:
         out = out_dir / f"{package_name}.json"
         out.write_text(pkg.to_json())  # type: ignore
+
+
+@py_wtf.command()
+@click.argument("file")
+def index_file(file: str) -> None:
+    path = Path(file)
+    mod = index_file(path.parent, path)
+    rich.print(mod)
 
 
 Archive = TarFile | ZipFile
@@ -178,6 +187,27 @@ def extract_type(annotation: cst.Annotation) -> Type:
     return Type(cst.Module(()).code_for_node(annotation.annotation))
 
 
+def extract_func_params(params: cst.Parameters) -> Iterable[Parameter]:
+    for param in itertools.chain(
+        params.params,
+        params.posonly_params,
+        [params.star_arg],
+        params.kwonly_params,
+        [params.star_kwarg],
+    ):
+        if not isinstance(param, cst.Param):
+            # TODO: ParamStar, MaybeSentinel isnt handled
+            continue
+        star = param.star if isinstance(param.star, str) else ""
+        if param.annotation:
+            ann = extract_type(param.annotation)
+        else:
+            ann = None
+        yield Parameter(
+            f"{star}{param.name.value}", ann, default="..." if param.default else None
+        )
+
+
 class Indexer(cst.CSTVisitor):
     def __init__(self, scope: str | None = None) -> None:
         super().__init__()
@@ -249,11 +279,13 @@ class Indexer(cst.CSTVisitor):
         indexer = Indexer()
         node.body.visit(indexer)
 
+        params = extract_func_params(node.params)
+
         self.functions.append(
             Function(
                 my_name,
                 asynchronous,
-                params=(),
+                params=tuple(params),
                 returns=returns,
                 documentation=(*indexer.documentation, *comments),
             )
