@@ -12,6 +12,9 @@ import styled from "styled-components";
 const Main = styled(Box)`
   min-height: 100vh;
 `;
+
+const theme = createTheme(darkTheme);
+
 export default function Layout({
   title,
   children,
@@ -20,7 +23,7 @@ export default function Layout({
   children: ReactNode;
 }) {
   return (
-    <WuiProvider theme={darkTheme}>
+    <WuiProvider theme={theme}>
       <Flex backgroundColor="light.700" color="dark.700" direction="column">
         <Main>
           <Stack>
