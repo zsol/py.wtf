@@ -83,7 +83,7 @@ export default function Package({
   pkg: Pkg;
   symbol?: string;
 }) {
-  const docs = pkg.documentation.map((doc) => <p>{doc}</p>);
+  const docs = pkg.documentation.map((doc, ind) => <p key={ind}>{doc}</p>);
   const classes = pkg.modules.flatMap((mod) => mod.classes);
   const functions = pkg.modules.flatMap((mod) => mod.functions);
   const variables = pkg.modules.flatMap((mod) => mod.variables);
