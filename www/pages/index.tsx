@@ -1,16 +1,19 @@
-import Head from 'next/head';
-import Link from 'next/link';
-import React from 'react';
-import { getPackageIndex } from '../lib/docs';
+import Head from "next/head";
+import Link from "next/link";
+import React from "react";
+import { LightAsync as SyntaxHighlighter } from "react-syntax-highlighter";
+
 import { createTheme, WuiProvider } from "@welcome-ui/core";
+
+import { getPackageIndex } from "../lib/docs";
 
 export async function getStaticProps() {
   const packages = getPackageIndex();
   return {
     props: {
       packages,
-    }
-  }
+    },
+  };
 }
 
 const theme = createTheme();
@@ -28,45 +31,46 @@ export default function Home({ packages }) {
           <ul>
             {packages.map(({ name, version }) => (
               <li key="{name}-{version}">
-                <Link href={'/' + name}><a>{name}</a></Link> ({version})
+                <Link href={"/" + name}>
+                  <a>{name}</a>
+                </Link>{" "}
+                ({version})
               </li>
             ))}
           </ul>
         </main>
 
-        <footer>
-          Footer.
-        </footer>
+        <footer>Footer.</footer>
 
         <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
+          .container {
+            min-height: 100vh;
+            padding: 0 0.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          }
 
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
+          main {
+            padding: 5rem 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          }
 
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-      `}</style>
+          footer {
+            width: 100%;
+            height: 100px;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        `}</style>
       </div>
     </WuiProvider>
-  )
+  );
 }
