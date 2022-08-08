@@ -6,21 +6,17 @@ build-backend = "hatchling.build"
 name = "py-wtf"
 description = 'Documentation index'
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 license = "MIT"
 keywords = []
 authors = [
-  { name = "U.N. Owen", email = "void@some.where" },
+  { name = "Zsolt Dollenstein", email = "zsol.zsol@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
   "click>=8.1.3",
@@ -32,9 +28,9 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Documentation = "https://github.com/unknown/py-wtf#readme"
-Issues = "https://github.com/unknown/py-wtf/issues"
-Source = "https://github.com/unknown/py-wtf"
+Documentation = "https://github.com/zsol/py.wtf#readme"
+Issues = "https://github.com/zsol/py.wtf/issues"
+Source = "https://github.com/zsol/py.wtf"
 
 [project.scripts]
 py-wtf = "py_wtf.cli:py_wtf"
@@ -55,7 +51,7 @@ cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=py_wtf
 no-cov = "cov --no-cov"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["37", "38", "39", "310"]
+python = ["310"]
 
 [tool.coverage.run]
 branch = true

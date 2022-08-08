@@ -1,9 +1,6 @@
 # py.wtf
 
-[![PyPI - Version](https://img.shields.io/pypi/v/py-wtf.svg)](https://pypi.org/project/py-wtf)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/py-wtf.svg)](https://pypi.org/project/py-wtf)
-
------
+---
 
 **Table of Contents**
 
@@ -12,8 +9,20 @@
 
 ## Installation
 
-```console
-pip install py-wtf
+Just don't.
+
+## Hacking
+
+Please do. Python 3.10, Node 16.14.
+
+```shell
+cd py.wtf
+pipx run hatch shell
+YOUR_FAVORITE_PACKAGE=click
+py-wtf index --package-name $YOUR_FAVORITE_PACKAGE index/
+cd www
+npm install
+npm run dev
 ```
 
 ## License
