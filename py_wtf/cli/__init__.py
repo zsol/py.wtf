@@ -2,11 +2,12 @@
 #
 # SPDX-License-Identifier: MIT
 from __future__ import annotations
-from dataclasses import dataclass
-from functools import partial
+
 import itertools
 import json
 import os
+from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 from tarfile import is_tarfile, TarFile
 from tempfile import TemporaryDirectory
@@ -14,20 +15,22 @@ from textwrap import dedent
 from typing import Iterable, Protocol, Tuple, TypeVar
 from urllib.request import urlopen, urlretrieve
 from zipfile import is_zipfile, ZipFile
+
 import click
-import rich
 import libcst as cst
+import rich
 import trailrunner
+
 from ..__about__ import __version__
 from ..types import (
+    Class,
+    Documentation,
+    Function,
     Module,
     Package,
-    Type,
-    Documentation,
-    Variable,
     Parameter,
-    Function,
-    Class,
+    Type,
+    Variable,
 )
 
 
