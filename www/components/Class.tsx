@@ -20,8 +20,8 @@ function Methods({ cls }: Props) {
   return (
     <>
       <Text variant="h5">Methods</Text>
-      {cls.methods.map((method) => (
-        <Function key={method.name} func={method} />
+      {cls.methods.map((method, index) => (
+        <Function key={`${method.name}/${index}`} func={method} />
       ))}
     </>
   );
