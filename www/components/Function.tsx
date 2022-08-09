@@ -1,32 +1,11 @@
 import React from "react";
+import styled from "styled-components";
 import { Text } from "@welcome-ui/text";
 import { Box } from "@welcome-ui/box";
-import { Func } from "../lib/docs";
+
 import Documentation from "./Documentation";
-import styled from "styled-components";
-
-const ParamWrapper = styled(Text)`
-  margin-left: 2em;
-  margin-top: 0;
-  margin-bottom: 0;
-`;
-
-function Param({ name, type }) {
-  const typeann =
-    type === null ? (
-      <></>
-    ) : (
-      <>
-        : <Ty>{type}</Ty>
-      </>
-    );
-  return (
-    <ParamWrapper>
-      {name}
-      {typeann},
-    </ParamWrapper>
-  );
-}
+import { Func } from "../lib/docs";
+import * as hl from "./highlight";
 
 const Container = styled(Box)`
   margin: 0.5em;
@@ -34,14 +13,17 @@ const Container = styled(Box)`
 const FuncDocs = styled(Documentation)`
   margin-left: 1em;
 `;
-const Keyword = styled.span`
-  font-weight: bold;
-  color: rgb(249, 38, 114);
+
+const ParamWrapper = styled(Text)`
+  margin-left: 2em;
+  margin-top: 0;
+  margin-bottom: 0;
 `;
-const Fn = styled.span`
-  color: rgb(166, 226, 46);
-`;
-const Ty = Fn;
+const Param = (props) => (
+  <ParamWrapper>
+    <hl.VarWithType comma {...props} />
+  </ParamWrapper>
+);
 
 export default function Function({ func }: { func: Func }) {
   const def = func.asynchronous ? "async def" : "def";
@@ -51,20 +33,20 @@ export default function Function({ func }: { func: Func }) {
     ) : (
       <>
         {" -> "}
-        <Ty>{func.returns}</Ty>
+        <hl.Ty>{func.returns}</hl.Ty>
       </>
     );
   const unqual = func.name.split(".").at(-1);
 
   return (
     <Container>
-      <Text as="code" backgroundColor="light.800" padding="md">
-        <Keyword>{def}</Keyword> <Fn>{unqual}</Fn>(
+      <hl.Container>
+        <hl.Keyword>{def}</hl.Keyword> <hl.Fn>{unqual}</hl.Fn>(
         {func.params.map((param) => (
           <Param name={param.name} type={param.type} key={param.name} />
         ))}
         ) {ret}
-      </Text>
+      </hl.Container>
       <FuncDocs>{func.documentation}</FuncDocs>
     </Container>
   );

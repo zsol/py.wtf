@@ -6,7 +6,9 @@ import styled from "styled-components";
 import { getPackage, getPackageIndex, Pkg } from "../lib/docs";
 import Layout from "../components/Layout";
 import Function from "../components/Function";
+import Class from "../components/Class";
 import ModuleListSidebar from "../components/ModuleListSidebar";
+import Intersperse from "../components/Intersperse";
 
 export async function getStaticProps({ params }) {
   const pkg = getPackage(params.pkg[0]);
@@ -84,21 +86,23 @@ function Content(pkg: Pkg, symbol: string) {
     <Wrapper>
       <Text>{mod.documentation}</Text>
       <Box>
-        <h3>Classes</h3>
-        {mod.classes.map((cls) => (
-          <Text key={cls.name}>{cls.name}</Text>
-        ))}
+        <Text variant="h3">Classes</Text>
+        <Intersperse separator={<hr />}>
+          {mod.classes.map((cls) => (
+            <Class key={cls.name} cls={cls} />
+          ))}
+        </Intersperse>
       </Box>
       <hr />
       <Box>
-        <h3>Functions</h3>
+        <Text variant="h3">Functions</Text>
         {mod.functions.map((fn) => (
           <Function func={fn} key={fn.name}></Function>
         ))}
       </Box>
       <hr />{" "}
       <Box>
-        <h3>Variables</h3>
+        <Text variant="h3">Variables</Text>
         {mod.variables.map((v) => (
           <Text key={v.name}>{v.name}</Text>
         ))}
