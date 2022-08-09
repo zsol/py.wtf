@@ -1,16 +1,12 @@
-import React, { ReactNode } from "react";
-import { getPackage, getPackageIndex, Pkg } from "../lib/docs";
-import { createTheme, WuiProvider } from "@welcome-ui/core";
-import { Flex } from "@welcome-ui/flex";
-import { Stack } from "@welcome-ui/stack";
+import React from "react";
 import { Box } from "@welcome-ui/box";
-import { darkTheme } from "@welcome-ui/themes.dark";
-import { welcomeTheme } from "@welcome-ui/themes.welcome";
 import { Text } from "@welcome-ui/text";
-import Layout from "../components/layout";
-import { Link } from "@welcome-ui/link";
-import Function from "../components/function";
 import styled from "styled-components";
+
+import { getPackage, getPackageIndex, Pkg } from "../lib/docs";
+import Layout from "../components/Layout";
+import Function from "../components/Function";
+import ModuleListSidebar from "../components/ModuleListSidebar";
 
 export async function getStaticProps({ params }) {
   const pkg = getPackage(params.pkg[0]);
@@ -47,35 +43,6 @@ function byName(a: { name }, b: { name }): number {
   return 0;
 }
 
-const Modules = styled.div`
-  max-width: 20em;
-  overflow: auto;
-`;
-
-function ModuleBrowser({ pkg, children }: { pkg: Pkg; children: ReactNode }) {
-  return (
-    <Flex>
-      <Modules>
-        <Stack backgroundColor="light.500">
-          <Box backgroundColor="light.200">
-            <Box>
-              <Text variant="h3" textAlign="center">
-                Modules
-              </Text>
-              {pkg.modules.map((mod) => (
-                <Text key={mod.name}>
-                  <Link href={`/${pkg.name}/${mod.name}`}>{mod.name}</Link>
-                </Text>
-              ))}
-            </Box>
-          </Box>
-        </Stack>
-      </Modules>
-      <Box>{children}</Box>
-    </Flex>
-  );
-}
-
 export default function Package({
   pkg,
   symbol,
@@ -94,8 +61,11 @@ export default function Package({
   variables.sort(byName);
   const content = symbol === undefined ? docs : Content(pkg, symbol);
   return (
-    <Layout title={`${pkg.name}==${pkg.version}`}>
-      <ModuleBrowser pkg={pkg}>{content}</ModuleBrowser>
+    <Layout
+      title={`${pkg.name}==${pkg.version}`}
+      sidebar={<ModuleListSidebar currentModule={symbol} pkg={pkg} />}
+    >
+      {content}
     </Layout>
   );
 }
