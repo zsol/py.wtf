@@ -42,7 +42,6 @@ export default function ModuleListSidebar({
       {pkg.modules.map((mod) => (
         <Text key={mod.name}>
           <ModuleLink
-            key={mod.name}
             href={`/${pkg.name}/${mod.name}`}
             active={mod.name === currentModule}
           >

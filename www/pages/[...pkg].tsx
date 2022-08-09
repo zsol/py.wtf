@@ -87,7 +87,7 @@ function Content(pkg: Pkg, symbol: string) {
       <Text>{mod.documentation}</Text>
       <Box>
         <Text variant="h3">Classes</Text>
-        <Intersperse separator={<hr />}>
+        <Intersperse separator={(key) => <hr key={key} />}>
           {mod.classes.map((cls) => (
             <Class key={cls.name} cls={cls} />
           ))}
@@ -96,15 +96,15 @@ function Content(pkg: Pkg, symbol: string) {
       <hr />
       <Box>
         <Text variant="h3">Functions</Text>
-        {mod.functions.map((fn) => (
-          <Function func={fn} key={fn.name}></Function>
+        {mod.functions.map((fn, index) => (
+          <Function func={fn} key={`${fn.name}/${index}`}></Function>
         ))}
       </Box>
       <hr />{" "}
       <Box>
         <Text variant="h3">Variables</Text>
-        {mod.variables.map((v) => (
-          <Text key={v.name}>{v.name}</Text>
+        {mod.variables.map((v, index) => (
+          <Text key={`${v.name}/${index}`}>{v.name}</Text>
         ))}
       </Box>
     </Wrapper>
