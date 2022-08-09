@@ -1,6 +1,8 @@
 from __future__ import annotations
-from typing import NewType, Iterable
+
 from dataclasses import dataclass
+from typing import Iterable, NewType
+
 from dataclasses_json import dataclass_json  # type: ignore
 
 
