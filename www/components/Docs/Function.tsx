@@ -22,7 +22,7 @@ const ParamWrapper = styled(Text)`
   margin-bottom: 0;
 `;
 
-const Param = (props) => (
+const Param = (props: hl.VarWithTypeProps) => (
   <ParamWrapper>
     <hl.VarWithType comma {...props} />
   </ParamWrapper>

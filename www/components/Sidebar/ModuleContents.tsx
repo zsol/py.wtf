@@ -1,7 +1,7 @@
 import { Text } from "@welcome-ui/text";
 import React from "react";
 
-import { Module, Pkg } from "@/lib/docs";
+import { Class, Func, Module, Pkg, Variable } from "@/lib/docs";
 import * as url from "@/lib/url";
 
 import SidebarLinkList from "./SidebarLinkList";
@@ -13,15 +13,15 @@ interface Props {
 }
 
 export default function ModuleContents({ pkg, mod, currentSymbol }: Props) {
-  function LinkList<T extends { name: string }>({
+  function LinkList({
     title,
     items,
   }: {
     title: string;
-    items: T[];
+    items: (Class | Func | Variable)[];
   }) {
     return (
-      <SidebarLinkList<T>
+      <SidebarLinkList
         title={title}
         items={items}
         active={currentSymbol}

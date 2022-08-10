@@ -17,15 +17,13 @@ export const Fn = styled.span`
 
 export const Ty = Fn;
 
-export function VarWithType({
-  name,
-  type,
-  comma = false,
-}: {
+export interface VarWithTypeProps {
   name: string;
-  type: string;
+  type: string | null;
   comma?: boolean;
-}) {
+}
+
+export function VarWithType({ name, type, comma = false }: VarWithTypeProps) {
   const typeann =
     type === null ? (
       <></>

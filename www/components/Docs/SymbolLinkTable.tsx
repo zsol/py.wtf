@@ -19,7 +19,7 @@ export interface Sym {
 
 interface Props<T extends Sym> {
   title: string;
-  stripPrefix: string;
+  stripPrefix?: string;
   symbols: T[];
   url: (sym: T) => string | UrlObject;
 }
@@ -52,7 +52,11 @@ export default function SymbolLinkTable<T extends Sym>({
               <Table.Tr key={sym.name}>
                 <Table.Th>
                   <NextLink href={url(sym)} passHref>
-                    <Link>{withoutPrefix(stripPrefix, sym.name)}</Link>
+                    <Link>
+                      {stripPrefix
+                        ? withoutPrefix(stripPrefix, sym.name)
+                        : sym.name}
+                    </Link>
                   </NextLink>
                 </Table.Th>
                 <Table.Td>

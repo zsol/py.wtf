@@ -14,18 +14,17 @@ interface Props {
 }
 
 export default function Module({ pkg, mod }: Props) {
-  const mkUrl = url.symbol.bind(null, pkg, mod);
-  function LinkTable<T extends Sym>({
+  function LinkTable({
     title,
     symbols,
   }: {
     title: string;
-    symbols: T[];
+    symbols: (docs.Class | docs.Func | docs.Variable)[];
   }) {
     return (
-      <SymbolLinkTable<T>
+      <SymbolLinkTable
         title={title}
-        url={mkUrl}
+        url={(sym) => url.symbol(pkg, mod, sym)}
         symbols={symbols}
         stripPrefix={mod.name}
       />
