@@ -1,10 +1,8 @@
+import { Box } from "@welcome-ui/box";
 import React from "react";
 
-import { Box } from "@welcome-ui/box";
-import { Text } from "@welcome-ui/text";
-
-import * as docs from "../lib/docs";
-import * as hl from "./highlight";
+import * as docs from "../../lib/docs";
+import * as hl from "../highlight";
 import Documentation from "./Documentation";
 
 interface Props {
