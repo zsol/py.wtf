@@ -1,23 +1,28 @@
+import { WuiProvider, createTheme } from "@welcome-ui/core";
+import { GetStaticProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 
-import { createTheme, WuiProvider } from "@welcome-ui/core";
+import { Pkg, getPackageIndex } from "@/lib/docs";
+import * as url from "@/lib/url";
 
-import { getPackageIndex } from "../lib/docs";
-
-export async function getStaticProps() {
+export const getStaticProps: GetStaticProps<Props> = () => {
   const packages = getPackageIndex();
   return {
     props: {
       packages,
     },
   };
-}
+};
 
 const theme = createTheme();
 
-export default function Home({ packages }) {
+interface Props {
+  packages: Pkg[];
+}
+
+export default function Home({ packages }: Props) {
   return (
     <WuiProvider theme={theme}>
       <div className="container">
@@ -28,12 +33,12 @@ export default function Home({ packages }) {
 
         <main>
           <ul>
-            {packages.map(({ name, version }) => (
-              <li key="{name}-{version}">
-                <Link href={"/" + name}>
-                  <a>{name}</a>
+            {packages.map((pkg) => (
+              <li key={`${pkg.name}-${pkg.version}`}>
+                <Link href={url.pkg(pkg)}>
+                  <a>{pkg.name}</a>
                 </Link>{" "}
-                ({version})
+                ({pkg.version})
               </li>
             ))}
           </ul>

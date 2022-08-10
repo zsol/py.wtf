@@ -1,11 +1,13 @@
+import { Box } from "@welcome-ui/box";
+import { Text } from "@welcome-ui/text";
 import React from "react";
 import styled from "styled-components";
-import { Text } from "@welcome-ui/text";
-import { Box } from "@welcome-ui/box";
+
+import * as hl from "@/components/highlight";
+
+import { Func } from "@/lib/docs";
 
 import Documentation from "./Documentation";
-import { Func } from "../lib/docs";
-import * as hl from "./highlight";
 
 const Container = styled(Box)`
   margin: 0.5em;
@@ -19,7 +21,8 @@ const ParamWrapper = styled(Text)`
   margin-top: 0;
   margin-bottom: 0;
 `;
-const Param = (props) => (
+
+const Param = (props: hl.VarWithTypeProps) => (
   <ParamWrapper>
     <hl.VarWithType comma {...props} />
   </ParamWrapper>

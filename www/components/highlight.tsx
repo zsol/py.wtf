@@ -1,9 +1,8 @@
-import styled from "styled-components";
+import { Text, TextProps } from "@welcome-ui/text";
 import React from "react";
+import styled from "styled-components";
 
-import { Text } from "@welcome-ui/text";
-
-export const Container = (props) => (
+export const Container = (props: TextProps) => (
   <Text as="code" backgroundColor="light.800" padding="md" {...props} />
 );
 
@@ -18,7 +17,13 @@ export const Fn = styled.span`
 
 export const Ty = Fn;
 
-export function VarWithType({ name, type, comma = false }) {
+export interface VarWithTypeProps {
+  name: string;
+  type: string | null;
+  comma?: boolean;
+}
+
+export function VarWithType({ name, type, comma = false }: VarWithTypeProps) {
   const typeann =
     type === null ? (
       <></>
