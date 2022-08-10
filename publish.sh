@@ -12,7 +12,7 @@ if ! which hatch &>/dev/null; then
 fi
 
 for pkg in click aioitertools aiomultiprocessing more_itertools usort ufmt black libcst; do
-  hatch run py-wtf index --package-name="$pkg" index/
+  hatch run py-wtf index --package-name="$pkg" www/public/_index/
 done
 
 cd "$TOPLEVEL/www"
