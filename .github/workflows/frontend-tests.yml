@@ -29,4 +29,3 @@ jobs:
       working-directory: www
     - run: npm run lint
       working-directory: www
-
