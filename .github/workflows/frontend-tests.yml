@@ -1,0 +1,30 @@
+name: Frontend Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: 'www/package-lock.json'
+    - run: npm install
+      working-directory: www
+    - run: npm run check-types
+      working-directory: www
+    - run: npm run lint
+      working-directory: www
