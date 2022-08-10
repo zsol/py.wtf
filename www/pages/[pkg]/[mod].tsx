@@ -22,7 +22,7 @@ export default function ModulePage() {
             {mod ? (
               <Module pkg={pkg} mod={mod} />
             ) : (
-              `Module ${modName} not found :O`
+              `Module ${modName} not found 🤪`
             )}
           </Layout>
         );

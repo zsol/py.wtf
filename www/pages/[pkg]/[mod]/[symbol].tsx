@@ -23,7 +23,7 @@ export default function ModulePage() {
         const [Sidebar, Content] = (() => {
           const mod = pkg.modules.find((mod) => mod.name === modName);
           if (!mod) {
-            return [<ModuleList pkg={pkg} />, `Module ${modName} not found :O`];
+            return [<ModuleList pkg={pkg} />, `Module ${modName} not found 🤪`];
           }
 
           const cls = mod.classes.find(
@@ -38,7 +38,7 @@ export default function ModulePage() {
           const symbol = cls || func || variable;
 
           if (!symbol) {
-            return [<ModuleList pkg={pkg} />, `Symbol ${symName} not found :O`];
+            return [<ModuleList pkg={pkg} />, `Symbol ${symName} not found 🤪`];
           }
 
           const Sidebar = cls ? (
