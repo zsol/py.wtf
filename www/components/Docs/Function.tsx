@@ -1,11 +1,11 @@
+import { Box } from "@welcome-ui/box";
+import { Text } from "@welcome-ui/text";
 import React from "react";
 import styled from "styled-components";
-import { Text } from "@welcome-ui/text";
-import { Box } from "@welcome-ui/box";
 
+import { Func } from "../../lib/docs";
+import * as hl from "../highlight";
 import Documentation from "./Documentation";
-import { Func } from "../lib/docs";
-import * as hl from "./highlight";
 
 const Container = styled(Box)`
   margin: 0.5em;

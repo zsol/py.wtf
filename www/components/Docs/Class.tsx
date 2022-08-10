@@ -2,9 +2,9 @@ import { Text } from "@welcome-ui/text";
 import { Box } from "@welcome-ui/box";
 import React from "react";
 
-import * as docs from "../lib/docs";
-import * as hl from "./highlight";
-import Intersperse from "./Intersperse";
+import * as docs from "../../lib/docs";
+import * as hl from "../highlight";
+import Intersperse from "../Intersperse";
 import Documentation from "./Documentation";
 import Function from "./Function";
 import Variable from "./Variable";

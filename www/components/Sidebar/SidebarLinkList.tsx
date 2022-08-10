@@ -1,0 +1,36 @@
+import { Box } from "@welcome-ui/box";
+import { Text } from "@welcome-ui/text";
+import { UrlObject } from "url";
+
+import { sortedBy } from "../../lib/utils";
+import SidebarLink from "./SidebarLink";
+
+export default function SidebarLinkList<T extends { name: string }>({
+  title,
+  items,
+  active,
+  url,
+}: {
+  title: string;
+  items: T[];
+  active?: string;
+  url: (item: T) => string | UrlObject;
+}) {
+  if (items.length === 0) {
+    return null;
+  }
+  return (
+    <Box>
+      <Text variant="h5">{title}</Text>
+      {sortedBy(items, "name")
+        .filter((x, i, xs) => i === 0 || xs[i - 1].name !== x.name)
+        .map((x) => (
+          <Text key={x.name}>
+            <SidebarLink href={url(x)} active={x.name === active}>
+              {x.name}
+            </SidebarLink>
+          </Text>
+        ))}
+    </Box>
+  );
+}

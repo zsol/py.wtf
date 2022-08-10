@@ -1,17 +1,13 @@
-import path from "path";
 import fs from "fs";
+import path from "path";
+
 const indexDirectory = path.join(process.cwd(), "..", "index");
 
-export function getPackageIndex() {
+export function getPackageIndex(): Pkg[] {
   const fileNames = fs
     .readdirSync(indexDirectory)
     .filter((fname) => fname.endsWith(".json"));
-  return fileNames.map((name) => ({
-    name: name.replace(/\.json$/, ""),
-    version: "unknown",
-    modules: JSON.parse(fs.readFileSync(`${indexDirectory}/${name}`).toString())
-      .modules,
-  }));
+  return fileNames.map((fname) => getPackage(fname.replace(/.json$/, "")));
 }
 
 export type Pkg = {
@@ -62,9 +58,9 @@ export type Class = {
   documentation: Array<Documentation>;
 };
 
-export function getPackage(name): Pkg {
+export function getPackage(name: string): Pkg {
   const indexFile = path.join(indexDirectory, `${name}.json`);
   const indexData = fs.readFileSync(indexFile, "utf8");
-  const index: Pkg = JSON.parse(indexData);
+  const index: Pkg = JSON.parse(indexData) as Pkg;
   return index;
 }
