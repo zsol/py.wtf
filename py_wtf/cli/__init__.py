@@ -11,7 +11,7 @@ from pathlib import Path
 from tarfile import is_tarfile, TarFile
 from tempfile import TemporaryDirectory
 
-from typing import Tuple
+from typing import Sequence, Tuple
 from urllib.request import urlopen, urlretrieve
 from zipfile import is_zipfile, ZipFile
 
@@ -65,7 +65,7 @@ def index(package_name: str, directory: str, pretty: bool) -> None:
 
 @py_wtf.command(name="index-file")
 @click.argument("file")
-def _index_file(file: str) -> None:
+def index_file_cmd(file: str) -> None:
     path = Path(file)
     mod = index_file(path.parent, path)
     rich.print(mod)
@@ -92,6 +92,12 @@ def archive_list(arc: Archive) -> list[str]:
 @dataclass
 class PkgInfo:
     version: str
+    classifiers: Sequence[str] | None
+    home_page: str | None
+    license: str | None
+    documentation_url: str | None
+    dependencies: Sequence[str]
+    summary: str | None
 
 
 def pick_project_dir(directory: Path) -> Path:
@@ -107,10 +113,26 @@ def pick_project_dir(directory: Path) -> Path:
     return project_directory
 
 
+def parse_deps(maybe_deps: None | Sequence[str]) -> Sequence[str]:
+    if not maybe_deps:
+        return ()
+    return tuple(dep.split(" ")[0] for dep in maybe_deps if "extra" not in dep)
+
+
 def download(package_name: str, directory: Path) -> Tuple[Path, PkgInfo]:
     with urlopen(f"https://pypi.org/pypi/{package_name}/json") as pypi:
         pkg_data = json.load(pypi)
-    latest_version = pkg_data["info"]["version"]
+    pypi_info = pkg_data["info"]
+    latest_version = pypi_info["version"]
+    pkg_info = PkgInfo(
+        latest_version,
+        summary=pypi_info.get("summary"),
+        home_page=pypi_info.get("home_page"),
+        license=pypi_info.get("license"),
+        documentation_url=pypi_info.get("project_urls", {}).get("Documentation"),
+        classifiers=pypi_info.get("classifiers"),
+        dependencies=parse_deps(pypi_info.get("requires_dist")),
+    )
     src_url = None
     for artifact in pkg_data["releases"][latest_version]:
         if artifact["packagetype"] == "sdist":
@@ -123,4 +145,4 @@ def download(package_name: str, directory: Path) -> Tuple[Path, PkgInfo]:
     with open_archive(src_archive) as opened:
         opened.extractall(directory)
 
-        return (pick_project_dir(directory), PkgInfo(latest_version))
+    return (pick_project_dir(directory), pkg_info)
