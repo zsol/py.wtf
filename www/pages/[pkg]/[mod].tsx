@@ -23,9 +23,7 @@ export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
     return { notFound: true };
   }
   const pkg = docs.getPackage(params.pkg);
-  const mod = pkg.modules.find(
-    (m) => m.name === `${pkg.name}.${params.mod as string}`
-  );
+  const mod = pkg.modules.find((m) => m.name === (params.mod as string));
   if (mod === undefined) {
     return { notFound: true };
   }
