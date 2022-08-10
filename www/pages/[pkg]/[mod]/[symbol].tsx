@@ -49,9 +49,7 @@ export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
   }
   const pkg = docs.getPackage(params.pkg);
 
-  const mod = pkg.modules.find(
-    (m) => m.name === `${pkg.name}.${params.mod as string}`
-  );
+  const mod = pkg.modules.find((m) => m.name === params.mod);
   if (mod === undefined) {
     return { notFound: true };
   }
@@ -99,7 +97,7 @@ export const getStaticPaths: GetStaticPaths = () => {
     paths.push({
       params: {
         pkg: pkg.name,
-        mod: withoutPrefix(pkg.name, mod.name),
+        mod: mod.name,
         symbol: withoutPrefix(mod.name, thing.name),
       },
     });

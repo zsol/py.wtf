@@ -12,7 +12,7 @@ interface HasName {
 }
 interface Props<T extends HasName> {
   title: string;
-  stripPrefix: string;
+  stripPrefix?: string;
   items: T[];
   active?: string;
   url: (item: T) => string | UrlObject;
@@ -36,7 +36,7 @@ export default function SidebarLinkList<T extends HasName>({
         .map((x) => (
           <Text key={x.name}>
             <SidebarLink href={url(x)} active={x.name === active}>
-              {withoutPrefix(stripPrefix, x.name)}
+              {stripPrefix ? withoutPrefix(stripPrefix, x.name) : x.name}
             </SidebarLink>
           </Text>
         ))}
