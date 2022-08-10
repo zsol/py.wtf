@@ -5,7 +5,6 @@ import Layout from "@/components/Layout";
 import ModuleList from "@/components/Sidebar/ModuleList";
 
 import * as docs from "@/lib/docs";
-import { withoutPrefix } from "@/lib/url";
 
 interface Props {
   pkg: docs.Pkg;
@@ -23,7 +22,7 @@ export const getStaticProps: GetStaticProps<Props> = ({ params }) => {
     return { notFound: true };
   }
   const pkg = docs.getPackage(params.pkg);
-  const mod = pkg.modules.find((m) => m.name === (params.mod as string));
+  const mod = pkg.modules.find((m) => m.name === params.mod);
   if (mod === undefined) {
     return { notFound: true };
   }
@@ -40,7 +39,7 @@ export const getStaticPaths: GetStaticPaths = () => {
   return {
     paths: idx.flatMap((pkg) =>
       pkg.modules.map((mod) => ({
-        params: { pkg: pkg.name, mod: withoutPrefix(pkg.name, mod.name) },
+        params: { pkg: pkg.name, mod: mod.name },
       }))
     ),
     fallback: false,

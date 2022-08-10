@@ -16,7 +16,6 @@ export default function ModuleList({ pkg, currentModule }: Props) {
       title="Modules"
       items={pkg.modules}
       active={currentModule.name}
-      stripPrefix={pkg.name}
       url={url.mod.bind(null, pkg)}
     />
   );

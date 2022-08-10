@@ -23,7 +23,7 @@ export function mod(p: docs.Pkg, m: docs.Module): UrlObject {
     pathname: "/[pkg]/[mod]",
     query: {
       pkg: p.name,
-      mod: withoutPrefix(p.name, m.name),
+      mod: m.name,
     },
   };
 }
@@ -37,7 +37,7 @@ export function symbol(
     pathname: "/[pkg]/[mod]/[symbol]",
     query: {
       pkg: p.name,
-      mod: withoutPrefix(p.name, m.name),
+      mod: m.name,
       symbol: withoutPrefix(m.name, s.name),
     },
   };
@@ -53,7 +53,7 @@ export function classItem(
     pathname: "/[pkg]/[mod]/[symbol]",
     query: {
       pkg: p.name,
-      mod: withoutPrefix(p.name, m.name),
+      mod: m.name,
       symbol: withoutPrefix(m.name, c.name),
     },
   };
