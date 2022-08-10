@@ -77,6 +77,10 @@ def index_dir_cmd(dir: str) -> None:
 
 
 def index_dir(dir: Path) -> Iterable[Module]:
+    # TODO: do something with .pyi files
+    # If there's a .pyi file with no corresponding .py -> just index .pyi
+    # If both of them exist, do a best effort merge? 🤷
+    trailrunner.core.INCLUDE_PATTERN = r".+\.py$"
     for (_, mod) in trailrunner.run_iter(
         paths=trailrunner.walk(dir), func=partial(index_file, dir)
     ):
