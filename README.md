@@ -21,7 +21,7 @@ Please do. Python 3.10, Node 16.14.
 cd py.wtf
 pipx run hatch shell
 YOUR_FAVORITE_PACKAGE=click
-py-wtf index --package-name $YOUR_FAVORITE_PACKAGE index/
+py-wtf index --package-name $YOUR_FAVORITE_PACKAGE www/public/_index/
 cd www
 npm install
 npm run dev

@@ -7,7 +7,7 @@ import SidebarLinkList from "./SidebarLinkList";
 
 interface Props {
   pkg: Pkg;
-  currentModule: Module;
+  currentModule?: Module;
 }
 
 export default function ModuleList({ pkg, currentModule }: Props) {
@@ -15,7 +15,7 @@ export default function ModuleList({ pkg, currentModule }: Props) {
     <SidebarLinkList
       title="Modules"
       items={pkg.modules}
-      active={currentModule.name}
+      active={currentModule?.name}
       url={url.mod.bind(null, pkg)}
     />
   );

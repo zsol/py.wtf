@@ -1,13 +1,17 @@
-import fs from "fs";
+import { promises as fs } from "fs";
 import path from "path";
 
 const indexDirectory = path.join(process.cwd(), "..", "index");
 
-export function getPackageIndex(): Pkg[] {
-  const fileNames = fs
-    .readdirSync(indexDirectory)
-    .filter((fname) => fname.endsWith(".json"));
-  return fileNames.map((fname) => getPackage(fname.replace(/.json$/, "")));
+export async function listPackages(): Promise<string[]> {
+  const entries = await fs.readdir(indexDirectory);
+  const fileNames = entries.filter((fname) => fname.endsWith(".json"));
+  return fileNames.map((f) => f.replace(/\.json$/, ""));
+}
+
+export async function readPackageJson(name: string): Promise<string> {
+  const indexFile = path.join(indexDirectory, `${name}.json`);
+  return await fs.readFile(indexFile, "utf8");
 }
 
 export type Pkg = {
@@ -57,10 +61,3 @@ export type Class = {
   inner_classes: Array<Class>;
   documentation: Array<Documentation>;
 };
-
-export function getPackage(name: string): Pkg {
-  const indexFile = path.join(indexDirectory, `${name}.json`);
-  const indexData = fs.readFileSync(indexFile, "utf8");
-  const index: Pkg = JSON.parse(indexData) as Pkg;
-  return index;
-}
