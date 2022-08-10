@@ -2,20 +2,29 @@ import { Box } from "@welcome-ui/box";
 import { Text } from "@welcome-ui/text";
 import { UrlObject } from "url";
 
-import { sortedBy } from "../../lib/utils";
+import { sortedBy } from "@/lib/sorting";
+import { withoutPrefix } from "@/lib/url";
+
 import SidebarLink from "./SidebarLink";
 
-export default function SidebarLinkList<T extends { name: string }>({
-  title,
-  items,
-  active,
-  url,
-}: {
+interface HasName {
+  name: string;
+}
+interface Props<T extends HasName> {
   title: string;
+  stripPrefix: string;
   items: T[];
   active?: string;
   url: (item: T) => string | UrlObject;
-}) {
+}
+
+export default function SidebarLinkList<T extends HasName>({
+  title,
+  stripPrefix,
+  items,
+  active,
+  url,
+}: Props<T>) {
   if (items.length === 0) {
     return null;
   }
@@ -27,7 +36,7 @@ export default function SidebarLinkList<T extends { name: string }>({
         .map((x) => (
           <Text key={x.name}>
             <SidebarLink href={url(x)} active={x.name === active}>
-              {x.name}
+              {withoutPrefix(stripPrefix, x.name)}
             </SidebarLink>
           </Text>
         ))}

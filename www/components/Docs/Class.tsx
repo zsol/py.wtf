@@ -1,10 +1,12 @@
-import { Text } from "@welcome-ui/text";
 import { Box } from "@welcome-ui/box";
+import { Text } from "@welcome-ui/text";
 import React from "react";
 
-import * as docs from "../../lib/docs";
-import * as hl from "../highlight";
-import Intersperse from "../Intersperse";
+import Intersperse from "@/components/Intersperse";
+import * as hl from "@/components/highlight";
+
+import * as docs from "@/lib/docs";
+
 import Documentation from "./Documentation";
 import Function from "./Function";
 import Variable from "./Variable";

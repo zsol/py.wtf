@@ -6,7 +6,7 @@ import * as docs from "@/lib/docs";
 import * as url from "@/lib/url";
 
 import Documentation from "./Documentation";
-import SymbolLinkTable from "./SymbolLinkTable";
+import SymbolLinkTable, { Sym } from "./SymbolLinkTable";
 
 interface Props {
   pkg: docs.Pkg;
@@ -15,13 +15,29 @@ interface Props {
 
 export default function Module({ pkg, mod }: Props) {
   const mkUrl = url.symbol.bind(null, pkg, mod);
+  function LinkTable<T extends Sym>({
+    title,
+    symbols,
+  }: {
+    title: string;
+    symbols: T[];
+  }) {
+    return (
+      <SymbolLinkTable<T>
+        title={title}
+        url={mkUrl}
+        symbols={symbols}
+        stripPrefix={mod.name}
+      />
+    );
+  }
   return (
     <Box>
       <Text variant="h3">Module {mod.name}</Text>
       <Documentation>{pkg.documentation}</Documentation>
-      <SymbolLinkTable title="Classes" symbols={mod.classes} url={mkUrl} />
-      <SymbolLinkTable title="Functions" symbols={mod.functions} url={mkUrl} />
-      <SymbolLinkTable title="Variables" symbols={mod.variables} url={mkUrl} />
+      <LinkTable title="Classes" symbols={mod.classes} />
+      <LinkTable title="Functions" symbols={mod.functions} />
+      <LinkTable title="Variables" symbols={mod.variables} />
     </Box>
   );
 }

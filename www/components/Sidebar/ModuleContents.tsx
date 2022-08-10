@@ -13,28 +13,30 @@ interface Props {
 }
 
 export default function ModuleContents({ pkg, mod, currentSymbol }: Props) {
-  const mkUrl = url.symbol.bind(null, pkg, mod);
+  function LinkList<T extends { name: string }>({
+    title,
+    items,
+  }: {
+    title: string;
+    items: T[];
+  }) {
+    return (
+      <SidebarLinkList<T>
+        title={title}
+        items={items}
+        active={currentSymbol}
+        stripPrefix={mod.name}
+        url={(sym) => url.symbol(pkg, mod, sym)}
+      />
+    );
+  }
+
   return (
     <>
       <Text variant="h4">In {mod.name}</Text>
-      <SidebarLinkList
-        title="Classes"
-        items={mod.classes}
-        url={mkUrl}
-        active={currentSymbol}
-      />
-      <SidebarLinkList
-        title="Functions"
-        items={mod.functions}
-        url={mkUrl}
-        active={currentSymbol}
-      />
-      <SidebarLinkList
-        title="Variables"
-        items={mod.variables}
-        url={mkUrl}
-        active={currentSymbol}
-      />
+      <LinkList title="Classes" items={mod.classes} />
+      <LinkList title="Functions" items={mod.functions} />
+      <LinkList title="Variables" items={mod.variables} />
     </>
   );
 }
