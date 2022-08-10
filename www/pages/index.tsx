@@ -4,7 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 
-import { getPackage, listPackages } from "@/lib/docs";
+import { Pkg, getPackage, listPackages } from "@/lib/docs";
 import * as url from "@/lib/url";
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -41,7 +41,7 @@ export default function Home({ packages }: Props) {
           <ul>
             {packages.map((pkg) => (
               <li key={`${pkg.name}-${pkg.version}`}>
-                <Link href={url.pkg(pkg)}>
+                <Link href={url.pkg(pkg as Pkg)}>
                   <a>{pkg.name}</a>
                 </Link>{" "}
                 ({pkg.version})

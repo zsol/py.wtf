@@ -6,7 +6,7 @@ import * as docs from "@/lib/docs";
 import * as url from "@/lib/url";
 
 import Documentation from "./Documentation";
-import SymbolLinkTable, { Sym } from "./SymbolLinkTable";
+import SymbolLinkTable from "./SymbolLinkTable";
 
 interface Props {
   pkg: docs.Pkg;
