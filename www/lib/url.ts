@@ -3,7 +3,7 @@ import { UrlObject } from "url";
 import * as docs from "./docs";
 
 export function withoutPrefix(prefix: string, s: string) {
-  if (s.startsWith(prefix)) {
+  if (s.startsWith(`${prefix}.`)) {
     return s.slice(prefix.length + 1); // +1 for the dot
   }
   return s;
