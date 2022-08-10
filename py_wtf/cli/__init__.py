@@ -11,7 +11,7 @@ from pathlib import Path
 from tarfile import is_tarfile, TarFile
 from tempfile import TemporaryDirectory
 
-from typing import Sequence, Tuple
+from typing import Iterable, Sequence, Tuple
 from urllib.request import urlopen, urlretrieve
 from zipfile import is_zipfile, ZipFile
 
@@ -21,7 +21,7 @@ import trailrunner
 
 from ..__about__ import __version__
 from ..indexer import index_file
-from ..types import Package
+from ..types import Module, Package
 
 
 @click.group(
@@ -43,12 +43,7 @@ def index(package_name: str, directory: str, pretty: bool) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory() as tmpdir:
         src_dir, info = download(package_name, Path(tmpdir))
-        modules = list(
-            mod
-            for (_, mod) in trailrunner.run_iter(
-                paths=trailrunner.walk(src_dir), func=partial(index_file, src_dir)
-            )
-        )
+        modules = list(index_dir(src_dir))
 
     pkg = Package(
         package_name,
@@ -69,6 +64,23 @@ def index_file_cmd(file: str) -> None:
     path = Path(file)
     mod = index_file(path.parent, path)
     rich.print(mod)
+
+
+@py_wtf.command(name="index-dir")
+@click.argument("dir")
+def index_dir_cmd(dir: str) -> None:
+    path = Path(dir)
+    cnt = 0
+    for cnt, mod in enumerate(index_dir(path), start=1):
+        rich.print(mod)
+    rich.print(f"Found {cnt} modules in total.")
+
+
+def index_dir(dir: Path) -> Iterable[Module]:
+    for (_, mod) in trailrunner.run_iter(
+        paths=trailrunner.walk(dir), func=partial(index_file, dir)
+    ):
+        yield mod
 
 
 Archive = TarFile | ZipFile
