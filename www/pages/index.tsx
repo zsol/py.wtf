@@ -4,11 +4,17 @@ import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 
-import { Pkg, getPackageIndex } from "@/lib/docs";
+import { getPackage, listPackages } from "@/lib/docs";
 import * as url from "@/lib/url";
 
-export const getStaticProps: GetStaticProps<Props> = () => {
-  const packages = getPackageIndex();
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  const packageNames = await listPackages();
+  const packages = await Promise.all(
+    packageNames.map(async (name) => ({
+      name,
+      version: (await getPackage(name)).version,
+    }))
+  );
   return {
     props: {
       packages,
@@ -19,7 +25,7 @@ export const getStaticProps: GetStaticProps<Props> = () => {
 const theme = createTheme();
 
 interface Props {
-  packages: Pkg[];
+  packages: { name: string; version: string }[];
 }
 
 export default function Home({ packages }: Props) {

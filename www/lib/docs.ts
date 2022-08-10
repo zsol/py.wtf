@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 
-const indexDirectory = path.join(process.cwd(), "..", "index");
+const indexDirectory = path.join(process.cwd(), "public", "_index");
 
 export async function listPackages(): Promise<string[]> {
   const entries = await fs.readdir(indexDirectory);
@@ -9,9 +9,10 @@ export async function listPackages(): Promise<string[]> {
   return fileNames.map((f) => f.replace(/\.json$/, ""));
 }
 
-export async function readPackageJson(name: string): Promise<string> {
+export async function getPackage(name: string): Promise<Pkg> {
   const indexFile = path.join(indexDirectory, `${name}.json`);
-  return await fs.readFile(indexFile, "utf8");
+  const json = await fs.readFile(indexFile, "utf8");
+  return JSON.parse(json) as Pkg;
 }
 
 export type Pkg = {
