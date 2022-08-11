@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { useParams } from "react-router-dom";
 
 import Module from "@/components/Docs/Module";
 import FetchPackage from "@/components/FetchPackage";
@@ -6,9 +6,7 @@ import Layout from "@/components/Layout";
 import ModuleList from "@/components/Sidebar/ModuleList";
 
 export default function ModulePage() {
-  const router = useRouter();
-  const pkgName = router.query.pkg as string;
-  const modName = router.query.mod as string;
+  const { pkg: pkgName, mod: modName } = useParams();
   return (
     <FetchPackage
       name={pkgName}
@@ -22,7 +20,7 @@ export default function ModulePage() {
             {mod ? (
               <Module pkg={pkg} mod={mod} />
             ) : (
-              `Module ${modName} not found 🤪`
+              `Module "${modName || ""}" not found 🤪`
             )}
           </Layout>
         );

@@ -8,6 +8,12 @@ const nextConfig = {
   experimental: {
     largePageDataBytes: 1024 * 1024,
   },
+  rewrites: async () => [
+    {
+      source: "/:any*",
+      destination: "/_spa",
+    },
+  ],
 };
 
 module.exports = nextConfig;

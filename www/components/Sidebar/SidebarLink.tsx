@@ -1,9 +1,9 @@
-import { Link } from "@welcome-ui/link";
-import NextLink, { LinkProps } from "next/link";
+import { Link as WUILink } from "@welcome-ui/link";
 import React from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-const StyledWUILink = styled(Link)<{ active: boolean }>`
+const StyledWUILink = styled(WUILink)<{ active: boolean }>`
   padding-left: ${(props) => props.theme.space.xs};
   padding-right: ${(props) => props.theme.space.md};
   width: 100%;
@@ -16,15 +16,16 @@ const StyledWUILink = styled(Link)<{ active: boolean }>`
   `}
 `;
 
-interface Props extends LinkProps {
+interface Props {
+  href: string;
   children: React.ReactNode;
   active?: boolean;
 }
 
 const SidebarLink = ({ children, href, active, ...rest }: Props) => (
-  <NextLink href={href} passHref {...rest}>
+  <Link to={href} {...rest}>
     <StyledWUILink active={active || false}>{children}</StyledWUILink>
-  </NextLink>
+  </Link>
 );
 
 export default SidebarLink;
