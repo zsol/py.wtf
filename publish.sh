@@ -21,8 +21,8 @@ npm run export
 OUT=$(mktemp -d)/docs
 REV=$(git rev-parse HEAD)
 mv out/ $OUT/
-git checkout pages
 cd "$TOPLEVEL"
+git checkout pages
 mv docs/CNAME docs/.nojekyll $OUT/
 rm -rf docs/
 mv $OUT docs
