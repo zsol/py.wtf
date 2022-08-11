@@ -11,7 +11,7 @@ if ! which hatch &>/dev/null; then
   exit 1
 fi
 
-for pkg in click aioitertools aiomultiprocessing more_itertools usort ufmt black libcst; do
+for pkg in click aioitertools aiomultiprocessing more_itertools usort ufmt black libcst numpy; do
   hatch run py-wtf index --package-name="$pkg" www/public/_index/
 done
 
