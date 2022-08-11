@@ -9,6 +9,10 @@ export function withoutPrefix(prefix: string, s: string) {
   return s;
 }
 
+export function pkgJson(name: string): string {
+  return `/_index/${name}.json`;
+}
+
 export function pkg(p: docs.Pkg): UrlObject {
   return {
     pathname: "/[pkg]",
