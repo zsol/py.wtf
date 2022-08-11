@@ -18,7 +18,10 @@ from .types import (
 
 
 def index_file(base_dir: Path, path: Path) -> Module:
-    name = ".".join(path.relative_to(base_dir).with_suffix("").parts)
+    name_parts = path.relative_to(base_dir).with_suffix("").parts
+    if name_parts[-1] == "__init__":
+        name_parts = name_parts[:-1]
+    name = ".".join(name_parts)
     indexer = Indexer(name)
     try:
         mod = cst.MetadataWrapper(
