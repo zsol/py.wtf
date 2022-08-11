@@ -39,7 +39,7 @@ const PageContainer = styled.div`
 `;
 
 const StyledPackageLink = styled.a`
-  color: cornflowerblue;
+  color: ${(props) => props.theme.links.default.color};
 `;
 
 const Content = styled.main`
