@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 
 export const Container = (props: TextProps) => (
-  <Text as="code" backgroundColor="light.800" padding="md" {...props} />
+  <Text as="code" backgroundColor="slate.700" padding="md" {...props} />
 );
 
 export const Keyword = styled.span`

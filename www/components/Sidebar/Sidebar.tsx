@@ -14,21 +14,24 @@ export interface Props {
 }
 
 const Container = styled(Box)`
-  overflow: auto;
-  background-color: #151515;
-  padding-left: ${(props) => props.theme.space.xxl};
-  border-right: ${(props) => props.theme.colors.light[200]} 5px solid;
   height: 100%;
+  min-width: 15em;
+  padding-left: ${(props) => props.theme.space.xxl};
+
+  background-color: ${(props) => props.theme.colors.slate[700]};
+  border-right: ${(props) => props.theme.colors.slate[200]} 10px solid;
+
+  overflow: auto;
 `;
 
 const StyledLink = styled(Link)`
-  color: ${(props) => props.theme.colors.dark[800]};
+  color: ${(props) => props.theme.colors.grey[300]};
   text-decoration: none;
 `;
 
 export default function Sidebar({ pkg, children }: Props) {
   return (
-    <Container>
+    <Container color="grey.100">
       <StyledLink to={url.pkg(pkg)}>
         <Text variant="h3" paddingRight="xl" cursor="pointer">
           Package {pkg.name}

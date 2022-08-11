@@ -42,7 +42,7 @@ export default function SymbolLinkTable<T extends Sym>({
     return <></>;
   }
   return (
-    <Box>
+    <Box color="grey.300">
       <Text variant="h3">{title}</Text>
       <Table>
         <Table.Tbody>
