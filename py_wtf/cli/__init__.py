@@ -110,6 +110,9 @@ def index_dir(dir: Path) -> Iterable[Module]:
     # If there's a .pyi file with no corresponding .py -> just index .pyi
     # If both of them exist, do a best effort merge? 🤷
     trailrunner.core.INCLUDE_PATTERN = r".+\.py$"
+
+    # Skip looking for root markers, we definitely want to index this directory.
+    trailrunner.core.ROOT_MARKERS = []
     for (_, mod) in trailrunner.run_iter(
         paths=trailrunner.walk(dir), func=partial(index_file, dir)
     ):
