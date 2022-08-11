@@ -1,5 +1,3 @@
-import { UrlObject } from "url";
-
 import * as docs from "./docs";
 
 export function withoutPrefix(prefix: string, s: string) {

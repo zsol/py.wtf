@@ -3,7 +3,6 @@ import { Link as WUILink } from "@welcome-ui/link";
 import { Text } from "@welcome-ui/text";
 import React from "react";
 import { Link } from "react-router-dom";
-import { UrlObject } from "url";
 
 import Table from "@/components/CondensedTable";
 
@@ -21,7 +20,7 @@ interface Props<T extends Sym> {
   title: string;
   stripPrefix?: string;
   symbols: T[];
-  url: (sym: T) => string | UrlObject;
+  url: (sym: T) => string;
 }
 
 function deduplicate<T extends Sym>(xs: T[]): T[] {

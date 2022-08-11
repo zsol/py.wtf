@@ -1,6 +1,5 @@
 import { Box } from "@welcome-ui/box";
 import { Text } from "@welcome-ui/text";
-import { UrlObject } from "url";
 
 import { sortedBy } from "@/lib/sorting";
 import { withoutPrefix } from "@/lib/url";
@@ -15,7 +14,7 @@ interface Props<T extends HasName> {
   stripPrefix?: string;
   items: T[];
   active?: string;
-  url: (item: T) => string | UrlObject;
+  url: (item: T) => string;
 }
 
 export default function SidebarLinkList<T extends HasName>({

@@ -1,6 +1,5 @@
 import { Text } from "@welcome-ui/text";
 import React from "react";
-import { UrlObject } from "url";
 
 import { Class, Module, Pkg } from "@/lib/docs";
 import * as url from "@/lib/url";
@@ -26,7 +25,7 @@ export default function ClassContents({ pkg, mod, cls, currentSymbol }: Props) {
   }: {
     title: string;
     items: T[];
-    url: (sym: T) => UrlObject;
+    url: (sym: T) => string;
   }) {
     return (
       <SidebarLinkList<T>
