@@ -21,7 +21,7 @@ import trailrunner
 
 from ..__about__ import __version__
 from ..indexer import index_file
-from ..types import Module, Package
+from ..types import Documentation, Module, Package
 
 
 @click.group(
@@ -74,6 +74,35 @@ def index_dir_cmd(dir: str) -> None:
     for cnt, mod in enumerate(index_dir(path), start=1):
         rich.print(mod)
     rich.print(f"Found {cnt} modules in total.")
+
+
+@py_wtf.command()
+def generate_test_index() -> None:
+    root_dir = Path(__file__).parent.parent.parent
+    out_dir = root_dir / "www" / "public" / "_index"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    fixtures = root_dir / "test_fixtures"
+    for proj_dir in fixtures.iterdir():
+        if not (proj_json := proj_dir / "project.json").exists():
+            continue
+        proj_metadata = json.loads(proj_json.read_bytes())
+        proj_info = PkgInfo(
+            proj_metadata["version"],
+            classifiers=proj_metadata.get("classifiers"),
+            home_page=proj_metadata.get("home_page"),
+            license=proj_metadata.get("license"),
+            documentation_url=proj_metadata.get("documentation_url"),
+            dependencies=proj_metadata["dependencies"],
+            summary=proj_metadata.get("summary"),
+        )
+        mods = index_dir(proj_dir)
+        proj = Package(
+            proj_dir.name,
+            version=proj_info.version,
+            modules=list(mods),
+            documentation=[Documentation(proj_info.summary or "")],
+        )
+        (out_dir / f"{proj.name}.json").write_text(proj.to_json())  # type: ignore
 
 
 def index_dir(dir: Path) -> Iterable[Module]:
