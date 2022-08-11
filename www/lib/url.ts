@@ -1,5 +1,3 @@
-import { UrlObject } from "url";
-
 import * as docs from "./docs";
 
 export function withoutPrefix(prefix: string, s: string) {
@@ -13,38 +11,20 @@ export function pkgJson(name: string): string {
   return `/_index/${name}.json`;
 }
 
-export function pkg(p: docs.Pkg): UrlObject {
-  return {
-    pathname: "/[pkg]",
-    query: {
-      pkg: p.name,
-    },
-  };
+export function pkg(p: docs.Pkg): string {
+  return `/${p.name}`;
 }
 
-export function mod(p: docs.Pkg, m: docs.Module): UrlObject {
-  return {
-    pathname: "/[pkg]/[mod]",
-    query: {
-      pkg: p.name,
-      mod: m.name,
-    },
-  };
+export function mod(p: docs.Pkg, m: docs.Module): string {
+  return `${pkg(p)}/${m.name}`;
 }
 
 export function symbol(
   p: docs.Pkg,
   m: docs.Module,
   s: docs.Class | docs.Func | docs.Variable
-): UrlObject {
-  return {
-    pathname: "/[pkg]/[mod]/[symbol]",
-    query: {
-      pkg: p.name,
-      mod: m.name,
-      symbol: withoutPrefix(m.name, s.name),
-    },
-  };
+): string {
+  return `${mod(p, m)}/${withoutPrefix(m.name, s.name)}`;
 }
 
 export function classItem(
@@ -52,13 +32,6 @@ export function classItem(
   m: docs.Module,
   c: docs.Class,
   x: docs.Func | docs.Variable
-): UrlObject {
-  return {
-    pathname: "/[pkg]/[mod]/[symbol]",
-    query: {
-      pkg: p.name,
-      mod: m.name,
-      symbol: withoutPrefix(m.name, c.name),
-    },
-  };
+): string {
+  return `${symbol(p, m, c)}#${withoutPrefix(c.name, x.name)}`;
 }

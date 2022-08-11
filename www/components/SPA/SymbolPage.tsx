@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { useParams } from "react-router-dom";
 
 import Class from "@/components/Docs/Class";
 import Function from "@/components/Docs/Function";
@@ -12,10 +12,7 @@ import ModuleList from "@/components/Sidebar/ModuleList";
 import { withoutPrefix } from "@/lib/url";
 
 export default function ModulePage() {
-  const router = useRouter();
-  const pkgName = router.query.pkg as string;
-  const modName = router.query.mod as string;
-  const symName = router.query.symbol as string;
+  const { pkg: pkgName, mod: modName, sym: symName } = useParams();
   return (
     <FetchPackage
       name={pkgName}
@@ -23,7 +20,10 @@ export default function ModulePage() {
         const [Sidebar, Content] = (() => {
           const mod = pkg.modules.find((mod) => mod.name === modName);
           if (!mod) {
-            return [<ModuleList pkg={pkg} />, `Module ${modName} not found 🤪`];
+            return [
+              <ModuleList pkg={pkg} />,
+              `Module ${modName || ""} not found 🤪`,
+            ];
           }
 
           const cls = mod.classes.find(
@@ -38,7 +38,10 @@ export default function ModulePage() {
           const symbol = cls || func || variable;
 
           if (!symbol) {
-            return [<ModuleList pkg={pkg} />, `Symbol ${symName} not found 🤪`];
+            return [
+              <ModuleList pkg={pkg} />,
+              `Symbol ${symName || ""} not found 🤪`,
+            ];
           }
 
           const Sidebar = cls ? (

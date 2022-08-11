@@ -1,7 +1,7 @@
 import { Box } from "@welcome-ui/box";
 import { Text } from "@welcome-ui/text";
-import Link from "next/link";
 import React from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 import * as url from "@/lib/url";
@@ -21,14 +21,19 @@ const Container = styled(Box)`
   height: 100%;
 `;
 
+const StyledLink = styled(Link)`
+  color: ${(props) => props.theme.colors.dark[800]};
+  text-decoration: none;
+`;
+
 export default function Sidebar({ pkg, children }: Props) {
   return (
     <Container>
-      <Link href={url.pkg(pkg)}>
+      <StyledLink to={url.pkg(pkg)}>
         <Text variant="h3" paddingRight="xl" cursor="pointer">
           Package {pkg.name}
         </Text>
-      </Link>
+      </StyledLink>
       <Text>Version {pkg.version}</Text>
       {children}
     </Container>

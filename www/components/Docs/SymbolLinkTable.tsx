@@ -1,9 +1,8 @@
 import { Box } from "@welcome-ui/box";
-import { Link } from "@welcome-ui/link";
+import { Link as WUILink } from "@welcome-ui/link";
 import { Text } from "@welcome-ui/text";
-import NextLink from "next/link";
 import React from "react";
-import { UrlObject } from "url";
+import { Link } from "react-router-dom";
 
 import Table from "@/components/CondensedTable";
 
@@ -21,7 +20,7 @@ interface Props<T extends Sym> {
   title: string;
   stripPrefix?: string;
   symbols: T[];
-  url: (sym: T) => string | UrlObject;
+  url: (sym: T) => string;
 }
 
 function deduplicate<T extends Sym>(xs: T[]): T[] {
@@ -51,13 +50,13 @@ export default function SymbolLinkTable<T extends Sym>({
             return (
               <Table.Tr key={sym.name}>
                 <Table.Th>
-                  <NextLink href={url(sym)} passHref>
-                    <Link>
+                  <Link to={url(sym)}>
+                    <WUILink>
                       {stripPrefix
                         ? withoutPrefix(stripPrefix, sym.name)
                         : sym.name}
-                    </Link>
-                  </NextLink>
+                    </WUILink>
+                  </Link>
                 </Table.Th>
                 <Table.Td>
                   <Documentation.Short>{sym.documentation}</Documentation.Short>
