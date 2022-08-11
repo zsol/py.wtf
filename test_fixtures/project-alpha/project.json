@@ -1,0 +1,8 @@
+{
+    "version": "0",
+    "home_page": "https://github.com/zsol/py.wtf/",
+    "dependencies": [
+        "more_itertools > 0.1"
+    ],
+    "summary": "This is a project for testing purposes\nit isn't intended for use by anyone. 🤪"
+}
