@@ -28,6 +28,5 @@ rm -rf docs/
 mv $OUT docs
 git add -A
 git commit -m "Deploy of $REV"
-exit 0
 git push
 git checkout -
