@@ -1,6 +1,2 @@
-www/public/_index/
-node_modules/
-www/.next/
 __pycache__/
-www/out/
 .vscode/

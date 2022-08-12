@@ -1,16 +1,19 @@
 import itertools
 from pathlib import Path
 from textwrap import dedent
-from typing import Iterable, Protocol, Tuple, TypeVar
+from typing import Iterable, Protocol, TypeVar
 
 import libcst as cst
+from libcst.codemod import CodemodContext
+from libcst.codemod.visitors import GatherExportsVisitor
+from libcst.helpers.expression import get_full_name_for_node
 
 from .types import (
     Class,
     Documentation,
+    FQName,
     Function,
     Module,
-    Package,
     Parameter,
     Type,
     Variable,
@@ -18,7 +21,10 @@ from .types import (
 
 
 def index_file(base_dir: Path, path: Path) -> Module:
-    name = ".".join(path.relative_to(base_dir).with_suffix("").parts)
+    name_parts = path.relative_to(base_dir).with_suffix("").parts
+    if name_parts[-1] == "__init__":
+        name_parts = name_parts[:-1]
+    name = ".".join(name_parts)
     indexer = Indexer(name)
     try:
         mod = cst.MetadataWrapper(
@@ -35,6 +41,7 @@ def index_file(base_dir: Path, path: Path) -> Module:
         classes=indexer.classes,
         functions=indexer.functions,
         variables=indexer.variables,
+        exports=indexer.exports,
     )
 
 
@@ -96,15 +103,53 @@ class Indexer(cst.CSTVisitor):
     def __init__(self, scope: str | None = None) -> None:
         super().__init__()
         self._scope_name: str | None = scope
+        self._symbol_table: dict[str, FQName] = {}
         self.classes: list[Class] = []
         self.functions: list[Function] = []
         self.variables: list[Variable] = []
         self.documentation: list[Documentation] = []
+        self.exports: list[FQName] = []
 
-    def scoped_name(self, name: str) -> str:
+    def leave_Module(self, original_node: cst.Module) -> None:
+        vis = GatherExportsVisitor(CodemodContext())
+        original_node.visit(vis)
+        # Maybe have an exports section?
+        self.exports.extend(
+            self._symbol_table.get(name, FQName(name))
+            for name in vis.explicit_exported_objects
+        )
+
+    def scoped_name(self, name: str) -> FQName:
         if self._scope_name:
-            return f"{self._scope_name}.{name}"
-        return name
+            return FQName(f"{self._scope_name}.{name}")
+        return FQName(name)
+
+    def visit_Import(self, node: cst.Import) -> bool:
+        for name in node.names:
+            if (asname := name.evaluated_alias) is not None:
+                self._symbol_table[asname] = FQName(name.evaluated_name)
+        return False
+
+    def visit_ImportFrom(self, node: cst.ImportFrom) -> bool:
+        if isinstance(node.names, cst.ImportStar):
+            return False
+
+        from_mod = ""
+        if node.relative:
+            if self._scope_name is None:
+                raise ValueError("Tried relative import when scope name is empty")
+            from_mod = self._scope_name.rsplit(".", len(node.relative) - 1)[0] + "."
+        if node.module:
+            from_mod += get_full_name_for_node(node.module) or ""
+        for name in node.names:
+            source = f"{from_mod}.{name.evaluated_name}"
+            target = (
+                asname
+                if (asname := name.evaluated_alias) is not None
+                else name.evaluated_name
+            )
+            self._symbol_table[target] = FQName(source)
+        return False
 
     def visit_IndentedBlock(self, node: cst.IndentedBlock) -> bool:
         if (hdr := extract_documentation(node.header)) is not None:
@@ -186,6 +231,10 @@ class Indexer(cst.CSTVisitor):
         my_name = name(target)
         if my_name is None:
             # it's not a Name or Attribute
+            return False
+
+        if my_name == "__all__":
+            # Handled by GatherExportsVisitor
             return False
 
         self.variables.append(
