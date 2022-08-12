@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, NewType
+from typing import Iterable, NewType, Sequence
 
 from dataclasses_json import dataclass_json  # type: ignore
 
@@ -67,3 +67,14 @@ class Package:
     version: str
     documentation: Iterable[Documentation]
     modules: Iterable[Module]
+
+
+@dataclass
+class ProjectMetadata:
+    version: str
+    classifiers: Sequence[str] | None
+    home_page: str | None
+    license: str | None
+    documentation_url: str | None
+    dependencies: Sequence[str]
+    summary: str | None
