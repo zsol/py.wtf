@@ -34,7 +34,7 @@ export default function Sidebar({ pkg, children }: Props) {
           Package {pkg.name}
         </Text>
       </StyledLink>
-      <Text>Version {pkg.version}</Text>
+      <Text>Version {pkg.metadata.version}</Text>
       {children}
     </Container>
   );
