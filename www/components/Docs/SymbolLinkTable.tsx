@@ -22,7 +22,7 @@ interface Props<T extends Sym> {
   stripPrefix?: string;
   symbols: T[];
   url: (sym: T) => string;
-  useReactRouter: boolean;
+  useReactRouter?: boolean;
 }
 
 function deduplicate<T extends Sym>(xs: T[]): T[] {
