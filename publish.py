@@ -76,7 +76,7 @@ async def main() -> None:
                 "py-wtf",
                 "index",
                 str(toplevel / "www" / "public" / "_index"),
-                f"--package-name={proj}",
+                f"--project-name={proj}",
             )
             for proj in PROJECTS_TO_INDEX
         ]

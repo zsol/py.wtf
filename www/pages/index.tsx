@@ -4,20 +4,20 @@ import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 
-import { Pkg, getPackage, listPackages, ProjectMetadata } from "@/lib/docs";
+import { Project, getProject, listProjects, ProjectMetadata } from "@/lib/docs";
 import * as url from "@/lib/url";
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const packageNames = await listPackages();
-  const packages = await Promise.all(
-    packageNames.map(async (name) => ({
+  const projectNames = await listProjects();
+  const projects = await Promise.all(
+    projectNames.map(async (name) => ({
       name,
-      metadata: (await getPackage(name)).metadata,
+      metadata: (await getProject(name)).metadata,
     }))
   );
   return {
     props: {
-      packages,
+      projects,
     },
   };
 };
@@ -25,10 +25,10 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 const theme = createTheme();
 
 interface Props {
-  packages: { name: string; metadata: ProjectMetadata }[];
+  projects: { name: string; metadata: ProjectMetadata }[];
 }
 
-export default function Home({ packages }: Props) {
+export default function Home({ projects }: Props) {
   return (
     <WuiProvider theme={theme}>
       <div className="container">
@@ -39,12 +39,12 @@ export default function Home({ packages }: Props) {
 
         <main>
           <ul>
-            {packages.map((pkg) => (
-              <li key={`${pkg.name}-${pkg.metadata.version}`}>
-                <Link href={url.pkg(pkg as Pkg)}>
-                  <a>{pkg.name}</a>
+            {projects.map((prj) => (
+              <li key={`${prj.name}-${prj.metadata.version}`}>
+                <Link href={url.project(prj as Project)}>
+                  <a>{prj.name}</a>
                 </Link>{" "}
-                ({pkg.metadata.version})
+                ({prj.metadata.version})
               </li>
             ))}
           </ul>

@@ -6,10 +6,10 @@ import styled from "styled-components";
 
 import * as url from "@/lib/url";
 
-import { Pkg } from "../../lib/docs";
+import { Project } from "../../lib/docs";
 
 export interface Props {
-  pkg: Pkg;
+  project: Project;
   children?: React.ReactNode;
 }
 
@@ -26,15 +26,15 @@ const StyledLink = styled(Link)`
   text-decoration: none;
 `;
 
-export default function Sidebar({ pkg, children }: Props) {
+export default function Sidebar({ project, children }: Props) {
   return (
     <Container>
-      <StyledLink to={url.pkg(pkg)}>
+      <StyledLink to={url.project(project)}>
         <Text variant="h3" paddingRight="xl" cursor="pointer">
-          Package {pkg.name}
+          Project {project.name}
         </Text>
       </StyledLink>
-      <Text>Version {pkg.metadata.version}</Text>
+      <Text>Version {project.metadata.version}</Text>
       {children}
     </Container>
   );

@@ -9,11 +9,11 @@ import Documentation from "./Documentation";
 import SymbolLinkTable from "./SymbolLinkTable";
 
 interface Props {
-  pkg: docs.Pkg;
+  prj: docs.Project;
   mod: docs.Module;
 }
 
-export default function Module({ pkg, mod }: Props) {
+export default function Module({ prj, mod }: Props) {
   function LinkTable({
     title,
     symbols,
@@ -24,7 +24,7 @@ export default function Module({ pkg, mod }: Props) {
     return (
       <SymbolLinkTable
         title={title}
-        url={(sym) => url.symbol(pkg, mod, sym)}
+        url={(sym) => url.symbol(prj, mod, sym)}
         symbols={symbols}
         stripPrefix={mod.name}
       />
@@ -33,7 +33,7 @@ export default function Module({ pkg, mod }: Props) {
   return (
     <Box>
       <Text variant="h3">Module {mod.name}</Text>
-      <Documentation>{pkg.documentation}</Documentation>
+      <Documentation>{prj.documentation}</Documentation>
       <LinkTable title="Classes" symbols={mod.classes} />
       <LinkTable title="Functions" symbols={mod.functions} />
       <LinkTable title="Variables" symbols={mod.variables} />

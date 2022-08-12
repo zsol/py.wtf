@@ -3,19 +3,19 @@ import path from "path";
 
 const indexDirectory = path.join(process.cwd(), "public", "_index");
 
-export async function listPackages(): Promise<string[]> {
+export async function listProjects(): Promise<string[]> {
   const entries = await fs.readdir(indexDirectory);
   const fileNames = entries.filter((fname) => fname.endsWith(".json"));
   return fileNames.map((f) => f.replace(/\.json$/, ""));
 }
 
-export async function getPackage(name: string): Promise<Pkg> {
+export async function getProject(name: string): Promise<Project> {
   const indexFile = path.join(indexDirectory, `${name}.json`);
   const json = await fs.readFile(indexFile, "utf8");
-  return JSON.parse(json) as Pkg;
+  return JSON.parse(json) as Project;
 }
 
-export type Pkg = {
+export type Project = {
   name: string;
   metadata: ProjectMetadata;
   documentation: Array<Documentation>;

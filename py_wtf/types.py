@@ -62,7 +62,7 @@ class Module:
 
 @dataclass_json  # type: ignore
 @dataclass(frozen=True)
-class Package:
+class Project:
     name: str
     metadata: ProjectMetadata
     documentation: Iterable[Documentation]

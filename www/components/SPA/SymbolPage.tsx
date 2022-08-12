@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import Class from "@/components/Docs/Class";
 import Function from "@/components/Docs/Function";
 import Variable from "@/components/Docs/Variable";
-import FetchPackage from "@/components/FetchPackage";
+import FetchProject from "@/components/FetchProject";
 import Layout from "@/components/Layout";
 import ClassContents from "@/components/Sidebar/ClassContents";
 import ModuleContents from "@/components/Sidebar/ModuleContents";
@@ -29,7 +29,7 @@ function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
 }
 
 export default function ModulePage() {
-  const { pkg: pkgName, mod: modName, sym: symName } = useParams();
+  const { prj: projectName, mod: modName, sym: symName } = useParams();
   if (symName === undefined) {
     return <div>`Missing "sym" parameter, how did you even get here?`</div>;
   }
@@ -40,14 +40,14 @@ export default function ModulePage() {
           py.wtf: {modName}.{symName}
         </title>
       </Head>
-      <FetchPackage
-        name={pkgName}
-        content={(pkg) => {
+      <FetchProject
+        name={projectName}
+        content={(prj) => {
           const [Sidebar, Content] = (() => {
-            const mod = pkg.modules.find((mod) => mod.name === modName);
+            const mod = prj.modules.find((mod) => mod.name === modName);
             if (!mod) {
               return [
-                <ModuleList pkg={pkg} />,
+                <ModuleList prj={prj} />,
                 `Module ${modName || ""} not found 🤪`,
               ];
             }
@@ -63,18 +63,18 @@ export default function ModulePage() {
 
             if (!symbol) {
               return [
-                <ModuleList pkg={pkg} />,
+                <ModuleList prj={prj} />,
                 `Symbol ${symName} not found 🤪`,
               ];
             }
 
             const Sidebar = cls ? (
               <>
-                <ClassContents pkg={pkg} mod={mod} cls={cls} currentSymbol="" />
-                <ModuleContents pkg={pkg} mod={mod} currentSymbol="" />
+                <ClassContents prj={prj} mod={mod} cls={cls} currentSymbol="" />
+                <ModuleContents prj={prj} mod={mod} currentSymbol="" />
               </>
             ) : (
-              <ModuleContents pkg={pkg} mod={mod} currentSymbol={symbol.name} />
+              <ModuleContents prj={prj} mod={mod} currentSymbol={symbol.name} />
             );
 
             if (cls) {
@@ -106,7 +106,7 @@ export default function ModulePage() {
           })();
 
           return (
-            <Layout pkg={pkg} sidebar={Sidebar}>
+            <Layout project={prj} sidebar={Sidebar}>
               {Content}
             </Layout>
           );

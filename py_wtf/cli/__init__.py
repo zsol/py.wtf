@@ -21,7 +21,7 @@ from packaging.requirements import Requirement
 
 from ..__about__ import __version__
 from ..indexer import index_file
-from ..types import Documentation, Module, Package, ProjectMetadata
+from ..types import Documentation, Module, Project, ProjectMetadata
 
 
 @click.group(
@@ -36,26 +36,26 @@ def py_wtf(ctx: click.Context) -> None:
 
 @py_wtf.command()
 @click.argument("directory")
-@click.option("--package-name", required=True)
+@click.option("--project-name", required=True)
 @click.option("--pretty", is_flag=True)
-def index(package_name: str, directory: str, pretty: bool) -> None:
+def index(project_name: str, directory: str, pretty: bool) -> None:
     out_dir = Path(directory)
     out_dir.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory() as tmpdir:
-        src_dir, info = download(package_name, Path(tmpdir))
+        src_dir, info = download(project_name, Path(tmpdir))
         modules = list(index_dir(src_dir))
 
-    pkg = Package(
-        package_name,
+    proj = Project(
+        project_name,
         metadata=info,
         modules=modules,
         documentation=(),
     )
     if pretty:
-        rich.print(pkg)
+        rich.print(proj)
     else:
-        out = out_dir / f"{package_name}.json"
-        out.write_text(pkg.to_json())  # type: ignore
+        out = out_dir / f"{project_name}.json"
+        out.write_text(proj.to_json())  # type: ignore
 
 
 @py_wtf.command(name="index-file")
@@ -96,7 +96,7 @@ def generate_test_index() -> None:
             summary=proj_metadata.get("summary"),
         )
         mods = index_dir(proj_dir)
-        proj = Package(
+        proj = Project(
             proj_dir.name,
             metadata=proj_info,
             modules=list(mods),
@@ -156,12 +156,12 @@ def parse_deps(maybe_deps: None | Sequence[str]) -> Sequence[str]:
     return tuple(req.name for dep in maybe_deps if not (req := Requirement(dep)).extras)
 
 
-def download(package_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:
-    with urlopen(f"https://pypi.org/pypi/{package_name}/json") as pypi:
-        pkg_data = json.load(pypi)
-    pypi_info = pkg_data["info"]
+def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:
+    with urlopen(f"https://pypi.org/pypi/{project_name}/json") as pypi:
+        proj_data = json.load(pypi)
+    pypi_info = proj_data["info"]
     latest_version = pypi_info["version"]
-    pkg_info = ProjectMetadata(
+    proj_metadata = ProjectMetadata(
         latest_version,
         summary=pypi_info.get("summary"),
         home_page=pypi_info.get("home_page"),
@@ -171,15 +171,15 @@ def download(package_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]
         dependencies=parse_deps(pypi_info.get("requires_dist")),
     )
     src_url = None
-    for artifact in pkg_data["releases"][latest_version]:
+    for artifact in proj_data["releases"][latest_version]:
         if artifact["packagetype"] == "sdist":
             src_url = artifact["url"]
             # src_md5 = artifact['md5_digest']
             break
     if not src_url:
-        raise ValueError(f"Couldn't find sdist for {package_name}=={latest_version}")
+        raise ValueError(f"Couldn't find sdist for {project_name}=={latest_version}")
     src_archive, _ = urlretrieve(src_url)
     with open_archive(src_archive) as opened:
         opened.extractall(directory)
 
-    return (pick_project_dir(directory), pkg_info)
+    return (pick_project_dir(directory), proj_metadata)
