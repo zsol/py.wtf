@@ -4,7 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 
-import { Pkg, getPackage, listPackages } from "@/lib/docs";
+import { Pkg, getPackage, listPackages, ProjectMetadata } from "@/lib/docs";
 import * as url from "@/lib/url";
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -12,7 +12,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   const packages = await Promise.all(
     packageNames.map(async (name) => ({
       name,
-      version: (await getPackage(name)).version,
+      metadata: (await getPackage(name)).metadata,
     }))
   );
   return {
@@ -25,7 +25,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 const theme = createTheme();
 
 interface Props {
-  packages: { name: string; version: string }[];
+  packages: { name: string; metadata: ProjectMetadata }[];
 }
 
 export default function Home({ packages }: Props) {
@@ -40,11 +40,11 @@ export default function Home({ packages }: Props) {
         <main>
           <ul>
             {packages.map((pkg) => (
-              <li key={`${pkg.name}-${pkg.version}`}>
+              <li key={`${pkg.name}-${pkg.metadata.version}`}>
                 <Link href={url.pkg(pkg as Pkg)}>
                   <a>{pkg.name}</a>
                 </Link>{" "}
-                ({pkg.version})
+                ({pkg.metadata.version})
               </li>
             ))}
           </ul>

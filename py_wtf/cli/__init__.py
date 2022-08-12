@@ -47,7 +47,7 @@ def index(package_name: str, directory: str, pretty: bool) -> None:
 
     pkg = Package(
         package_name,
-        version=info.version,
+        metadata=info,
         modules=modules,
         documentation=(),
     )
@@ -98,7 +98,7 @@ def generate_test_index() -> None:
         mods = index_dir(proj_dir)
         proj = Package(
             proj_dir.name,
-            version=proj_info.version,
+            metadata=proj_info,
             modules=list(mods),
             documentation=[Documentation(proj_info.summary or "")],
         )

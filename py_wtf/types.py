@@ -64,7 +64,7 @@ class Module:
 @dataclass(frozen=True)
 class Package:
     name: str
-    version: str
+    metadata: ProjectMetadata
     documentation: Iterable[Documentation]
     modules: Iterable[Module]
 

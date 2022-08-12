@@ -17,7 +17,7 @@ export async function getPackage(name: string): Promise<Pkg> {
 
 export type Pkg = {
   name: string;
-  version: string;
+  metadata: ProjectMetadata;
   documentation: Array<Documentation>;
   modules: Array<Module>;
 };
@@ -62,4 +62,14 @@ export type Class = {
   instance_variables: Array<Variable>;
   inner_classes: Array<Class>;
   documentation: Array<Documentation>;
+};
+
+export type ProjectMetadata = {
+  version: string;
+  classifiers?: Array<string>;
+  home_page?: string;
+  license?: string;
+  documentation_url?: string;
+  dependencies: Array<string>;
+  summary?: string;
 };
