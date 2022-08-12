@@ -29,6 +29,7 @@ export type Module = {
   functions: Array<Func>;
   variables: Array<Variable>;
   classes: Array<Class>;
+  exports: Array<string>;
 };
 
 export type Func = {

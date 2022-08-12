@@ -8,6 +8,7 @@ from dataclasses_json import dataclass_json  # type: ignore
 
 Type = NewType("Type", str)
 Documentation = NewType("Documentation", str)
+FQName = NewType("FQName", str)
 
 
 @dataclass_json  # type: ignore
@@ -56,6 +57,7 @@ class Module:
     functions: Iterable[Function]
     variables: Iterable[Variable]
     classes: Iterable[Class]
+    exports: Iterable[FQName]
 
 
 @dataclass_json  # type: ignore
