@@ -68,6 +68,9 @@ async def main() -> None:
     os.chdir(toplevel)
     await shell("hatch", "--version")
     await shell(NPM, "--version")
+    index_dir = toplevel / "www" / "public" / "_index"
+    for item in index_dir.glob("*.json"):
+        item.unlink()
     await asyncio.gather(
         *[
             shell(
@@ -75,7 +78,7 @@ async def main() -> None:
                 "run",
                 "py-wtf",
                 "index",
-                str(toplevel / "www" / "public" / "_index"),
+                str(index_dir),
                 f"--project-name={proj}",
             )
             for proj in PROJECTS_TO_INDEX
