@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 from tarfile import is_tarfile, TarFile
@@ -22,7 +21,7 @@ from packaging.requirements import Requirement
 
 from ..__about__ import __version__
 from ..indexer import index_file
-from ..types import Documentation, Module, Package
+from ..types import Documentation, Module, Package, ProjectMetadata
 
 
 @click.group(
@@ -87,7 +86,7 @@ def generate_test_index() -> None:
         if not (proj_json := proj_dir / "project.json").exists():
             continue
         proj_metadata = json.loads(proj_json.read_bytes())
-        proj_info = PkgInfo(
+        proj_info = ProjectMetadata(
             proj_metadata["version"],
             classifiers=proj_metadata.get("classifiers"),
             home_page=proj_metadata.get("home_page"),
@@ -138,17 +137,6 @@ def archive_list(arc: Archive) -> list[str]:
         return arc.namelist()
 
 
-@dataclass
-class PkgInfo:
-    version: str
-    classifiers: Sequence[str] | None
-    home_page: str | None
-    license: str | None
-    documentation_url: str | None
-    dependencies: Sequence[str]
-    summary: str | None
-
-
 def pick_project_dir(directory: Path) -> Path:
     for entry in (e for e in directory.iterdir() if e.is_dir()):
         project_directory = entry
@@ -168,12 +156,12 @@ def parse_deps(maybe_deps: None | Sequence[str]) -> Sequence[str]:
     return tuple(req.name for dep in maybe_deps if not (req := Requirement(dep)).extras)
 
 
-def download(package_name: str, directory: Path) -> Tuple[Path, PkgInfo]:
+def download(package_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:
     with urlopen(f"https://pypi.org/pypi/{package_name}/json") as pypi:
         pkg_data = json.load(pypi)
     pypi_info = pkg_data["info"]
     latest_version = pypi_info["version"]
-    pkg_info = PkgInfo(
+    pkg_info = ProjectMetadata(
         latest_version,
         summary=pypi_info.get("summary"),
         home_page=pypi_info.get("home_page"),
