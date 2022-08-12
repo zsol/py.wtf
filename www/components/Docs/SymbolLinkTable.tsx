@@ -2,7 +2,8 @@ import { Box } from "@welcome-ui/box";
 import { Link as WUILink } from "@welcome-ui/link";
 import { Text } from "@welcome-ui/text";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import NextLink from "next/link";
 
 import Table from "@/components/CondensedTable";
 
@@ -21,6 +22,7 @@ interface Props<T extends Sym> {
   stripPrefix?: string;
   symbols: T[];
   url: (sym: T) => string;
+  useReactRouter: boolean;
 }
 
 function deduplicate<T extends Sym>(xs: T[]): T[] {
@@ -37,10 +39,17 @@ export default function SymbolLinkTable<T extends Sym>({
   stripPrefix,
   symbols,
   url,
+  useReactRouter = true,
 }: Props<T>) {
   if (symbols.length === 0) {
     return <></>;
   }
+  const Link = ({ to, children }) =>
+    useReactRouter ? (
+      <RouterLink to={to}>{children}</RouterLink>
+    ) : (
+      <NextLink href={to}>{children}</NextLink>
+    );
   return (
     <Box>
       <Text variant="h3">{title}</Text>
