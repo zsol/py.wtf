@@ -31,7 +31,7 @@ function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
 export default function ModulePage() {
   const { pkg: pkgName, mod: modName, sym: symName } = useParams();
   if (symName === undefined) {
-    return `Missing "sym" parameter, how did you even get here?`;
+    return <div>`Missing "sym" parameter, how did you even get here?`</div>;
   }
   return (
     <>
