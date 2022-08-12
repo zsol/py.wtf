@@ -24,6 +24,7 @@ dependencies = [
   "rich>=12.5.1",
   "libcst>=0.4.7",
   "trailrunner>=1.2.1",
+  "packaging>=21",
 ]
 dynamic = ["version"]
 
