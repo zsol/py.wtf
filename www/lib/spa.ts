@@ -1,4 +1,7 @@
 export function redirect() {
+  if (typeof window === "undefined") {
+    return;
+  }
   // Single Page Apps for GitHub Pages
   // MIT License
   // https://github.com/rafgraph/spa-github-pages
@@ -42,6 +45,9 @@ export function redirect() {
 }
 
 export function receive() {
+  if (typeof window === "undefined") {
+    return;
+  }
   // Single Page Apps for GitHub Pages
   // MIT License
   // https://github.com/rafgraph/spa-github-pages
