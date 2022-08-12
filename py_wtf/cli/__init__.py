@@ -18,6 +18,7 @@ from zipfile import is_zipfile, ZipFile
 import click
 import rich
 import trailrunner
+from packaging.requirements import Requirement
 
 from ..__about__ import __version__
 from ..indexer import index_file
@@ -164,7 +165,7 @@ def pick_project_dir(directory: Path) -> Path:
 def parse_deps(maybe_deps: None | Sequence[str]) -> Sequence[str]:
     if not maybe_deps:
         return ()
-    return tuple(dep.split(" ")[0] for dep in maybe_deps if "extra" not in dep)
+    return tuple(req.name for dep in maybe_deps if not (req := Requirement(dep)).extras)
 
 
 def download(package_name: str, directory: Path) -> Tuple[Path, PkgInfo]:
