@@ -7,6 +7,8 @@ import styled from "styled-components";
 import * as url from "@/lib/url";
 
 import { Project } from "../../lib/docs";
+import { Stack } from "@welcome-ui/stack";
+import Documentation from "../Docs/Documentation";
 
 export interface Props {
   project: Project;
@@ -27,6 +29,21 @@ const StyledLink = styled(Link)`
 `;
 
 export default function Sidebar({ project, children }: Props) {
+  const meta = project.metadata;
+  const docs_url = meta.documentation_url ? (
+    <StyledLink to={meta.documentation_url}>
+      <Text>🗎 Docs</Text>
+    </StyledLink>
+  ) : (
+    <></>
+  );
+  const home_link = meta.home_page ? (
+    <StyledLink to={meta.home_page}>
+      <Text>🏠 Website</Text>
+    </StyledLink>
+  ) : (
+    <></>
+  );
   return (
     <Container>
       <StyledLink to={url.project(project)}>
@@ -34,7 +51,11 @@ export default function Sidebar({ project, children }: Props) {
           Project {project.name}
         </Text>
       </StyledLink>
-      <Text>Version {project.metadata.version}</Text>
+      <Stack direction="row">
+        {home_link}
+        {docs_url}
+      </Stack>
+      <Text>Version {meta.version}</Text>
       {children}
     </Container>
   );
