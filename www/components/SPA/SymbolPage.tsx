@@ -11,10 +11,28 @@ import ClassContents from "@/components/Sidebar/ClassContents";
 import ModuleContents from "@/components/Sidebar/ModuleContents";
 import ModuleList from "@/components/Sidebar/ModuleList";
 
+import * as docs from "@/lib/docs";
 import { withoutPrefix } from "@/lib/url";
+
+function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
+  const parts = withoutPrefix(mod.name, name).split(".");
+  let cls = mod.classes.find(
+    (c) => withoutPrefix(mod.name, c.name) === parts.shift()
+  );
+  while (cls && parts.length) {
+    const parentName = cls.name;
+    cls = cls.inner_classes.find(
+      (c) => withoutPrefix(parentName, c.name) === parts.shift()
+    );
+  }
+  return cls;
+}
 
 export default function ModulePage() {
   const { pkg: pkgName, mod: modName, sym: symName } = useParams();
+  if (symName === undefined) {
+    return `Missing "sym" parameter, how did you even get here?`;
+  }
   return (
     <>
       <Head>
@@ -34,9 +52,7 @@ export default function ModulePage() {
               ];
             }
 
-            const cls = mod.classes.find(
-              (cls) => withoutPrefix(mod.name, cls.name) === symName
-            );
+            const cls = resolveClass(mod, symName);
             const func = mod.functions.find(
               (func) => withoutPrefix(mod.name, func.name) === symName
             );
@@ -48,7 +64,7 @@ export default function ModulePage() {
             if (!symbol) {
               return [
                 <ModuleList pkg={pkg} />,
-                `Symbol ${symName || ""} not found 🤪`,
+                `Symbol ${symName} not found 🤪`,
               ];
             }
 
