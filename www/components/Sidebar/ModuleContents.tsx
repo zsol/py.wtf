@@ -1,18 +1,18 @@
 import { Text } from "@welcome-ui/text";
 import React from "react";
 
-import { Class, Func, Module, Pkg, Variable } from "@/lib/docs";
+import { Class, Func, Module, Project, Variable } from "@/lib/docs";
 import * as url from "@/lib/url";
 
 import SidebarLinkList from "./SidebarLinkList";
 
 interface Props {
-  pkg: Pkg;
+  prj: Project;
   mod: Module;
   currentSymbol: string;
 }
 
-export default function ModuleContents({ pkg, mod, currentSymbol }: Props) {
+export default function ModuleContents({ prj, mod, currentSymbol }: Props) {
   function LinkList({
     title,
     items,
@@ -26,7 +26,7 @@ export default function ModuleContents({ pkg, mod, currentSymbol }: Props) {
         items={items}
         active={currentSymbol}
         stripPrefix={mod.name}
-        url={(sym) => url.symbol(pkg, mod, sym)}
+        url={(sym) => url.symbol(prj, mod, sym)}
       />
     );
   }

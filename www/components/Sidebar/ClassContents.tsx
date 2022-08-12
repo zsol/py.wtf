@@ -1,22 +1,22 @@
 import { Text } from "@welcome-ui/text";
 import React from "react";
 
-import { Class, Module, Pkg } from "@/lib/docs";
+import { Class, Module, Project } from "@/lib/docs";
 import * as url from "@/lib/url";
 import { withoutPrefix } from "@/lib/url";
 
 import SidebarLinkList from "./SidebarLinkList";
 
 interface Props {
-  pkg: Pkg;
+  prj: Project;
   mod: Module;
   cls: Class;
   currentSymbol: string;
 }
 
-export default function ClassContents({ pkg, mod, cls, currentSymbol }: Props) {
-  const symbolUrl = url.symbol.bind(null, pkg, mod);
-  const anchorUrl = url.symbol.bind(null, pkg, mod, cls);
+export default function ClassContents({ prj, mod, cls, currentSymbol }: Props) {
+  const symbolUrl = url.symbol.bind(null, prj, mod);
+  const anchorUrl = url.symbol.bind(null, prj, mod, cls);
 
   function LinkList<T extends { name: string }>({
     title,

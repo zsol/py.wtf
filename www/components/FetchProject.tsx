@@ -10,20 +10,20 @@ const fetcher = (input: RequestInfo | URL, init?: RequestInit) =>
 
 interface Props {
   name?: string;
-  content: (pkg: docs.Pkg) => React.ReactElement;
+  content: (pkg: docs.Project) => React.ReactElement;
 }
 
-export default function FetchPackage({ name, content }: Props) {
+export default function FetchProject({ name, content }: Props) {
   if (name === undefined) {
     return null;
   }
-  const pkgJsonUrl = url.pkgJson(name);
-  const { data, error } = useSWR<docs.Pkg, Error>(pkgJsonUrl, fetcher);
+  const projectJsonUrl = url.projectJson(name);
+  const { data, error } = useSWR<docs.Project, Error>(projectJsonUrl, fetcher);
 
   if (error)
     return (
       <Box>
-        Failed to load <code>{pkgJsonUrl}</code>: {error.message}
+        Failed to load <code>{projectJsonUrl}</code>: {error.message}
       </Box>
     );
   if (!data) return <Box>Loading...</Box>;

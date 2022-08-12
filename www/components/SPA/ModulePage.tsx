@@ -3,28 +3,28 @@ import React from "react";
 import { useParams } from "react-router-dom";
 
 import Module from "@/components/Docs/Module";
-import FetchPackage from "@/components/FetchPackage";
+import FetchProject from "@/components/FetchProject";
 import Layout from "@/components/Layout";
 import ModuleList from "@/components/Sidebar/ModuleList";
 
 export default function ModulePage() {
-  const { pkg: pkgName, mod: modName } = useParams();
+  const { prj: projectName, mod: modName } = useParams();
   return (
     <>
       <Head>
         <title>py.wtf: {modName}</title>
       </Head>
-      <FetchPackage
-        name={pkgName}
-        content={(pkg) => {
-          const mod = pkg.modules.find((mod) => mod.name === modName);
+      <FetchProject
+        name={projectName}
+        content={(prj) => {
+          const mod = prj.modules.find((mod) => mod.name === modName);
           return (
             <Layout
-              pkg={pkg}
-              sidebar={<ModuleList pkg={pkg} currentModule={mod} />}
+              project={prj}
+              sidebar={<ModuleList prj={prj} currentModule={mod} />}
             >
               {mod ? (
-                <Module pkg={pkg} mod={mod} />
+                <Module prj={prj} mod={mod} />
               ) : (
                 `Module "${modName || ""}" not found 🤪`
               )}

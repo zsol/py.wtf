@@ -7,20 +7,20 @@ export function withoutPrefix(prefix: string, s: string) {
   return s;
 }
 
-export function pkgJson(name: string): string {
+export function projectJson(name: string): string {
   return `/_index/${name}.json`;
 }
 
-export function pkg(p: docs.Pkg): string {
+export function project(p: docs.Project): string {
   return `/${p.name}`;
 }
 
-export function mod(p: docs.Pkg, m: docs.Module): string {
-  return `${pkg(p)}/${m.name}`;
+export function mod(p: docs.Project, m: docs.Module): string {
+  return `${project(p)}/${m.name}`;
 }
 
 export function symbol(
-  p: docs.Pkg,
+  p: docs.Project,
   m: docs.Module,
   s: docs.Class | docs.Func | docs.Variable
 ): string {
@@ -28,7 +28,7 @@ export function symbol(
 }
 
 export function classItem(
-  p: docs.Pkg,
+  p: docs.Project,
   m: docs.Module,
   c: docs.Class,
   x: docs.Func | docs.Variable
