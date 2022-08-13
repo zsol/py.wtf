@@ -1,10 +1,10 @@
-import { Text } from "@welcome-ui/text";
 import React from "react";
 
 import { Class, Module, Project } from "@/lib/docs";
 import * as url from "@/lib/url";
 import { withoutPrefix } from "@/lib/url";
 
+import { H4 } from "../core/typography/Heading";
 import SidebarLinkList from "./SidebarLinkList";
 
 interface Props {
@@ -40,7 +40,7 @@ export default function ClassContents({ prj, mod, cls, currentSymbol }: Props) {
 
   return (
     <>
-      <Text variant="h4">{withoutPrefix(mod.name, cls.name)}</Text>
+      <H4>{withoutPrefix(mod.name, cls.name)}</H4>
       <LinkList title="Methods" items={cls.methods} url={anchorUrl} />
       <LinkList
         title="Class Variables"

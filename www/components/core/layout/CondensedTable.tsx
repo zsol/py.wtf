@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 // Note: Styles to come
 export const Table = styled.table``;

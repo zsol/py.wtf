@@ -1,12 +1,12 @@
-import { Box } from "@welcome-ui/box";
-import { Text } from "@welcome-ui/text";
 import React from "react";
 import useSWR from "swr";
 
 import * as docs from "@/lib/docs";
 import * as url from "@/lib/url";
 
-import Layout from "./Layout";
+import Sidebar from "./Sidebar/Sidebar";
+import ContentWithSidebar from "./core/layout/ContentWithSidebar";
+import { H3 } from "./core/typography/Heading";
 
 const fetcher = (input: RequestInfo | URL, init?: RequestInit) =>
   fetch(input, init).then((res) => res.json());
@@ -25,27 +25,28 @@ export default function FetchProject({ name, content }: Props) {
 
   if (error)
     return (
-      <Box>
+      <div>
         Failed to load <code>{projectJsonUrl}</code>: {error.message}
-      </Box>
+      </div>
     );
-  if (!data)
+  if (!data) {
+    const dummyProject = {
+      name,
+      metadata: {
+        version: "Loading...",
+        dependencies: [],
+      },
+      documentation: [],
+      modules: [],
+    };
+
     return (
-      <Layout
-        project={{
-          name,
-          metadata: {
-            version: "Loading...",
-            dependencies: [],
-          },
-          documentation: [],
-          modules: [],
-        }}
-      >
-        <Text variant="h3">Modules</Text>
+      <ContentWithSidebar sidebar={<Sidebar project={dummyProject} />}>
+        <H3>Modules</H3>
         Loading...
-      </Layout>
+      </ContentWithSidebar>
     );
+  }
 
   return content(data);
 }

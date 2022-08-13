@@ -9,7 +9,6 @@ const Container = styled.div`
   min-height: 100vh;
 
   background-color: ${(props) => props.theme.colors.pageBackground.mid};
-
   color: ${(props) => props.theme.colors.mainText};
 `;
 
