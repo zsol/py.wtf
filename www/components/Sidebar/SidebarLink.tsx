@@ -3,12 +3,12 @@ import React from "react";
 
 import { RouterLink } from "../core/navigation/Link";
 
-const StyledRouterLink = styled(RouterLink)<{ active: boolean }>`
+const StyledRouterLink = styled(RouterLink)<{ active: string }>`
   padding-left: ${(props) => props.theme.spacing.s};
   padding-right: ${(props) => props.theme.spacing.m};
   width: 100%;
   ${(props) =>
-    props.active &&
+    props.active === "true" &&
     `
     background-color: ${props.theme.colors.sidebar.highlight};
     font-weight: bold;
@@ -23,7 +23,7 @@ interface Props {
 }
 
 const SidebarLink = ({ children, href, active }: Props) => (
-  <StyledRouterLink to={href} active={active || false}>
+  <StyledRouterLink to={href} active={(!!active || false).toString()}>
     {children}
   </StyledRouterLink>
 );
