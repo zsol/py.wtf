@@ -1,8 +1,8 @@
+import { ThemeProvider } from "@emotion/react";
 import { GetStaticProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
-import { ThemeProvider } from "styled-components";
 
 import { darkTheme } from "@/components/core/theme/theme";
 

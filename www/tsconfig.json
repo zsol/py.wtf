@@ -13,6 +13,7 @@
     "moduleResolution": "node",
     "isolatedModules": true,
     "jsx": "preserve",
+    "jsxImportSource": "@emotion/react",
     "module": "esnext",
     "baseUrl": ".",
     "paths": {
@@ -23,7 +24,7 @@
   },
   "include": [
     "types/next-env.d.ts",
-    "types/styled.d.ts",
+    "types/emotion.d.ts",
     "**/*.ts",
     "**/*.tsx"
   ],

@@ -1,6 +1,6 @@
+import { ThemeProvider } from "@emotion/react";
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { ThemeProvider } from "styled-components";
 
 import ModulePage from "@/components/SPA/ModulePage";
 import ProjectPage from "@/components/SPA/ProjectPage";

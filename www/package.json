@@ -9,6 +9,8 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
     "@welcome-ui/box": "^4.2.0",
     "@welcome-ui/core": "^4.2.0",
     "@welcome-ui/flex": "^4.2.0",
