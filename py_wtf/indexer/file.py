@@ -1,14 +1,16 @@
 import itertools
+from functools import partial
 from pathlib import Path
 from textwrap import dedent
 from typing import Iterable, Protocol, TypeVar
 
 import libcst as cst
+import trailrunner
 from libcst.codemod import CodemodContext
 from libcst.codemod.visitors import GatherExportsVisitor
 from libcst.helpers.expression import get_full_name_for_node
 
-from .types import (
+from py_wtf.types import (
     Class,
     Documentation,
     FQName,
@@ -18,6 +20,20 @@ from .types import (
     Type,
     Variable,
 )
+
+
+def index_dir(dir: Path) -> Iterable[Module]:
+    # TODO: do something with .pyi files
+    # If there's a .pyi file with no corresponding .py -> just index .pyi
+    # If both of them exist, do a best effort merge? 🤷
+    trailrunner.core.INCLUDE_PATTERN = r".+\.py$"
+
+    # Skip looking for root markers, we definitely want to index this directory.
+    trailrunner.core.ROOT_MARKERS = []
+    for (_, mod) in trailrunner.run_iter(
+        paths=trailrunner.walk(dir), func=partial(index_file, dir)
+    ):
+        yield mod
 
 
 def index_file(base_dir: Path, path: Path) -> Module:

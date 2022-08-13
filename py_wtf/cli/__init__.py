@@ -5,23 +5,14 @@ from __future__ import annotations
 
 import json
 import os
-from functools import partial
 from pathlib import Path
-from tarfile import is_tarfile, TarFile
-from tempfile import TemporaryDirectory
-
-from typing import Iterable, Sequence, Tuple
-from urllib.request import urlopen, urlretrieve
-from zipfile import is_zipfile, ZipFile
 
 import click
 import rich
-import trailrunner
-from packaging.requirements import Requirement
 
-from ..__about__ import __version__
-from ..indexer import index_file
-from ..types import Documentation, Module, Project, ProjectMetadata
+from py_wtf.__about__ import __version__
+from py_wtf.indexer import index_dir, index_file, index_project
+from py_wtf.types import Documentation, Project, ProjectMetadata
 
 
 @click.group(
@@ -41,16 +32,9 @@ def py_wtf(ctx: click.Context) -> None:
 def index(project_name: str, directory: str, pretty: bool) -> None:
     out_dir = Path(directory)
     out_dir.mkdir(parents=True, exist_ok=True)
-    with TemporaryDirectory() as tmpdir:
-        src_dir, info = download(project_name, Path(tmpdir))
-        modules = list(index_dir(src_dir))
 
-    proj = Project(
-        project_name,
-        metadata=info,
-        modules=modules,
-        documentation=(),
-    )
+    proj = next(iter(index_project(project_name)))
+
     if pretty:
         rich.print(proj)
     else:
@@ -103,83 +87,3 @@ def generate_test_index() -> None:
             documentation=[Documentation(proj_info.summary or "")],
         )
         (out_dir / f"{proj.name}.json").write_text(proj.to_json())  # type: ignore
-
-
-def index_dir(dir: Path) -> Iterable[Module]:
-    # TODO: do something with .pyi files
-    # If there's a .pyi file with no corresponding .py -> just index .pyi
-    # If both of them exist, do a best effort merge? 🤷
-    trailrunner.core.INCLUDE_PATTERN = r".+\.py$"
-
-    # Skip looking for root markers, we definitely want to index this directory.
-    trailrunner.core.ROOT_MARKERS = []
-    for (_, mod) in trailrunner.run_iter(
-        paths=trailrunner.walk(dir), func=partial(index_file, dir)
-    ):
-        yield mod
-
-
-Archive = TarFile | ZipFile
-
-
-def open_archive(src: str) -> Archive:
-    if is_tarfile(src):
-        return TarFile.open(src)
-    if is_zipfile(src):
-        return ZipFile(src)
-    raise NotImplementedError()
-
-
-def archive_list(arc: Archive) -> list[str]:
-    if isinstance(arc, TarFile):
-        return arc.getnames()
-    else:
-        return arc.namelist()
-
-
-def pick_project_dir(directory: Path) -> Path:
-    for entry in (e for e in directory.iterdir() if e.is_dir()):
-        project_directory = entry
-        break
-    else:
-        project_directory = directory
-
-    if (dir := project_directory / "src").is_dir():
-        return dir
-
-    return project_directory
-
-
-def parse_deps(maybe_deps: None | Sequence[str]) -> Sequence[str]:
-    if not maybe_deps:
-        return ()
-    return tuple(req.name for dep in maybe_deps if not (req := Requirement(dep)).extras)
-
-
-def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:
-    with urlopen(f"https://pypi.org/pypi/{project_name}/json") as pypi:
-        proj_data = json.load(pypi)
-    pypi_info = proj_data["info"]
-    latest_version = pypi_info["version"]
-    proj_metadata = ProjectMetadata(
-        latest_version,
-        summary=pypi_info.get("summary"),
-        home_page=pypi_info.get("home_page"),
-        license=pypi_info.get("license"),
-        documentation_url=pypi_info.get("project_urls", {}).get("Documentation"),
-        classifiers=pypi_info.get("classifiers"),
-        dependencies=parse_deps(pypi_info.get("requires_dist")),
-    )
-    src_url = None
-    for artifact in proj_data["releases"][latest_version]:
-        if artifact["packagetype"] == "sdist":
-            src_url = artifact["url"]
-            # src_md5 = artifact['md5_digest']
-            break
-    if not src_url:
-        raise ValueError(f"Couldn't find sdist for {project_name}=={latest_version}")
-    src_archive, _ = urlretrieve(src_url)
-    with open_archive(src_archive) as opened:
-        opened.extractall(directory)
-
-    return (pick_project_dir(directory), proj_metadata)
