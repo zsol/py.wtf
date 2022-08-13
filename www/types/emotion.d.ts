@@ -10,6 +10,11 @@ declare module "@emotion/react" {
       };
       codeBackground: string;
       mainText: string;
+      link: {
+        default: string;
+        hover: string;
+        visited: string;
+      };
     };
   }
 }

@@ -8,6 +8,11 @@ const colors = {
   grey: {
     light: "#dedede",
   },
+  cornflower: {
+    light: "#9ebcf0",
+    mid: "#6495ED",
+    dark: "#1563ed",
+  },
 };
 
 export const darkTheme = {
@@ -19,5 +24,10 @@ export const darkTheme = {
     },
     codeBackground: colors.slate.dark,
     mainText: colors.grey.light,
+    link: {
+      default: colors.cornflower.mid,
+      hover: colors.cornflower.light,
+      visited: colors.cornflower.mid,
+    },
   },
 };

@@ -1,9 +1,12 @@
 import { ThemeProvider } from "@emotion/react";
+import styled from "@emotion/styled";
 import { GetStaticProps } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import React from "react";
 
+import FullPageBackground from "@/components/core/layout/FullPageBackground";
+import { flexColumnCenter } from "@/components/core/layout/helpers";
+import { Link } from "@/components/core/navigation/Link";
 import { darkTheme } from "@/components/core/theme/theme";
 
 import { Project, ProjectMetadata, getProject, listProjects } from "@/lib/docs";
@@ -24,6 +27,22 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   };
 };
 
+const Content = styled.main`
+  ${flexColumnCenter}
+  flex: 1;
+
+  padding: 5rem 0;
+`;
+
+const Footer = styled.footer`
+  ${flexColumnCenter}
+
+  width: 100%;
+  height: 100px;
+
+  border-top: 1px solid #eaeaea;
+`;
+
 interface Props {
   projects: { name: string; metadata: ProjectMetadata }[];
 }
@@ -31,13 +50,13 @@ interface Props {
 export default function Home({ projects }: Props) {
   return (
     <ThemeProvider theme={darkTheme}>
-      <div className="container">
+      <FullPageBackground>
         <Head>
           <title>py.wtf</title>
           {/*<link rel="icon" href="/favicon.ico" /> */}
         </Head>
 
-        <main>
+        <Content>
           <ul>
             {projects.map((prj) => (
               <li key={`${prj.name}-${prj.metadata.version}`}>
@@ -48,39 +67,10 @@ export default function Home({ projects }: Props) {
               </li>
             ))}
           </ul>
-        </main>
+        </Content>
 
-        <footer>Footer.</footer>
-
-        <style jsx>{`
-          .container {
-            min-height: 100vh;
-            padding: 0 0.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-          }
-
-          main {
-            padding: 5rem 0;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-          }
-
-          footer {
-            width: 100%;
-            height: 100px;
-            border-top: 1px solid #eaeaea;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          }
-        `}</style>
-      </div>
+        <Footer>Footer.</Footer>
+      </FullPageBackground>
     </ThemeProvider>
   );
 }
