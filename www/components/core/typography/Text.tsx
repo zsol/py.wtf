@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { ReactNode } from "react";
 
 const StyledText = styled.p`
   color: ${(props) => props.theme.colors.mainText};
@@ -11,7 +12,7 @@ const StyledMarginlessText = styled(StyledText)`
 
 type TextProps = {
   marginLess?: boolean;
-  children: string;
+  children: ReactNode;
 };
 
 export const Text = ({ marginLess, children }: TextProps) => {

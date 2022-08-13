@@ -34,6 +34,9 @@ export const darkTheme = {
       hover: colors.cornflower.light,
       visited: colors.cornflower.mid,
     },
+    sidebar: {
+      highlight: colors.grey.light,
+    },
   },
   spacing: spacing,
 };

@@ -1,9 +1,7 @@
-import { Box } from "@welcome-ui/box";
-import { Text } from "@welcome-ui/text";
-
 import { sortedBy } from "@/lib/sorting";
 import { withoutPrefix } from "@/lib/url";
 
+import { Text } from "../core/typography/Text";
 import SidebarLink from "./SidebarLink";
 
 interface HasName {
@@ -28,8 +26,8 @@ export default function SidebarLinkList<T extends HasName>({
     return null;
   }
   return (
-    <Box>
-      <Text variant="h5">{title}</Text>
+    <div>
+      <Text>{title}</Text>
       {sortedBy(items, "name")
         .filter((x, i, xs) => i === 0 || xs[i - 1].name !== x.name)
         .map((x) => (
@@ -39,6 +37,6 @@ export default function SidebarLinkList<T extends HasName>({
             </SidebarLink>
           </Text>
         ))}
-    </Box>
+    </div>
   );
 }

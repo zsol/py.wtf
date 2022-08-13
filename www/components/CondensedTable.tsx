@@ -12,7 +12,6 @@ Table.Tr = styled(WUITable.Tr)`
 
 Table.Th = styled(WUITable.Th)`
   border: none;
-  padding: ${(props) => props.theme.space.xxs};
 `;
 
 Table.Td = styled(WUITable.Td)`
