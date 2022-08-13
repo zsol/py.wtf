@@ -76,7 +76,7 @@ T = TypeVar("T")
 
 def ensure(val: T | None) -> T:
     if val is None:
-        raise ValueError(f"Unexpected None")
+        raise ValueError(f"Unexpected None")  # no cov
     return val
 
 
