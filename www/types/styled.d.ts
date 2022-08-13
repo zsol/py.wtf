@@ -1,6 +1,6 @@
-import "styled-components";
-import "@xstyled/styled-components";
 import { WuiTheme } from "@welcome-ui/core";
+import "@xstyled/styled-components";
+import "styled-components";
 
 interface AppTheme extends WuiTheme {
   // customize your theme
