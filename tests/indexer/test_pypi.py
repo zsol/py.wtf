@@ -88,10 +88,7 @@ def no_pypi_downloads(monkeypatch: pytest.MonkeyPatch, pypi_artifact: Path) -> N
     monkeypatch.setattr(
         module_under_test,
         "urlretrieve",
-        lambda *args, **kwargs: (
-            pypi_artifact,
-            None,
-        ),
+        lambda *args, **kwargs: (pypi_artifact, None),
     )
 
 
