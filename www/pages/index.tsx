@@ -1,10 +1,12 @@
-import { WuiProvider, createTheme } from "@welcome-ui/core";
 import { GetStaticProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
+import { ThemeProvider } from "styled-components";
 
-import { Project, getProject, listProjects, ProjectMetadata } from "@/lib/docs";
+import { darkTheme } from "@/components/core/theme/theme";
+
+import { Project, ProjectMetadata, getProject, listProjects } from "@/lib/docs";
 import * as url from "@/lib/url";
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -22,15 +24,13 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   };
 };
 
-const theme = createTheme();
-
 interface Props {
   projects: { name: string; metadata: ProjectMetadata }[];
 }
 
 export default function Home({ projects }: Props) {
   return (
-    <WuiProvider theme={theme}>
+    <ThemeProvider theme={darkTheme}>
       <div className="container">
         <Head>
           <title>py.wtf</title>
@@ -81,6 +81,6 @@ export default function Home({ projects }: Props) {
           }
         `}</style>
       </div>
-    </WuiProvider>
+    </ThemeProvider>
   );
 }
