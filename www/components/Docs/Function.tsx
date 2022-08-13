@@ -1,25 +1,29 @@
-import { Box } from "@welcome-ui/box";
-import { Text } from "@welcome-ui/text";
+import styled from "@emotion/styled";
 import React from "react";
-import styled from "styled-components";
 
 import * as hl from "@/components/highlight";
 
 import { Func } from "@/lib/docs";
 
+import { Code } from "../core/typography/Code";
+import { Text } from "../core/typography/Text";
 import Documentation from "./Documentation";
 
-const Container = styled(Box)`
-  margin: 0.5em;
-`;
 const FuncDocs = styled(Documentation)`
-  margin-left: 1em;
+  margin-left: ${(props) => props.theme.spacing.m};
 `;
 
 const ParamWrapper = styled(Text)`
-  margin-left: 2em;
-  margin-top: 0;
-  margin-bottom: 0;
+  padding-left: ${(props) => props.theme.spacing.xl};
+  margin-top: ${(props) => props.theme.spacing.xxs};
+  margin-bottom: ${(props) => props.theme.spacing.xxs};
+
+  &:first-of-type {
+    margin-top: ${(props) => props.theme.spacing.xs};
+  }
+  &:last-of-type {
+    margin-bottom: ${(props) => props.theme.spacing.xs};
+  }
 `;
 
 const Param = (props: hl.VarWithTypeProps) => (
@@ -30,27 +34,24 @@ const Param = (props: hl.VarWithTypeProps) => (
 
 export default function Function({ func }: { func: Func }) {
   const def = func.asynchronous ? "async def" : "def";
-  const ret =
-    func.returns === null ? (
-      <></>
-    ) : (
-      <>
-        {" -> "}
-        <hl.Ty>{func.returns}</hl.Ty>
-      </>
-    );
+  const ret = func.returns && (
+    <>
+      {" -> "}
+      <hl.Ty>{func.returns}</hl.Ty>
+    </>
+  );
   const unqual = func.name.split(".").at(-1);
 
   return (
-    <Container>
-      <hl.Container>
+    <div>
+      <Code>
         <hl.Keyword>{def}</hl.Keyword> <hl.Fn>{unqual}</hl.Fn>(
         {func.params.map((param) => (
           <Param name={param.name} type={param.type} key={param.name} />
         ))}
         ) {ret}
-      </hl.Container>
+      </Code>
       <FuncDocs>{func.documentation}</FuncDocs>
-    </Container>
+    </div>
   );
 }

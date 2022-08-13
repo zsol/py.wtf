@@ -1,3 +1,6 @@
 __pycache__/
 .vscode/
 .coverage
+
+# This is an auto-generated file and should not be committed
+next-env.d.ts

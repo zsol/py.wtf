@@ -1,9 +1,10 @@
-import { Box } from "@welcome-ui/box";
-import { Text } from "@welcome-ui/text";
+import styled from "@emotion/styled";
 
 import { sortedBy } from "@/lib/sorting";
 import { withoutPrefix } from "@/lib/url";
 
+import { flexColumn } from "../core/layout/helpers";
+import { Text } from "../core/typography/Text";
 import SidebarLink from "./SidebarLink";
 
 interface HasName {
@@ -17,6 +18,10 @@ interface Props<T extends HasName> {
   url: (item: T) => string;
 }
 
+const LinkContainer = styled.div`
+  ${flexColumn}
+`;
+
 export default function SidebarLinkList<T extends HasName>({
   title,
   stripPrefix,
@@ -28,17 +33,17 @@ export default function SidebarLinkList<T extends HasName>({
     return null;
   }
   return (
-    <Box>
-      <Text variant="h5">{title}</Text>
-      {sortedBy(items, "name")
-        .filter((x, i, xs) => i === 0 || xs[i - 1].name !== x.name)
-        .map((x) => (
-          <Text key={x.name}>
-            <SidebarLink href={url(x)} active={x.name === active}>
+    <div>
+      <Text>{title}</Text>
+      <LinkContainer>
+        {sortedBy(items, "name")
+          .filter((x, i, xs) => i === 0 || xs[i - 1].name !== x.name)
+          .map((x) => (
+            <SidebarLink key={x.name} href={url(x)} active={x.name === active}>
               {stripPrefix ? withoutPrefix(stripPrefix, x.name) : x.name}
             </SidebarLink>
-          </Text>
-        ))}
-    </Box>
+          ))}
+      </LinkContainer>
+    </div>
   );
 }

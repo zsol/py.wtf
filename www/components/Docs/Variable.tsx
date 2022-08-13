@@ -1,7 +1,7 @@
-import { Box } from "@welcome-ui/box";
 import React from "react";
 
 import * as docs from "../../lib/docs";
+import { Code } from "../core/typography/Code";
 import * as hl from "../highlight";
 import Documentation from "./Documentation";
 
@@ -11,11 +11,11 @@ interface Props {
 
 export default function Variable({ variable }: Props) {
   return (
-    <Box>
-      <hl.Container>
+    <div>
+      <Code>
         <hl.VarWithType name={variable.name} type={variable.type} />
-      </hl.Container>
+      </Code>
       <Documentation>{variable.documentation}</Documentation>
-    </Box>
+    </div>
   );
 }
