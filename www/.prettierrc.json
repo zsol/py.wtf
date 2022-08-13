@@ -1,4 +1,5 @@
 {
+  "endOfLine": "auto",
   "importOrder": [
     "<THIRD_PARTY_MODULES>",
     "^@/components/(.*)$",
