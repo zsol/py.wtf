@@ -16,5 +16,9 @@ declare module "@emotion/react" {
         visited: string;
       };
     };
+    spacing: {
+      s: string;
+      m: string;
+    };
   }
 }

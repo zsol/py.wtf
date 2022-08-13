@@ -15,6 +15,11 @@ const colors = {
   },
 };
 
+const spacing = {
+  s: "0.75em",
+  m: "1em",
+};
+
 export const darkTheme = {
   colors: {
     pageBackground: {
@@ -30,4 +35,5 @@ export const darkTheme = {
       visited: colors.cornflower.mid,
     },
   },
+  spacing: spacing,
 };

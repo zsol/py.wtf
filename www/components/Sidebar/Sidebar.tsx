@@ -1,41 +1,38 @@
-import { Box } from "@welcome-ui/box";
-import { Text } from "@welcome-ui/text";
+import styled from "@emotion/styled";
 import React from "react";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
 
 import * as url from "@/lib/url";
 
 import { Project } from "../../lib/docs";
+import { RouterLink } from "../core/navigation/Link";
+import { H3 } from "../core/typography/Heading";
+import { Text } from "../core/typography/Text";
 
 export interface Props {
   project: Project;
   children?: React.ReactNode;
 }
 
-const Container = styled(Box)`
-  overflow: auto;
-  background-color: #151515;
-  padding-left: ${(props) => props.theme.space.xxl};
-  border-right: ${(props) => props.theme.colors.light[200]} 5px solid;
-  height: 100%;
+const Container = styled.div`
+  padding: ${(props) => props.theme.spacing.s};
 `;
 
-const StyledLink = styled(Link)`
-  color: ${(props) => props.theme.colors.dark[800]};
-  text-decoration: none;
-`;
+// Note: Styles to come later
+const SidebarHeader = styled.div``;
+const SidebarContent = styled.div``;
 
 export default function Sidebar({ project, children }: Props) {
   return (
     <Container>
-      <StyledLink to={url.project(project)}>
-        <Text variant="h3" paddingRight="xl" cursor="pointer">
-          Project {project.name}
-        </Text>
-      </StyledLink>
-      <Text>Version {project.metadata.version}</Text>
-      {children}
+      <SidebarHeader>
+        <H3>
+          <RouterLink to={url.project(project)}>
+            Project {project.name}
+          </RouterLink>
+        </H3>
+        <Text>Version {project.metadata.version}</Text>
+      </SidebarHeader>
+      <SidebarContent>{children}</SidebarContent>
     </Container>
   );
 }
