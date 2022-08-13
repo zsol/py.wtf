@@ -1,2 +1,5 @@
 __pycache__/
 .vscode/
+
+# This is an auto-generated file and should not be committed
+next-env.d.ts
