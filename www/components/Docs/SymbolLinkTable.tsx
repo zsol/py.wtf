@@ -1,14 +1,11 @@
-import { Box } from "@welcome-ui/box";
-import { Link as WUILink } from "@welcome-ui/link";
-import { Text } from "@welcome-ui/text";
 import React from "react";
-import { Link } from "react-router-dom";
-
-import Table from "@/components/CondensedTable";
 
 import { sortedBy } from "@/lib/sorting";
 import { withoutPrefix } from "@/lib/url";
 
+import { TBody, Table, Td, Tr } from "../core/layout/CondensedTable";
+import { RouterLink } from "../core/navigation/Link";
+import { H3 } from "../core/typography/Heading";
 import Documentation from "./Documentation";
 
 export interface Sym {
@@ -38,34 +35,34 @@ export default function SymbolLinkTable<T extends Sym>({
   symbols,
   url,
 }: Props<T>) {
-  if (symbols.length === 0) {
-    return <></>;
-  }
-  return (
-    <Box>
-      <Text variant="h3">{title}</Text>
-      <Table>
-        <Table.Tbody>
-          {deduplicate(symbols).map((sym) => {
-            return (
-              <Table.Tr key={sym.name}>
-                <Table.Th>
-                  <Link to={url(sym)}>
-                    <WUILink>
+  if (symbols.length > 0) {
+    return (
+      <div>
+        <H3>{title}</H3>
+        <Table>
+          <TBody>
+            {deduplicate(symbols).map((sym) => {
+              return (
+                <Tr key={sym.name}>
+                  <Td>
+                    <RouterLink to={url(sym)}>
                       {stripPrefix
                         ? withoutPrefix(stripPrefix, sym.name)
                         : sym.name}
-                    </WUILink>
-                  </Link>
-                </Table.Th>
-                <Table.Td>
-                  <Documentation.Short>{sym.documentation}</Documentation.Short>
-                </Table.Td>
-              </Table.Tr>
-            );
-          })}
-        </Table.Tbody>
-      </Table>
-    </Box>
-  );
+                    </RouterLink>
+                  </Td>
+                  <Td>
+                    <Documentation.Short>
+                      {sym.documentation}
+                    </Documentation.Short>
+                  </Td>
+                </Tr>
+              );
+            })}
+          </TBody>
+        </Table>
+      </div>
+    );
+  }
+  return null;
 }

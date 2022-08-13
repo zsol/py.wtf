@@ -28,6 +28,7 @@ const ContentContainer = styled.div`
 
   width: 100%;
   overflow: auto;
+  padding: ${(props) => props.theme.spacing.m};
 
   background-color: ${(props) => props.theme.colors.pageBackground.mid};
 `;
