@@ -88,7 +88,7 @@ export default function ModulePage() {
                   {mod.functions
                     .filter((f) => f.name === symbol.name)
                     .map((f) => (
-                      <Function func={f} />
+                      <Function func={f} key={f.name} />
                     ))}
                 </>,
               ];

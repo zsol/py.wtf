@@ -19,18 +19,10 @@ export interface VarWithTypeProps {
 }
 
 export function VarWithType({ name, type, comma = false }: VarWithTypeProps) {
-  const typeann =
-    type === null ? (
-      <></>
-    ) : (
-      <>
-        : <Ty>{type}</Ty>
-      </>
-    );
   return (
     <>
       {name}
-      {typeann}
+      {type != null && <Ty>{type}</Ty>}
       {comma && ","}
     </>
   );

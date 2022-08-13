@@ -18,10 +18,10 @@ const ParamWrapper = styled(Text)`
   margin-top: ${(props) => props.theme.spacing.xxs};
   margin-bottom: ${(props) => props.theme.spacing.xxs};
 
-  &:first-child {
+  &:first-of-type {
     margin-top: ${(props) => props.theme.spacing.xs};
   }
-  &:last-child {
+  &:last-of-type {
     margin-bottom: ${(props) => props.theme.spacing.xs};
   }
 `;
