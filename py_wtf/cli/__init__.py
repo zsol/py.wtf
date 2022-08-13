@@ -43,9 +43,6 @@ def index(project_name: str, directory: str, pretty: bool, force: bool) -> None:
 
     if pretty:
         rich.print(proj)
-    else:
-        out = out_dir / f"{project_name}.json"
-        out.write_text(proj.to_json())  # type: ignore
 
 
 @py_wtf.command(name="index-file")
