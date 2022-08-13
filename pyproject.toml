@@ -1,16 +1,10 @@
 [build-system]
-requires = ["hatchling"]
 build-backend = "hatchling.build"
+requires = ["hatchling"]
 
 [project]
-name = "py-wtf"
-description = 'Documentation index'
-readme = "README.md"
-requires-python = ">=3.10"
-license = "MIT"
-keywords = []
 authors = [
-  { name = "Zsolt Dollenstein", email = "zsol.zsol@gmail.com" },
+  {name = "Zsolt Dollenstein", email = "zsol.zsol@gmail.com"},
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -25,8 +19,16 @@ dependencies = [
   "libcst>=0.4.7",
   "trailrunner>=1.2.1",
   "packaging>=21",
+  "docutils>=0.19",
+  "sphinx>=5.1.1",
 ]
+description = 'Documentation index'
 dynamic = ["version"]
+keywords = []
+license = "MIT"
+name = "py-wtf"
+readme = "README.md"
+requires-python = ">=3.10"
 
 [project.urls]
 Documentation = "https://github.com/zsol/py.wtf#readme"
@@ -59,10 +61,10 @@ python = ["310"]
 
 [tool.coverage.run]
 branch = true
-parallel = true
 omit = [
   "py_wtf/__about__.py",
 ]
+parallel = true
 
 [tool.coverage.report]
 exclude_lines = [

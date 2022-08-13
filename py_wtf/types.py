@@ -3,12 +3,24 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable, NewType, Sequence
 
-from dataclasses_json import dataclass_json
+from dataclasses_json import dataclass_json  # type: ignore
+import sphinx.parsers
+import sphinx.config
+import docutils.utils
+import docutils.frontend
 
 
 Type = NewType("Type", str)
-Documentation = NewType("Documentation", str)
 FQName = NewType("FQName", str)
+
+rst_parser = sphinx.parsers.RSTParser()
+rst_settings = docutils.frontend.OptionParser(components=(sphinx.parsers.RSTParser,)).get_default_values()
+rst_parser.config = sphinx.config.Config()
+class Documentation(str):
+    def __new__(cls, value, *args, **kwargs):
+        document = docutils.utils.new_document("<py-wtf/indexer/string>", rst_settings)
+        rst_parser.parse(value, document)
+        return super().__new__(cls, document.astext(), *args, **kwargs)
 
 
 @dataclass_json
