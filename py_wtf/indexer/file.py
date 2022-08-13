@@ -223,7 +223,7 @@ class Indexer(cst.CSTVisitor):
             None, (extract_documentation(line) for line in node.leading_lines)
         )
         # TODO: this is way too much work for just extracting docs
-        indexer = Indexer()
+        indexer = Indexer(self._scope_name)
         node.body.visit(indexer)
 
         params = extract_func_params(node.params)
