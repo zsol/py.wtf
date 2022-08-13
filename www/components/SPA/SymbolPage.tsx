@@ -6,13 +6,15 @@ import Class from "@/components/Docs/Class";
 import Function from "@/components/Docs/Function";
 import Variable from "@/components/Docs/Variable";
 import FetchProject from "@/components/FetchProject";
-import Layout from "@/components/Layout";
 import ClassContents from "@/components/Sidebar/ClassContents";
 import ModuleContents from "@/components/Sidebar/ModuleContents";
 import ModuleList from "@/components/Sidebar/ModuleList";
 
 import * as docs from "@/lib/docs";
 import { withoutPrefix } from "@/lib/url";
+
+import Sidebar from "../Sidebar/Sidebar";
+import ContentWithSidebar from "../core/layout/ContentWithSidebar";
 
 function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
   const parts = withoutPrefix(mod.name, name).split(".");
@@ -31,7 +33,7 @@ function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
 export default function ModulePage() {
   const { prj: projectName, mod: modName, sym: symName } = useParams();
   if (symName === undefined) {
-    return <div>`Missing "sym" parameter, how did you even get here?`</div>;
+    return <div>Missing "sym" parameter, how did you even get here?</div>;
   }
   return (
     <>
@@ -43,7 +45,7 @@ export default function ModulePage() {
       <FetchProject
         name={projectName}
         content={(prj) => {
-          const [Sidebar, Content] = (() => {
+          const [sidebarContent, content] = (() => {
             const mod = prj.modules.find((mod) => mod.name === modName);
             if (!mod) {
               return [
@@ -68,7 +70,7 @@ export default function ModulePage() {
               ];
             }
 
-            const Sidebar = cls ? (
+            const sidebarContent = cls ? (
               <>
                 <ClassContents prj={prj} mod={mod} cls={cls} currentSymbol="" />
                 <ModuleContents prj={prj} mod={mod} currentSymbol="" />
@@ -78,10 +80,10 @@ export default function ModulePage() {
             );
 
             if (cls) {
-              return [Sidebar, <Class cls={cls} />];
+              return [sidebarContent, <Class cls={cls} />];
             } else if (func) {
               return [
-                Sidebar,
+                sidebarContent,
                 <>
                   {mod.functions
                     .filter((f) => f.name === symbol.name)
@@ -93,7 +95,7 @@ export default function ModulePage() {
             } else {
               // variable
               return [
-                Sidebar,
+                sidebarContent,
                 <>
                   {mod.variables
                     .filter((v) => v.name === symbol.name)
@@ -106,9 +108,11 @@ export default function ModulePage() {
           })();
 
           return (
-            <Layout project={prj} sidebar={Sidebar}>
-              {Content}
-            </Layout>
+            <ContentWithSidebar
+              sidebar={<Sidebar project={prj}>{sidebarContent}</Sidebar>}
+            >
+              {content}
+            </ContentWithSidebar>
           );
         }}
       />

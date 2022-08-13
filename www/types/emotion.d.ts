@@ -20,8 +20,12 @@ declare module "@emotion/react" {
       };
     };
     spacing: {
+      xxs: string;
+      xs: string;
       s: string;
       m: string;
+      l: string;
+      xl: string;
     };
   }
 }

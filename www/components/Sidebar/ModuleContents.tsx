@@ -1,9 +1,9 @@
-import { Text } from "@welcome-ui/text";
 import React from "react";
 
 import { Class, Func, Module, Project, Variable } from "@/lib/docs";
 import * as url from "@/lib/url";
 
+import { H4 } from "../core/typography/Heading";
 import SidebarLinkList from "./SidebarLinkList";
 
 interface Props {
@@ -33,7 +33,7 @@ export default function ModuleContents({ prj, mod, currentSymbol }: Props) {
 
   return (
     <>
-      <Text variant="h4">In {mod.name}</Text>
+      <H4>In {mod.name}</H4>
       <LinkList title="Classes" items={mod.classes} />
       <LinkList title="Functions" items={mod.functions} />
       <LinkList title="Variables" items={mod.variables} />

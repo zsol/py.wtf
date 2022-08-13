@@ -1,10 +1,5 @@
-import { Text, TextProps } from "@welcome-ui/text";
 import React from "react";
 import styled from "styled-components";
-
-export const Container = (props: TextProps) => (
-  <Text as="code" backgroundColor="light.800" padding="md" {...props} />
-);
 
 export const Keyword = styled.span`
   font-weight: bold;
