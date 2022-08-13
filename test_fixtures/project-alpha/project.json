@@ -1,6 +1,7 @@
 {
     "version": "0",
     "home_page": "https://github.com/zsol/py.wtf/",
+    "documentation_url": "https://tinyurl.com/alpha-docs",
     "dependencies": [
         "more_itertools > 0.1"
     ],

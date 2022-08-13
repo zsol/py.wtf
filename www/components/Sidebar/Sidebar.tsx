@@ -4,7 +4,8 @@ import React from "react";
 import * as url from "@/lib/url";
 
 import { Project } from "../../lib/docs";
-import { RouterLink } from "../core/navigation/Link";
+import { flexColumn } from "../core/layout/helpers";
+import { Link, RouterLink } from "../core/navigation/Link";
 import { H3 } from "../core/typography/Heading";
 import { Text } from "../core/typography/Text";
 
@@ -17,11 +18,27 @@ const Container = styled.div`
   padding: ${(props) => props.theme.spacing.s};
 `;
 
+const LinkContainer = styled.div`
+  ${flexColumn}
+`;
+
 // Note: Styles to come later
 const SidebarHeader = styled.div``;
 const SidebarContent = styled.div``;
 
 export default function Sidebar({ project, children }: Props) {
+  const meta = project.metadata;
+  const docs_url = meta.documentation_url && (
+    <Link href={meta.documentation_url} target="_blank">
+      <Text>📄 Docs</Text>
+    </Link>
+  );
+  const home_link = meta.home_page && (
+    <Link href={meta.home_page} target="_blank">
+      <Text>🏠 Website</Text>
+    </Link>
+  );
+
   return (
     <Container>
       <SidebarHeader>
@@ -30,6 +47,10 @@ export default function Sidebar({ project, children }: Props) {
             Project {project.name}
           </RouterLink>
         </H3>
+        <LinkContainer>
+          {home_link}
+          {docs_url}
+        </LinkContainer>
         <Text>Version {project.metadata.version}</Text>
       </SidebarHeader>
       <SidebarContent>{children}</SidebarContent>
