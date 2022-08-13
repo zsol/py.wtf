@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable, NewType, Sequence
 
-from dataclasses_json import dataclass_json  # type: ignore
+from dataclasses_json import dataclass_json
 
 
 Type = NewType("Type", str)
@@ -11,7 +11,7 @@ Documentation = NewType("Documentation", str)
 FQName = NewType("FQName", str)
 
 
-@dataclass_json  # type: ignore
+@dataclass_json
 @dataclass(frozen=True)
 class Variable:
     name: str
@@ -19,7 +19,7 @@ class Variable:
     documentation: Iterable[Documentation]
 
 
-@dataclass_json  # type: ignore
+@dataclass_json
 @dataclass(frozen=True)
 class Parameter:
     name: str
@@ -27,7 +27,7 @@ class Parameter:
     default: str | None
 
 
-@dataclass_json  # type: ignore
+@dataclass_json
 @dataclass(frozen=True)
 class Function:
     name: str
@@ -37,7 +37,7 @@ class Function:
     documentation: Iterable[Documentation]
 
 
-@dataclass_json  # type: ignore
+@dataclass_json
 @dataclass(frozen=True)
 class Class:
     name: str
@@ -49,7 +49,7 @@ class Class:
     documentation: Iterable[Documentation]
 
 
-@dataclass_json  # type: ignore
+@dataclass_json
 @dataclass(frozen=True)
 class Module:
     name: str
@@ -60,7 +60,7 @@ class Module:
     exports: Iterable[FQName]
 
 
-@dataclass_json  # type: ignore
+@dataclass_json
 @dataclass(frozen=True)
 class Project:
     name: str

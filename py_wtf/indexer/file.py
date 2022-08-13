@@ -76,12 +76,14 @@ T = TypeVar("T")
 
 def ensure(val: T | None) -> T:
     if val is None:
-        raise ValueError(f"Expected type {T}, got None")
+        raise ValueError(f"Unexpected None")
     return val
 
 
 class HasComment(Protocol):
-    comment: cst.Comment | None
+    @property
+    def comment(self) -> cst.Comment | None:
+        ...
 
 
 def extract_documentation(node: HasComment) -> Documentation | None:
