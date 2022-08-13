@@ -4,9 +4,14 @@ import React from "react";
 import { RouterLink } from "../core/navigation/Link";
 
 const StyledRouterLink = styled(RouterLink)<{ active: string }>`
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
   padding-left: ${(props) => props.theme.spacing.s};
   padding-right: ${(props) => props.theme.spacing.m};
-  width: 100%;
+  padding-bottom: ${(props) => props.theme.spacing.xxs};
+  padding-top: ${(props) => props.theme.spacing.xxs};
+
   ${(props) =>
     props.active === "true" &&
     `
