@@ -9,11 +9,11 @@ from zipfile import is_zipfile, ZipFile
 import trailrunner
 from packaging.requirements import Requirement
 
-from py_wtf.types import Documentation, Module, Project, ProjectMetadata
+from py_wtf.types import Documentation, Module, Project, ProjectMetadata, ProjectName
 from .file import index_dir
 
 
-def index_project(project_name: str) -> Iterable[Project]:
+def index_project(project_name: ProjectName) -> Iterable[Project]:
     with TemporaryDirectory() as tmpdir:
         src_dir, info = download(project_name, Path(tmpdir))
         modules = list(index_dir(src_dir))

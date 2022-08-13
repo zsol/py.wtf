@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 from pathlib import Path
 
 import click
@@ -12,7 +13,8 @@ import rich
 
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
-from py_wtf.types import Documentation, Project, ProjectMetadata
+from py_wtf.repository import ProjectRepository
+from py_wtf.types import Documentation, Project, ProjectMetadata, ProjectName
 
 
 @click.group(
@@ -29,17 +31,18 @@ def py_wtf(ctx: click.Context) -> None:
 @click.argument("directory")
 @click.option("--project-name", required=True)
 @click.option("--pretty", is_flag=True)
-def index(project_name: str, directory: str, pretty: bool) -> None:
+@click.option("--force", is_flag=True, help="Blow away index repository and reindex")
+def index(project_name: str, directory: str, pretty: bool, force: bool) -> None:
     out_dir = Path(directory)
+    if force:
+        shutil.rmtree(out_dir, ignore_errors=True)
     out_dir.mkdir(parents=True, exist_ok=True)
+    repo = ProjectRepository(out_dir)
 
-    proj = next(iter(index_project(project_name)))
+    proj = repo.get(ProjectName(project_name), index_project)
 
     if pretty:
         rich.print(proj)
-    else:
-        out = out_dir / f"{project_name}.json"
-        out.write_text(proj.to_json())  # type: ignore
 
 
 @py_wtf.command(name="index-file")
@@ -81,7 +84,7 @@ def generate_test_index() -> None:
         )
         mods = index_dir(proj_dir)
         proj = Project(
-            proj_dir.name,
+            ProjectName(proj_dir.name),
             metadata=proj_info,
             modules=list(mods),
             documentation=[Documentation(proj_info.summary or "")],

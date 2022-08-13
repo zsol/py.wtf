@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, NewType, Sequence
+from typing import Iterable, NewType
 
 from dataclasses_json import dataclass_json
 
@@ -9,6 +9,7 @@ from dataclasses_json import dataclass_json
 Type = NewType("Type", str)
 Documentation = NewType("Documentation", str)
 FQName = NewType("FQName", str)
+ProjectName = NewType("ProjectName", str)
 
 
 @dataclass_json
@@ -63,7 +64,7 @@ class Module:
 @dataclass_json
 @dataclass(frozen=True)
 class Project:
-    name: str
+    name: ProjectName
     metadata: ProjectMetadata
     documentation: Iterable[Documentation]
     modules: Iterable[Module]
@@ -72,9 +73,9 @@ class Project:
 @dataclass
 class ProjectMetadata:
     version: str
-    classifiers: Sequence[str] | None
+    classifiers: Iterable[str] | None
     home_page: str | None
     license: str | None
     documentation_url: str | None
-    dependencies: Sequence[str]
+    dependencies: Iterable[str]
     summary: str | None
