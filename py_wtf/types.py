@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import NewType, TYPE_CHECKING
 
@@ -53,7 +55,7 @@ class Class:
     methods: list[Function]
     class_variables: list[Variable]
     instance_variables: list[Variable]
-    inner_classes: list["Class"]
+    inner_classes: list[Class]
     documentation: list[Documentation]
 
 
