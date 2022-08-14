@@ -61,7 +61,14 @@ def pick_project_dir(directory: Path) -> Path:
 def parse_deps(maybe_deps: None | Sequence[str]) -> Sequence[str]:
     if not maybe_deps:
         return ()
-    return tuple(req.name for dep in maybe_deps if not (req := Requirement(dep)).extras)
+
+    return tuple(
+        req.name
+        for dep in maybe_deps
+        if (req := Requirement(dep))
+        if not req.extras
+        if not req.marker
+    )
 
 
 def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:

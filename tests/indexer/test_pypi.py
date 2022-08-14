@@ -97,3 +97,8 @@ def test_download(tmp_path: Path) -> None:
     assert metadata.license == "BSD"
     assert path.is_relative_to(tmp_path)
     assert (path / "foo_mod.py").exists()
+
+
+def test_no_extras_in_deps(tmp_path: Path) -> None:
+    _, metadata = download("foo", tmp_path)
+    assert "aiohttp" not in metadata.dependencies
