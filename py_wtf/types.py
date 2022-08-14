@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import NewType, TYPE_CHECKING
 
@@ -43,7 +41,7 @@ class Class:
     methods: list[Function]
     class_variables: list[Variable]
     instance_variables: list[Variable]
-    inner_classes: list[Class]
+    inner_classes: list["Class"]
     documentation: list[Documentation]
 
 
@@ -54,15 +52,7 @@ class Module:
     functions: list[Function]
     variables: list[Variable]
     classes: list[Class]
-    exports: list[FQName]
-
-
-@dataclass(frozen=True)
-class Project:
-    name: ProjectName
-    metadata: ProjectMetadata
-    documentation: list[Documentation]
-    modules: list[Module]
+    exports: list[tuple[ProjectName | None, FQName]]
 
 
 @dataclass
@@ -74,3 +64,14 @@ class ProjectMetadata:
     documentation_url: str | None
     dependencies: list[str]
     summary: str | None
+
+
+@dataclass(frozen=True)
+class Project:
+    name: ProjectName
+    metadata: ProjectMetadata
+    documentation: list[Documentation]
+    modules: list[Module]
+
+
+SymbolTable = dict[FQName, ProjectName]

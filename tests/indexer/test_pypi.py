@@ -9,7 +9,8 @@ from zipfile import ZipFile
 import pytest
 from py_wtf.indexer import pypi as module_under_test
 
-from py_wtf.indexer.pypi import download
+from py_wtf.indexer.pypi import _build_symbol_table, download
+from py_wtf.types import FQName, Project
 
 
 @pytest.fixture(params=[None, ["click (>=8.0.0)", "aiohttp (>=3.7.4) ; extra == 'd'"]])
@@ -102,3 +103,8 @@ def test_download(tmp_path: Path) -> None:
 def test_no_extras_in_deps(tmp_path: Path) -> None:
     _, metadata = download("foo", tmp_path)
     assert "aiohttp" not in metadata.dependencies
+
+
+def test_symbol_table_building(project: Project) -> None:
+    table = _build_symbol_table([project])
+    assert table[FQName("foo")] == "testproject"
