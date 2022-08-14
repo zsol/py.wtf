@@ -58,6 +58,12 @@ def test_nesting(indexer: IF) -> None:
     )
 
 
+def test_attributes(indexer: IF) -> None:
+    assert indexer("foo_alias.bar.baz") == Type(
+        "foo_alias.bar.baz", XRef(FQName("foo.Foo.bar.baz"), ProjectName("foooid"))
+    )
+
+
 def test_pep_604_alternative(indexer: IF) -> None:
     assert indexer("a | b") == Type("a | b", None)
 
@@ -68,3 +74,22 @@ def test_callable(indexer: IF) -> None:
         XRef(FQName("Callable")),
         params=[Type("[]", None), Type("str", XRef(FQName("str")))],
     )
+
+
+def test_string_annotation(indexer: IF) -> None:
+    assert indexer('"foo"') == indexer("foo")
+
+
+def test_literals(indexer: IF) -> None:
+    assert indexer("typing.Literal[1, '2']") == Type(
+        "typing.Literal",
+        XRef(FQName("typing.Literal")),
+        params=[
+            Type("1", None),
+            Type("'2'", None),
+        ],
+    )
+
+
+def test_ellipsis(indexer: IF) -> None:
+    assert indexer("...") == Type("...", None)

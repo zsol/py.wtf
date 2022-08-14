@@ -1,5 +1,6 @@
 import logging
 from dataclasses import replace
+from typing import Iterable, Sequence
 
 import libcst as cst
 
@@ -19,10 +20,20 @@ def index(
     return indexer(annotation)
 
 
-def dumb_annotation(node: cst.CSTNode) -> Type:
+def dumb_annotation(node: cst.CSTNode, warning: bool = True) -> Type:
     code = cst.Module(body=[]).code_for_node(node)
-    log.warning(f"Found unparseable annotation: '{code}'")
+    if warning:
+        log.warning(f"Found unparseable annotation: '{code}'")
     return Type(code, None)
+
+
+def is_fqname(ty: Type, name: FQName) -> bool:
+    if not ty.xref:
+        return ty.name == str(name)
+    return ty.xref.fqname == name
+
+
+typing_Literal = FQName("typing.Literal")
 
 
 class AnnotationIndexer(cst.CSTVisitor):
@@ -38,6 +49,12 @@ class AnnotationIndexer(cst.CSTVisitor):
             return self.handle_name(node)
         elif isinstance(node, cst.Subscript):
             return self.handle_subscript(node)
+        elif isinstance(node, cst.Attribute):
+            return self.handle_attribute(node)
+        elif isinstance(node, (cst.SimpleString, cst.ConcatenatedString)):
+            return self.handle_string_like(node)
+        elif isinstance(node, cst.Ellipsis):
+            return dumb_annotation(node, warning=False)
 
         return dumb_annotation(node)
 
@@ -52,10 +69,40 @@ class AnnotationIndexer(cst.CSTVisitor):
             return value
 
         params: list[Type] = []
-        for el in node.slice:
-            if not isinstance(el.slice, cst.Index):
-                params.append(dumb_annotation(el.slice))
-                continue
-            params.append(self(el.slice.value))
+        if is_fqname(value, typing_Literal):
+            params.extend(self.handle_literal_params(node.slice))
+        else:
+            for el in node.slice:
+                if not isinstance(el.slice, cst.Index):
+                    params.append(dumb_annotation(el.slice))
+                    continue
+                params.append(self(el.slice.value))
 
         return replace(value, params=params)
+
+    def handle_attribute(self, node: cst.Attribute) -> Type:
+        attr = node.attr.value
+        value = self(node.value)
+        replacements = {"name": f"{value.name}.{attr}"}
+        if value.xref and value.xref.fqname:
+            xref: XRef = replace(value.xref, fqname=f"{value.xref.fqname}.{attr}")
+            replacements["xref"] = xref  # type: ignore
+        return replace(value, **replacements)
+
+    def handle_string_like(
+        self, node: cst.SimpleString | cst.ConcatenatedString
+    ) -> Type:
+        contents = node.evaluated_value
+        if not contents:
+            return dumb_annotation(node)
+        try:
+            return self(cst.parse_expression(contents))
+        except Exception as e:
+            log.warning(f"Unparseable string annotation ({e}): {contents}")
+            return dumb_annotation(node)
+
+    def handle_literal_params(
+        self, params: Sequence[cst.SubscriptElement]
+    ) -> Iterable[Type]:
+        for param in params:
+            yield dumb_annotation(param.slice, warning=False)
