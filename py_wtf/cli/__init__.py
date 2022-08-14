@@ -16,7 +16,7 @@ import rich
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
 from py_wtf.repository import converter, ProjectRepository
-from py_wtf.types import Documentation, Project, ProjectMetadata, ProjectName
+from py_wtf.types import Documentation, FQName, Project, ProjectMetadata, ProjectName
 
 
 @click.group(
@@ -85,7 +85,8 @@ def generate_test_index() -> None:
             dependencies=proj_metadata["dependencies"],
             summary=proj_metadata.get("summary"),
         )
-        mods = index_dir(proj_dir)
+        symbol_table = {FQName("alpha.bar"): ProjectName("alpha")}
+        mods = index_dir(proj_dir, symbol_table)
         proj = Project(
             ProjectName(proj_dir.name),
             metadata=proj_info,
