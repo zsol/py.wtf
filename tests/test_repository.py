@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Iterable
 
 import pytest
-from py_wtf.repository import ProjectRepository
+from py_wtf.repository import converter, ProjectRepository
 from py_wtf.types import Project, ProjectMetadata, ProjectName
 
 
@@ -66,7 +66,7 @@ def test_save_writes_to_disk(repo: ProjectRepository, project: Project) -> None:
 
 def test_getitem_loads_from_disk(repo: ProjectRepository, project: Project) -> None:
     index_file = repo.directory / f"{project.name}.json"
-    index_file.write_text(project.to_json())  # type: ignore
+    index_file.write_text(converter.dumps(project))
     assert repo[project.name] == project
 
 

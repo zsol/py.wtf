@@ -36,7 +36,7 @@ def index_project(
         project_name,
         metadata=info,
         modules=modules,
-        documentation=(),
+        documentation=[],
     )
     yield proj
 
@@ -72,11 +72,11 @@ def pick_project_dir(directory: Path) -> Path:
     return project_directory
 
 
-def parse_deps(maybe_deps: None | Sequence[str]) -> Sequence[str]:
+def parse_deps(maybe_deps: None | Sequence[str]) -> list[str]:
     if not maybe_deps:
-        return ()
+        return []
 
-    return tuple(
+    return list(
         req.name
         for dep in maybe_deps
         if (req := Requirement(dep))

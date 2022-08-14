@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, NewType
+from typing import NewType, TYPE_CHECKING
 
-from dataclasses_json import dataclass_json
 
+if not TYPE_CHECKING:
+    NewType = lambda _, ty: ty
 
 Type = NewType("Type", str)
 Documentation = NewType("Documentation", str)
@@ -12,15 +13,13 @@ FQName = NewType("FQName", str)
 ProjectName = NewType("ProjectName", str)
 
 
-@dataclass_json
 @dataclass(frozen=True)
 class Variable:
     name: str
     type: Type | None
-    documentation: Iterable[Documentation]
+    documentation: list[Documentation]
 
 
-@dataclass_json
 @dataclass(frozen=True)
 class Parameter:
     name: str
@@ -28,54 +27,50 @@ class Parameter:
     default: str | None
 
 
-@dataclass_json
 @dataclass(frozen=True)
 class Function:
     name: str
     asynchronous: bool
-    params: Iterable[Parameter]
+    params: list[Parameter]
     returns: Type | None
-    documentation: Iterable[Documentation]
+    documentation: list[Documentation]
 
 
-@dataclass_json
 @dataclass(frozen=True)
 class Class:
     name: str
-    bases: Iterable[str]
-    methods: Iterable[Function]
-    class_variables: Iterable[Variable]
-    instance_variables: Iterable[Variable]
-    inner_classes: Iterable[Class]
-    documentation: Iterable[Documentation]
+    bases: list[str]
+    methods: list[Function]
+    class_variables: list[Variable]
+    instance_variables: list[Variable]
+    inner_classes: list[Class]
+    documentation: list[Documentation]
 
 
-@dataclass_json
 @dataclass(frozen=True)
 class Module:
     name: str
-    documentation: Iterable[Documentation]
-    functions: Iterable[Function]
-    variables: Iterable[Variable]
-    classes: Iterable[Class]
-    exports: Iterable[FQName]
+    documentation: list[Documentation]
+    functions: list[Function]
+    variables: list[Variable]
+    classes: list[Class]
+    exports: list[FQName]
 
 
-@dataclass_json
 @dataclass(frozen=True)
 class Project:
     name: ProjectName
     metadata: ProjectMetadata
-    documentation: Iterable[Documentation]
-    modules: Iterable[Module]
+    documentation: list[Documentation]
+    modules: list[Module]
 
 
 @dataclass
 class ProjectMetadata:
     version: str
-    classifiers: Iterable[str] | None
+    classifiers: list[str] | None
     home_page: str | None
     license: str | None
     documentation_url: str | None
-    dependencies: Iterable[str]
+    dependencies: list[str]
     summary: str | None

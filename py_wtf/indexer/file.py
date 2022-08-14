@@ -196,7 +196,7 @@ class Indexer(cst.CSTVisitor):
 
     def visit_ClassDef(self, node: cst.ClassDef) -> bool:
         my_name = self.scoped_name(ensure(name(node.name)))
-        bases = tuple(filter(None, (name(arg.value) for arg in node.bases)))
+        bases = list(filter(None, (name(arg.value) for arg in node.bases)))
         comments = filter(
             None, (extract_documentation(line) for line in node.leading_lines)
         )
@@ -208,9 +208,9 @@ class Indexer(cst.CSTVisitor):
                 bases,
                 methods=indexer.functions,
                 class_variables=indexer.variables,
-                instance_variables=(),  # TODO
+                instance_variables=[],  # TODO
                 inner_classes=indexer.classes,
-                documentation=(*indexer.documentation, *comments),
+                documentation=[*indexer.documentation, *comments],
             )
         )
         return False
@@ -232,9 +232,9 @@ class Indexer(cst.CSTVisitor):
             Function(
                 my_name,
                 asynchronous,
-                params=tuple(params),
+                params=list(params),
                 returns=returns,
-                documentation=(*indexer.documentation, *comments),
+                documentation=[*indexer.documentation, *comments],
             )
         )
         return False
@@ -259,7 +259,7 @@ class Indexer(cst.CSTVisitor):
             Variable(
                 name=self.scoped_name(my_name),
                 type=None,
-                documentation=(),  # TODO
+                documentation=[],  # TODO
             )
         )
         return False
@@ -277,7 +277,7 @@ class Indexer(cst.CSTVisitor):
             Variable(
                 my_name,
                 type,
-                documentation=(),  # TODO
+                documentation=[],  # TODO
             )
         )
         return False

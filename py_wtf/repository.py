@@ -1,8 +1,12 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Iterable
+from typing import Callable, Iterable, NewType
+
+from cattrs.preconf.json import make_converter
 
 from py_wtf.types import Project, ProjectName
+
+converter = make_converter()
 
 
 @dataclass(slots=True)
@@ -29,7 +33,7 @@ class ProjectRepository:
     def _load_from_disk(self, key: ProjectName) -> None:
         index_file = self._index_file(key)
         index_contents = index_file.read_bytes()
-        proj: Project = Project.from_json(index_contents)  # type: ignore
+        proj = converter.loads(index_contents, Project)
         self._cache[key] = proj
 
     def _save(self, project: Project) -> None:
@@ -39,7 +43,7 @@ class ProjectRepository:
 
         self._cache[name] = project
         index_file = self._index_file(name)
-        index_file.write_text(project.to_json())  # type: ignore
+        index_file.write_text(converter.dumps(project))
 
     def get(
         self,
