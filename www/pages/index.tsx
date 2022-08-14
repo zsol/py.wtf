@@ -2,7 +2,6 @@ import { ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
 import { GetStaticProps } from "next";
 import Head from "next/head";
-import React from "react";
 
 import FullPageBackground from "@/components/core/layout/FullPageBackground";
 import { flexColumnCenter } from "@/components/core/layout/helpers";
@@ -43,7 +42,7 @@ const Footer = styled.footer`
   border-top: 1px solid #eaeaea;
 `;
 
-interface Props {
+export interface Props {
   projects: { name: string; metadata: ProjectMetadata }[];
 }
 

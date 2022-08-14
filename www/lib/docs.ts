@@ -1,7 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
+import process from "process";
 
-const indexDirectory = path.join(process.cwd(), "public", "_index");
+const indexDirectory = path.join(
+  process.cwd(),
+  process.env.INDEX_PATH || path.join("public", "_index")
+);
 
 export async function listProjects(): Promise<string[]> {
   const entries = await fs.readdir(indexDirectory);
