@@ -13,6 +13,6 @@ describe("Index", () => {
     const link = getByRole("link", { name: "project-alpha" });
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/project-alpha");
-    expect(link.parentElement).toHaveTextContent("project-alpha (0)");
+    expect(link.parentElement).toHaveTextContent("project-alpha");
   });
 });
