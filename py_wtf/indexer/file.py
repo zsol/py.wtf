@@ -25,6 +25,8 @@ from py_wtf.types import (
     XRef,
 )
 
+from .annotation import index as extract_type
+
 
 def index_dir(dir: Path, symbol_table: SymbolTable | None = None) -> Iterable[Module]:
     # TODO: do something with .pyi files
@@ -107,31 +109,6 @@ def extract_documentation(node: HasComment) -> Documentation | None:
     return Documentation(node.comment.value[1:].lstrip())
 
 
-def extract_type(annotation: cst.Annotation) -> Type:
-    return Type(cst.Module(()).code_for_node(annotation.annotation))
-
-
-def extract_func_params(params: cst.Parameters) -> Iterable[Parameter]:
-    for param in itertools.chain(
-        params.params,
-        params.posonly_params,
-        [params.star_arg],
-        params.kwonly_params,
-        [params.star_kwarg],
-    ):
-        if not isinstance(param, cst.Param):
-            # TODO: ParamStar, MaybeSentinel isnt handled
-            continue
-        star = param.star if isinstance(param.star, str) else ""
-        if param.annotation:
-            ann = extract_type(param.annotation)
-        else:
-            ann = None
-        yield Parameter(
-            f"{star}{param.name.value}", ann, default="..." if param.default else None
-        )
-
-
 class Indexer(cst.CSTVisitor):
     def __init__(self, scope: str, external_symbol_table: SymbolTable) -> None:
         super().__init__()
@@ -154,6 +131,33 @@ class Indexer(cst.CSTVisitor):
                     self.scoped_name(name),
                     XRef(fqname, project=self._external_symbol_table.get(fqname)),
                 )
+            )
+
+    def extract_type(self, ann: cst.Annotation) -> Type:
+        return extract_type(
+            ann.annotation, self._symbol_table, self._external_symbol_table
+        )
+
+    def extract_func_params(self, params: cst.Parameters) -> Iterable[Parameter]:
+        for param in itertools.chain(
+            params.params,
+            params.posonly_params,
+            [params.star_arg],
+            params.kwonly_params,
+            [params.star_kwarg],
+        ):
+            if not isinstance(param, cst.Param):
+                # TODO: ParamStar, MaybeSentinel isnt handled
+                continue
+            star = param.star if isinstance(param.star, str) else ""
+            if param.annotation:
+                ann = self.extract_type(param.annotation)
+            else:
+                ann = None
+            yield Parameter(
+                f"{star}{param.name.value}",
+                ann,
+                default="..." if param.default else None,
             )
 
     def scoped_name(self, name: str) -> FQName:
@@ -235,7 +239,7 @@ class Indexer(cst.CSTVisitor):
     def visit_FunctionDef(self, node: cst.FunctionDef) -> bool:
         my_name = self.scoped_name(ensure(name(node.name)))
         asynchronous = node.asynchronous is not None
-        returns = extract_type(node.returns) if node.returns else None
+        returns = self.extract_type(node.returns) if node.returns else None
         comments = filter(
             None, (extract_documentation(line) for line in node.leading_lines)
         )
@@ -243,7 +247,7 @@ class Indexer(cst.CSTVisitor):
         indexer = Indexer(self._scope_name, self._external_symbol_table)
         node.body.visit(indexer)
 
-        params = extract_func_params(node.params)
+        params = self.extract_func_params(node.params)
 
         self.functions.append(
             Function(
@@ -289,7 +293,7 @@ class Indexer(cst.CSTVisitor):
             return False
 
         my_name = self.scoped_name(ensure(name(node.target)))
-        type = extract_type(node.annotation)
+        type = self.extract_type(node.annotation)
         self.variables.append(
             Variable(
                 my_name,

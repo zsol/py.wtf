@@ -7,7 +7,6 @@ from typing import NewType, TYPE_CHECKING
 if not TYPE_CHECKING:
     NewType = lambda _, ty: ty
 
-Type = NewType("Type", str)
 Documentation = NewType("Documentation", str)
 FQName = NewType("FQName", str)
 ProjectName = NewType("ProjectName", str)
@@ -16,7 +15,18 @@ ProjectName = NewType("ProjectName", str)
 @dataclass(frozen=True)
 class XRef:
     fqname: FQName
-    project: ProjectName | None
+    project: ProjectName | None = None
+
+
+@dataclass(frozen=True)
+class Type:
+    name: str
+    xref: XRef | None
+    params: None | list[Type] = None
+
+    @property
+    def is_dumb(self) -> bool:
+        return self.xref is None
 
 
 @dataclass(frozen=True)
