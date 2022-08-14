@@ -24,8 +24,8 @@ def _build_symbol_table(projects: Iterable[Project]) -> SymbolTable:
         pname = project.name
         for mod in project.modules:
             ret[FQName(mod.name)] = pname
-            for _, exp in mod.exports:
-                ret[exp] = pname
+            for exp in mod.exports:
+                ret[exp.name] = pname
             for func in mod.functions:
                 ret[FQName(func.name)] = pname
             for var in mod.variables:

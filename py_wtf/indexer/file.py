@@ -13,6 +13,7 @@ from libcst.helpers.expression import get_full_name_for_node
 from py_wtf.types import (
     Class,
     Documentation,
+    Export,
     FQName,
     Function,
     Module,
@@ -21,6 +22,7 @@ from py_wtf.types import (
     SymbolTable,
     Type,
     Variable,
+    XRef,
 )
 
 
@@ -140,14 +142,19 @@ class Indexer(cst.CSTVisitor):
         self.functions: list[Function] = []
         self.variables: list[Variable] = []
         self.documentation: list[Documentation] = []
-        self.exports: list[tuple[ProjectName | None, FQName]] = []
+        self.exports: list[Export] = []
 
     def leave_Module(self, original_node: cst.Module) -> None:
         vis = GatherExportsVisitor(CodemodContext())
         original_node.visit(vis)
         for name in vis.explicit_exported_objects:
             fqname = self._symbol_table.get(name, self.scoped_name(name))
-            self.exports.append((self._external_symbol_table.get(fqname), fqname))
+            self.exports.append(
+                Export(
+                    self.scoped_name(name),
+                    XRef(fqname, project=self._external_symbol_table.get(fqname)),
+                )
+            )
 
     def scoped_name(self, name: str) -> FQName:
         if self._scope_name:

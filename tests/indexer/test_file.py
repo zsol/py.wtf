@@ -4,7 +4,7 @@ from textwrap import dedent
 import pytest
 from py_wtf.indexer import file as mod_under_test
 from py_wtf.indexer.file import index_dir, index_file
-from py_wtf.types import FQName, Module, ProjectName, SymbolTable
+from py_wtf.types import Export, FQName, Module, ProjectName, SymbolTable, XRef
 
 empty_module = Module("testmod", [], [], [], [], [])
 
@@ -114,8 +114,14 @@ def test_index_package(package: Module, package_file: Path) -> None:
 
 def test_index_package_exports(package: Module) -> None:
     assert set(package.exports) == {
-        (None, "dependencyproject.helper"),
-        (None, "mypackage.foo"),
+        Export(
+            FQName("mypackage.helper"),
+            XRef(FQName("dependencyproject.helper"), None),
+        ),
+        Export(
+            FQName("mypackage.foo"),
+            XRef(FQName("mypackage.foo"), None),
+        ),
     }
 
 
@@ -130,6 +136,12 @@ def package_with_dep(package_file: Path) -> Module:
 
 def test_index_package_exports_with_dependencies(package_with_dep: Module) -> None:
     assert set(package_with_dep.exports) == {
-        (None, "mypackage.foo"),
-        ("dependency", "dependencyproject.helper"),
+        Export(
+            FQName("mypackage.helper"),
+            XRef(FQName("dependencyproject.helper"), ProjectName("dependency")),
+        ),
+        Export(
+            FQName("mypackage.foo"),
+            XRef(FQName("mypackage.foo"), None),
+        ),
     }
