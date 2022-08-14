@@ -1,3 +1,4 @@
+import process from "process";
 import React from "react";
 import useSWR from "swr";
 
@@ -11,6 +12,14 @@ import { H3 } from "./core/typography/Heading";
 const fetcher = (input: RequestInfo | URL, init?: RequestInit) =>
   fetch(input, init).then((res) => res.json());
 
+function fetchProject(name: string) {
+  const projectJsonUrl = url.projectJson(name);
+  return {
+    projectJsonUrl,
+    ...useSWR<docs.Project, Error>(projectJsonUrl, fetcher),
+  };
+}
+
 interface Props {
   name?: string;
   content: (pkg: docs.Project) => React.ReactElement;
@@ -20,8 +29,8 @@ export default function FetchProject({ name, content }: Props) {
   if (name === undefined) {
     return null;
   }
-  const projectJsonUrl = url.projectJson(name);
-  const { data, error } = useSWR<docs.Project, Error>(projectJsonUrl, fetcher);
+
+  const { data, error, projectJsonUrl } = fetchProject(name);
 
   if (error)
     return (

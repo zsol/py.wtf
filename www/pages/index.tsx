@@ -2,7 +2,6 @@ import { ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
 import { GetStaticProps } from "next";
 import Head from "next/head";
-import React from "react";
 
 import SymbolLinkTable from "@/components/Docs/SymbolLinkTable";
 import FullPageBackground from "@/components/core/layout/FullPageBackground";
@@ -47,7 +46,7 @@ const Footer = styled.footer`
   border-top: 1px solid #eaeaea;
 `;
 
-interface Props {
+export interface Props {
   projects: { name: string; documentation: string[] }[];
 }
 
