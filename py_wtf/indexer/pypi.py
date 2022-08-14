@@ -1,4 +1,6 @@
 import json
+import logging
+from functools import partial
 from pathlib import Path
 from tarfile import is_tarfile, TarFile
 from tempfile import TemporaryDirectory
@@ -6,23 +8,59 @@ from typing import Iterable, Sequence, Tuple
 from urllib.request import urlopen, urlretrieve
 from zipfile import is_zipfile, ZipFile
 
-import trailrunner
 from packaging.requirements import Requirement
 
-from py_wtf.types import Documentation, Module, Project, ProjectMetadata
+from py_wtf.repository import ProjectRepository
+
+from py_wtf.types import FQName, Project, ProjectMetadata, ProjectName, SymbolTable
 from .file import index_dir
 
+logger = logging.getLogger(__name__)
 
-def index_project(project_name: str) -> Iterable[Project]:
+
+def _build_symbol_table(projects: Iterable[Project]) -> SymbolTable:
+    ret: SymbolTable = {}
+    for project in projects:
+        pname = project.name
+        for mod in project.modules:
+            ret[FQName(mod.name)] = pname
+            for exp in mod.exports:
+                ret[exp.name] = pname
+            for func in mod.functions:
+                ret[FQName(func.name)] = pname
+            for var in mod.variables:
+                ret[FQName(var.name)] = pname
+            for cls in mod.classes:
+                ret[FQName(cls.name)] = pname
+                for func in cls.methods:
+                    ret[FQName(func.name)] = pname
+                for var in cls.class_variables:
+                    ret[FQName(var.name)] = pname
+                for var in cls.instance_variables:
+                    ret[FQName(var.name)] = pname
+                # TODO: inner classes and more
+    return ret
+
+
+def index_project(
+    project_name: ProjectName, repo: ProjectRepository
+) -> Iterable[Project]:
+    logging.info(f"Indexing {project_name}")
+    deps: list[Project] = []
     with TemporaryDirectory() as tmpdir:
         src_dir, info = download(project_name, Path(tmpdir))
-        modules = list(index_dir(src_dir))
+        dep_project_names = [ProjectName(dep) for dep in info.dependencies]
+        for name in dep_project_names:
+            proj = repo.get(name, partial(index_project, repo=repo))
+            deps.append(proj)
+
+        modules = list(index_dir(src_dir, _build_symbol_table(deps)))
 
     proj = Project(
         project_name,
         metadata=info,
         modules=modules,
-        documentation=(),
+        documentation=[],
     )
     yield proj
 
@@ -58,10 +96,17 @@ def pick_project_dir(directory: Path) -> Path:
     return project_directory
 
 
-def parse_deps(maybe_deps: None | Sequence[str]) -> Sequence[str]:
+def parse_deps(maybe_deps: None | Sequence[str]) -> list[str]:
     if not maybe_deps:
-        return ()
-    return tuple(req.name for dep in maybe_deps if not (req := Requirement(dep)).extras)
+        return []
+
+    return list(
+        req.name
+        for dep in maybe_deps
+        if (req := Requirement(dep))
+        if not req.extras
+        if not req.marker
+    )
 
 
 def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:

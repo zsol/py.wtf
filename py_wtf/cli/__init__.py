@@ -4,7 +4,10 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
+import shutil
+from functools import partial
 from pathlib import Path
 
 import click
@@ -12,7 +15,8 @@ import rich
 
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
-from py_wtf.types import Documentation, Project, ProjectMetadata
+from py_wtf.repository import converter, ProjectRepository
+from py_wtf.types import Documentation, FQName, Project, ProjectMetadata, ProjectName
 
 
 @click.group(
@@ -23,23 +27,25 @@ from py_wtf.types import Documentation, Project, ProjectMetadata
 @click.pass_context
 def py_wtf(ctx: click.Context) -> None:
     os.environ["LIBCST_PARSER_TYPE"] = "native"
+    logging.basicConfig(level=logging.INFO)
 
 
 @py_wtf.command()
 @click.argument("directory")
 @click.option("--project-name", required=True)
 @click.option("--pretty", is_flag=True)
-def index(project_name: str, directory: str, pretty: bool) -> None:
+@click.option("--force", is_flag=True, help="Blow away index repository and reindex")
+def index(project_name: str, directory: str, pretty: bool, force: bool) -> None:
     out_dir = Path(directory)
+    if force:
+        shutil.rmtree(out_dir, ignore_errors=True)
     out_dir.mkdir(parents=True, exist_ok=True)
+    repo = ProjectRepository(out_dir)
 
-    proj = next(iter(index_project(project_name)))
+    proj = repo.get(ProjectName(project_name), partial(index_project, repo=repo))
 
     if pretty:
         rich.print(proj)
-    else:
-        out = out_dir / f"{project_name}.json"
-        out.write_text(proj.to_json())  # type: ignore
 
 
 @py_wtf.command(name="index-file")
@@ -79,11 +85,12 @@ def generate_test_index() -> None:
             dependencies=proj_metadata["dependencies"],
             summary=proj_metadata.get("summary"),
         )
-        mods = index_dir(proj_dir)
+        symbol_table = {FQName("alpha.bar"): ProjectName("alpha")}
+        mods = index_dir(proj_dir, symbol_table)
         proj = Project(
-            proj_dir.name,
+            ProjectName(proj_dir.name),
             metadata=proj_info,
             modules=list(mods),
             documentation=[Documentation(proj_info.summary or "")],
         )
-        (out_dir / f"{proj.name}.json").write_text(proj.to_json())  # type: ignore
+        (out_dir / f"{proj.name}.json").write_text(converter.dumps(proj))

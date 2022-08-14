@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { GetStaticProps } from "next";
 import Head from "next/head";
 
+import SymbolLinkTable from "@/components/Docs/SymbolLinkTable";
 import FullPageBackground from "@/components/core/layout/FullPageBackground";
 import { flexColumnCenter } from "@/components/core/layout/helpers";
 import { Link } from "@/components/core/navigation/Link";
@@ -14,10 +15,13 @@ import * as url from "@/lib/url";
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const projectNames = await listProjects();
   const projects = await Promise.all(
-    projectNames.map(async (name) => ({
-      name,
-      metadata: (await getProject(name)).metadata,
-    }))
+    projectNames.map(async (name) => {
+      const proj = await getProject(name);
+      return {
+        name,
+        documentation: [`${proj.metadata.summary ?? ""}`],
+      };
+    })
   );
   return {
     props: {
@@ -43,7 +47,7 @@ const Footer = styled.footer`
 `;
 
 export interface Props {
-  projects: { name: string; metadata: ProjectMetadata }[];
+  projects: { name: string; documentation: string[] }[];
 }
 
 export default function Home({ projects }: Props) {
@@ -56,16 +60,12 @@ export default function Home({ projects }: Props) {
         </Head>
 
         <Content>
-          <ul>
-            {projects.map((prj) => (
-              <li key={`${prj.name}-${prj.metadata.version}`}>
-                <Link href={url.project(prj as Project)}>
-                  <a>{prj.name}</a>
-                </Link>{" "}
-                ({prj.metadata.version})
-              </li>
-            ))}
-          </ul>
+          <SymbolLinkTable
+            title="Projects"
+            url={(prj) => url.project(prj as Project)}
+            symbols={projects}
+            useReactRouter={false}
+          />
         </Content>
 
         <Footer>Footer.</Footer>
