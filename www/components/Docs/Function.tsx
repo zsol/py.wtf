@@ -36,7 +36,7 @@ export default function Function({ func }: { func: Func }) {
   const def = func.asynchronous ? "async def" : "def";
   const ret = func.returns && (
     <>
-      {" -> "}
+      {"-> "}
       <hl.Ty>{func.returns}</hl.Ty>
     </>
   );

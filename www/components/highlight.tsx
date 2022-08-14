@@ -22,7 +22,11 @@ export function VarWithType({ name, type, comma = false }: VarWithTypeProps) {
   return (
     <>
       {name}
-      {type != null && <Ty>{type}</Ty>}
+      {type != null && (
+        <>
+          : <Ty>{type}</Ty>
+        </>
+      )}
       {comma && ","}
     </>
   );
