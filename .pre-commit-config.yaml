@@ -39,9 +39,11 @@ repos:
         name: Generate test fixtures
         language: python
         types_or: [python, json]
-        entry: "py-wtf generate-test-index"
+        entry: "hatch run py-wtf generate-test-index"
         pass_filenames: false
         require_serial: true
+        additional_dependencies:
+          - hatch
 
 default_language_version:
   python: python3.10
