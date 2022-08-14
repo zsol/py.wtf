@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import shutil
+from functools import partial
 from pathlib import Path
 
 import click
@@ -25,6 +27,7 @@ from py_wtf.types import Documentation, Project, ProjectMetadata, ProjectName
 @click.pass_context
 def py_wtf(ctx: click.Context) -> None:
     os.environ["LIBCST_PARSER_TYPE"] = "native"
+    logging.basicConfig(level=logging.INFO)
 
 
 @py_wtf.command()
@@ -39,7 +42,7 @@ def index(project_name: str, directory: str, pretty: bool, force: bool) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     repo = ProjectRepository(out_dir)
 
-    proj = repo.get(ProjectName(project_name), index_project)
+    proj = repo.get(ProjectName(project_name), partial(index_project, repo=repo))
 
     if pretty:
         rich.print(proj)
