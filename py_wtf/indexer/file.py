@@ -13,16 +13,20 @@ from libcst.helpers.expression import get_full_name_for_node
 from py_wtf.types import (
     Class,
     Documentation,
+    Export,
     FQName,
     Function,
     Module,
     Parameter,
+    ProjectName,
+    SymbolTable,
     Type,
     Variable,
+    XRef,
 )
 
 
-def index_dir(dir: Path) -> Iterable[Module]:
+def index_dir(dir: Path, symbol_table: SymbolTable | None = None) -> Iterable[Module]:
     # TODO: do something with .pyi files
     # If there's a .pyi file with no corresponding .py -> just index .pyi
     # If both of them exist, do a best effort merge? 🤷
@@ -31,17 +35,28 @@ def index_dir(dir: Path) -> Iterable[Module]:
     # Skip looking for root markers, we definitely want to index this directory.
     trailrunner.core.ROOT_MARKERS = []
     for (_, mod) in trailrunner.run_iter(
-        paths=trailrunner.walk(dir), func=partial(index_file, dir)
+        paths=trailrunner.walk(dir),
+        func=partial(
+            index_file,
+            dir,
+            symbol_table=symbol_table,
+        ),
     ):
         yield mod
 
 
-def index_file(base_dir: Path, path: Path) -> Module:
+def index_file(
+    base_dir: Path,
+    path: Path,
+    symbol_table: SymbolTable | None = None,
+) -> Module:
+    if not symbol_table:
+        symbol_table = {}
     name_parts = path.relative_to(base_dir).with_suffix("").parts
     if name_parts[-1] == "__init__":
         name_parts = name_parts[:-1]
     name = ".".join(name_parts)
-    indexer = Indexer(name)
+    indexer = Indexer(name, symbol_table)
     try:
         mod = cst.MetadataWrapper(
             cst.parse_module(path.read_bytes()), unsafe_skip_copy=True
@@ -118,24 +133,28 @@ def extract_func_params(params: cst.Parameters) -> Iterable[Parameter]:
 
 
 class Indexer(cst.CSTVisitor):
-    def __init__(self, scope: str | None = None) -> None:
+    def __init__(self, scope: str, external_symbol_table: SymbolTable) -> None:
         super().__init__()
-        self._scope_name: str | None = scope
+        self._scope_name: str = scope
         self._symbol_table: dict[str, FQName] = {}
+        self._external_symbol_table = external_symbol_table
         self.classes: list[Class] = []
         self.functions: list[Function] = []
         self.variables: list[Variable] = []
         self.documentation: list[Documentation] = []
-        self.exports: list[FQName] = []
+        self.exports: list[Export] = []
 
     def leave_Module(self, original_node: cst.Module) -> None:
         vis = GatherExportsVisitor(CodemodContext())
         original_node.visit(vis)
-        # Maybe have an exports section?
-        self.exports.extend(
-            self._symbol_table.get(name, FQName(name))
-            for name in vis.explicit_exported_objects
-        )
+        for name in vis.explicit_exported_objects:
+            fqname = self._symbol_table.get(name, self.scoped_name(name))
+            self.exports.append(
+                Export(
+                    self.scoped_name(name),
+                    XRef(fqname, project=self._external_symbol_table.get(fqname)),
+                )
+            )
 
     def scoped_name(self, name: str) -> FQName:
         if self._scope_name:
@@ -154,8 +173,6 @@ class Indexer(cst.CSTVisitor):
 
         from_mod = ""
         if node.relative:
-            if self._scope_name is None:
-                raise ValueError("Tried relative import when scope name is empty")
             from_mod = self._scope_name.rsplit(".", len(node.relative) - 1)[0] + "."
         if node.module:
             from_mod += get_full_name_for_node(node.module) or ""
@@ -200,7 +217,7 @@ class Indexer(cst.CSTVisitor):
         comments = filter(
             None, (extract_documentation(line) for line in node.leading_lines)
         )
-        indexer = Indexer(scope=my_name)
+        indexer = Indexer(my_name, self._external_symbol_table)
         node.body.visit(indexer)
         self.classes.append(
             Class(
@@ -223,7 +240,7 @@ class Indexer(cst.CSTVisitor):
             None, (extract_documentation(line) for line in node.leading_lines)
         )
         # TODO: this is way too much work for just extracting docs
-        indexer = Indexer(self._scope_name)
+        indexer = Indexer(self._scope_name, self._external_symbol_table)
         node.body.visit(indexer)
 
         params = extract_func_params(node.params)

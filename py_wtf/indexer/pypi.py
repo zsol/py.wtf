@@ -12,10 +12,34 @@ from packaging.requirements import Requirement
 
 from py_wtf.repository import ProjectRepository
 
-from py_wtf.types import FQName, Project, ProjectMetadata, ProjectName
+from py_wtf.types import FQName, Project, ProjectMetadata, ProjectName, SymbolTable
 from .file import index_dir
 
 logger = logging.getLogger(__name__)
+
+
+def _build_symbol_table(projects: Iterable[Project]) -> SymbolTable:
+    ret: SymbolTable = {}
+    for project in projects:
+        pname = project.name
+        for mod in project.modules:
+            ret[FQName(mod.name)] = pname
+            for exp in mod.exports:
+                ret[exp.name] = pname
+            for func in mod.functions:
+                ret[FQName(func.name)] = pname
+            for var in mod.variables:
+                ret[FQName(var.name)] = pname
+            for cls in mod.classes:
+                ret[FQName(cls.name)] = pname
+                for func in cls.methods:
+                    ret[FQName(func.name)] = pname
+                for var in cls.class_variables:
+                    ret[FQName(var.name)] = pname
+                for var in cls.instance_variables:
+                    ret[FQName(var.name)] = pname
+                # TODO: inner classes and more
+    return ret
 
 
 def index_project(
@@ -30,7 +54,7 @@ def index_project(
             proj = repo.get(name, partial(index_project, repo=repo))
             deps.append(proj)
 
-        modules = list(index_dir(src_dir))
+        modules = list(index_dir(src_dir, _build_symbol_table(deps)))
 
     proj = Project(
         project_name,

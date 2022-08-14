@@ -14,6 +14,18 @@ ProjectName = NewType("ProjectName", str)
 
 
 @dataclass(frozen=True)
+class XRef:
+    fqname: FQName
+    project: ProjectName | None
+
+
+@dataclass(frozen=True)
+class Export:
+    name: FQName
+    xref: XRef
+
+
+@dataclass(frozen=True)
 class Variable:
     name: str
     type: Type | None
@@ -54,15 +66,7 @@ class Module:
     functions: list[Function]
     variables: list[Variable]
     classes: list[Class]
-    exports: list[FQName]
-
-
-@dataclass(frozen=True)
-class Project:
-    name: ProjectName
-    metadata: ProjectMetadata
-    documentation: list[Documentation]
-    modules: list[Module]
+    exports: list[Export]
 
 
 @dataclass
@@ -74,3 +78,14 @@ class ProjectMetadata:
     documentation_url: str | None
     dependencies: list[str]
     summary: str | None
+
+
+@dataclass(frozen=True)
+class Project:
+    name: ProjectName
+    metadata: ProjectMetadata
+    documentation: list[Documentation]
+    modules: list[Module]
+
+
+SymbolTable = dict[FQName, ProjectName]

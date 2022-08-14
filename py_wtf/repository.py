@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Iterable, NewType
+from typing import Callable, Iterable
 
 from cattrs.preconf.json import make_converter
 
