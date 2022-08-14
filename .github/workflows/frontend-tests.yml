@@ -28,5 +28,5 @@ jobs:
       working-directory: www
     - run: npm run lint
       working-directory: www
-    - run: npm run test
+    - run: npm run test-ci
       working-directory: www
