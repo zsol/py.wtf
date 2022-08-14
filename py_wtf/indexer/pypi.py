@@ -1,4 +1,6 @@
 import json
+import logging
+from functools import partial
 from pathlib import Path
 from tarfile import is_tarfile, TarFile
 from tempfile import TemporaryDirectory
@@ -6,16 +8,28 @@ from typing import Iterable, Sequence, Tuple
 from urllib.request import urlopen, urlretrieve
 from zipfile import is_zipfile, ZipFile
 
-import trailrunner
 from packaging.requirements import Requirement
 
-from py_wtf.types import Documentation, Module, Project, ProjectMetadata, ProjectName
+from py_wtf.repository import ProjectRepository
+
+from py_wtf.types import FQName, Project, ProjectMetadata, ProjectName
 from .file import index_dir
 
+logger = logging.getLogger(__name__)
 
-def index_project(project_name: ProjectName) -> Iterable[Project]:
+
+def index_project(
+    project_name: ProjectName, repo: ProjectRepository
+) -> Iterable[Project]:
+    logging.info(f"Indexing {project_name}")
+    deps: list[Project] = []
     with TemporaryDirectory() as tmpdir:
         src_dir, info = download(project_name, Path(tmpdir))
+        dep_project_names = [ProjectName(dep) for dep in info.dependencies]
+        for name in dep_project_names:
+            proj = repo.get(name, partial(index_project, repo=repo))
+            deps.append(proj)
+
         modules = list(index_dir(src_dir))
 
     proj = Project(
