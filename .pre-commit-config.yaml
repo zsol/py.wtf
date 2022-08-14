@@ -25,14 +25,25 @@ repos:
     rev: "v0.971"
     hooks:
       - id: mypy
-        additional_dependencies:
+        additional_dependencies: &deps
+          - cattrs==22.1.0
           - click>=8.1.3
-          - dataclasses-json>=0.5.7
           - rich>=12.5.1
           - libcst>=0.4.7
           - trailrunner>=1.2.1
           - packaging>=21
           - pytest
+
+  - repo: local
+    hooks:
+      - id: generate-test-fixtures
+        name: Generate test fixtures
+        language: python
+        types_or: [python, json]
+        entry: "python -m py_wtf generate-test-index"
+        pass_filenames: false
+        require_serial: true
+        additional_dependencies: *deps
 
 default_language_version:
   python: python3.10
