@@ -1,18 +1,23 @@
-import { Link as WUILink } from "@welcome-ui/link";
+import styled from "@emotion/styled";
 import React from "react";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
 
-const StyledWUILink = styled(WUILink)<{ active: boolean }>`
-  padding-left: ${(props) => props.theme.space.xs};
-  padding-right: ${(props) => props.theme.space.md};
+import { RouterLink } from "../core/navigation/Link";
+
+const StyledRouterLink = styled(RouterLink)<{ active: string }>`
+  display: flex;
+  box-sizing: border-box;
   width: 100%;
+  padding-left: ${(props) => props.theme.spacing.s};
+  padding-right: ${(props) => props.theme.spacing.m};
+  padding-bottom: ${(props) => props.theme.spacing.xxs};
+  padding-top: ${(props) => props.theme.spacing.xxs};
+
   ${(props) =>
-    props.active &&
+    props.active === "true" &&
     `
-    background-color: ${props.theme.colors.light["500"]};
+    background-color: ${props.theme.colors.sidebar.highlight};
     font-weight: bold;
-    color: ${props.theme.colors.dark["900"]};
+    color: ${props.theme.colors.link.default};
   `}
 `;
 
@@ -22,10 +27,10 @@ interface Props {
   active?: boolean;
 }
 
-const SidebarLink = ({ children, href, active, ...rest }: Props) => (
-  <Link to={href} {...rest}>
-    <StyledWUILink active={active || false}>{children}</StyledWUILink>
-  </Link>
+const SidebarLink = ({ children, href, active }: Props) => (
+  <StyledRouterLink to={href} active={(!!active || false).toString()}>
+    {children}
+  </StyledRouterLink>
 );
 
 export default SidebarLink;

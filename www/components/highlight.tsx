@@ -1,10 +1,5 @@
-import { Text, TextProps } from "@welcome-ui/text";
+import styled from "@emotion/styled";
 import React from "react";
-import styled from "styled-components";
-
-export const Container = (props: TextProps) => (
-  <Text as="code" backgroundColor="light.800" padding="md" {...props} />
-);
 
 export const Keyword = styled.span`
   font-weight: bold;
@@ -24,18 +19,10 @@ export interface VarWithTypeProps {
 }
 
 export function VarWithType({ name, type, comma = false }: VarWithTypeProps) {
-  const typeann =
-    type === null ? (
-      <></>
-    ) : (
-      <>
-        : <Ty>{type}</Ty>
-      </>
-    );
   return (
     <>
       {name}
-      {typeann}
+      {type != null && <Ty>{type}</Ty>}
       {comma && ","}
     </>
   );

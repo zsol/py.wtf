@@ -1,14 +1,16 @@
 import itertools
+from functools import partial
 from pathlib import Path
 from textwrap import dedent
 from typing import Iterable, Protocol, TypeVar
 
 import libcst as cst
+import trailrunner
 from libcst.codemod import CodemodContext
 from libcst.codemod.visitors import GatherExportsVisitor
 from libcst.helpers.expression import get_full_name_for_node
 
-from .types import (
+from py_wtf.types import (
     Class,
     Documentation,
     FQName,
@@ -18,6 +20,20 @@ from .types import (
     Type,
     Variable,
 )
+
+
+def index_dir(dir: Path) -> Iterable[Module]:
+    # TODO: do something with .pyi files
+    # If there's a .pyi file with no corresponding .py -> just index .pyi
+    # If both of them exist, do a best effort merge? 🤷
+    trailrunner.core.INCLUDE_PATTERN = r".+\.py$"
+
+    # Skip looking for root markers, we definitely want to index this directory.
+    trailrunner.core.ROOT_MARKERS = []
+    for (_, mod) in trailrunner.run_iter(
+        paths=trailrunner.walk(dir), func=partial(index_file, dir)
+    ):
+        yield mod
 
 
 def index_file(base_dir: Path, path: Path) -> Module:
@@ -60,12 +76,14 @@ T = TypeVar("T")
 
 def ensure(val: T | None) -> T:
     if val is None:
-        raise ValueError(f"Expected type {T}, got None")
+        raise ValueError(f"Unexpected None")  # no cov
     return val
 
 
 class HasComment(Protocol):
-    comment: cst.Comment | None
+    @property
+    def comment(self) -> cst.Comment | None:
+        ...
 
 
 def extract_documentation(node: HasComment) -> Documentation | None:
@@ -205,7 +223,7 @@ class Indexer(cst.CSTVisitor):
             None, (extract_documentation(line) for line in node.leading_lines)
         )
         # TODO: this is way too much work for just extracting docs
-        indexer = Indexer()
+        indexer = Indexer(self._scope_name)
         node.body.visit(indexer)
 
         params = extract_func_params(node.params)

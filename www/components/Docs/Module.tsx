@@ -1,10 +1,9 @@
-import { Box } from "@welcome-ui/box";
-import { Text } from "@welcome-ui/text";
 import React from "react";
 
 import * as docs from "@/lib/docs";
 import * as url from "@/lib/url";
 
+import { H3 } from "../core/typography/Heading";
 import Documentation from "./Documentation";
 import SymbolLinkTable from "./SymbolLinkTable";
 
@@ -31,12 +30,12 @@ export default function Module({ prj, mod }: Props) {
     );
   }
   return (
-    <Box>
-      <Text variant="h3">Module {mod.name}</Text>
+    <div>
+      <H3>Module {mod.name}</H3>
       <Documentation>{prj.documentation}</Documentation>
       <LinkTable title="Classes" symbols={mod.classes} />
       <LinkTable title="Functions" symbols={mod.functions} />
       <LinkTable title="Variables" symbols={mod.variables} />
-    </Box>
+    </div>
   );
 }

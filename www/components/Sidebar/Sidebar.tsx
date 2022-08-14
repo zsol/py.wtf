@@ -1,62 +1,59 @@
-import { Box } from "@welcome-ui/box";
-import { Text } from "@welcome-ui/text";
+import styled from "@emotion/styled";
 import React from "react";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
 
 import * as url from "@/lib/url";
 
 import { Project } from "../../lib/docs";
-import { Stack } from "@welcome-ui/stack";
-import Documentation from "../Docs/Documentation";
+import { flexColumn } from "../core/layout/helpers";
+import { Link, RouterLink } from "../core/navigation/Link";
+import { H3 } from "../core/typography/Heading";
+import { Text } from "../core/typography/Text";
 
 export interface Props {
   project: Project;
   children?: React.ReactNode;
 }
 
-const Container = styled(Box)`
-  overflow: auto;
-  background-color: #151515;
-  padding-left: ${(props) => props.theme.space.xxl};
-  border-right: ${(props) => props.theme.colors.light[200]} 5px solid;
-  height: 100%;
+const Container = styled.div`
+  padding: ${(props) => props.theme.spacing.s};
 `;
 
-const StyledLink = styled(Link)`
-  color: ${(props) => props.theme.colors.dark[800]};
-  text-decoration: none;
+const LinkContainer = styled.div`
+  ${flexColumn}
 `;
+
+// Note: Styles to come later
+const SidebarHeader = styled.div``;
+const SidebarContent = styled.div``;
 
 export default function Sidebar({ project, children }: Props) {
   const meta = project.metadata;
-  const docs_url = meta.documentation_url ? (
-    <StyledLink to={meta.documentation_url}>
-      <Text>🗎 Docs</Text>
-    </StyledLink>
-  ) : (
-    <></>
+  const docs_url = meta.documentation_url && (
+    <Link href={meta.documentation_url} target="_blank">
+      <Text>📄 Docs</Text>
+    </Link>
   );
-  const home_link = meta.home_page ? (
-    <StyledLink to={meta.home_page}>
+  const home_link = meta.home_page && (
+    <Link href={meta.home_page} target="_blank">
       <Text>🏠 Website</Text>
-    </StyledLink>
-  ) : (
-    <></>
+    </Link>
   );
+
   return (
     <Container>
-      <StyledLink to={url.project(project)}>
-        <Text variant="h3" paddingRight="xl" cursor="pointer">
-          Project {project.name}
-        </Text>
-      </StyledLink>
-      <Stack direction="row">
-        {home_link}
-        {docs_url}
-      </Stack>
-      <Text>Version {meta.version}</Text>
-      {children}
+      <SidebarHeader>
+        <H3>
+          <RouterLink to={url.project(project)}>
+            Project {project.name}
+          </RouterLink>
+        </H3>
+        <LinkContainer>
+          {home_link}
+          {docs_url}
+        </LinkContainer>
+        <Text>Version {project.metadata.version}</Text>
+      </SidebarHeader>
+      <SidebarContent>{children}</SidebarContent>
     </Container>
   );
 }

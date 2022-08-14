@@ -1,12 +1,17 @@
-import { WuiProvider, createTheme } from "@welcome-ui/core";
+import { ThemeProvider } from "@emotion/react";
+import styled from "@emotion/styled";
 import { GetStaticProps } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import React from "react";
 
-import { Project, getProject, listProjects, ProjectMetadata } from "@/lib/docs";
-import * as url from "@/lib/url";
 import SymbolLinkTable from "@/components/Docs/SymbolLinkTable";
+import FullPageBackground from "@/components/core/layout/FullPageBackground";
+import { flexColumnCenter } from "@/components/core/layout/helpers";
+import { Link } from "@/components/core/navigation/Link";
+import { darkTheme } from "@/components/core/theme/theme";
+
+import { Project, ProjectMetadata, getProject, listProjects } from "@/lib/docs";
+import * as url from "@/lib/url";
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const projectNames = await listProjects();
@@ -26,7 +31,21 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   };
 };
 
-const theme = createTheme();
+const Content = styled.main`
+  ${flexColumnCenter}
+  flex: 1;
+
+  padding: 5rem 0;
+`;
+
+const Footer = styled.footer`
+  ${flexColumnCenter}
+
+  width: 100%;
+  height: 100px;
+
+  border-top: 1px solid #eaeaea;
+`;
 
 interface Props {
   projects: { name: string; documentation: string[] }[];
@@ -34,53 +53,24 @@ interface Props {
 
 export default function Home({ projects }: Props) {
   return (
-    <WuiProvider theme={theme}>
-      <div className="container">
+    <ThemeProvider theme={darkTheme}>
+      <FullPageBackground>
         <Head>
           <title>py.wtf</title>
           {/*<link rel="icon" href="/favicon.ico" /> */}
         </Head>
 
-        <main>
+        <Content>
           <SymbolLinkTable
             title="Projects"
             url={(prj) => url.project(prj as Project)}
             symbols={projects}
             useReactRouter={false}
           />
-        </main>
+        </Content>
 
-        <footer>Footer.</footer>
-
-        <style jsx>{`
-          .container {
-            min-height: 100vh;
-            padding: 0 0.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-          }
-
-          main {
-            padding: 5rem 0;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-          }
-
-          footer {
-            width: 100%;
-            height: 100px;
-            border-top: 1px solid #eaeaea;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          }
-        `}</style>
-      </div>
-    </WuiProvider>
+        <Footer>Footer.</Footer>
+      </FullPageBackground>
+    </ThemeProvider>
   );
 }

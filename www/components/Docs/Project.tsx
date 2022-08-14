@@ -1,4 +1,3 @@
-import { Box } from "@welcome-ui/box";
 import React from "react";
 
 import { Project } from "@/lib/docs";
@@ -14,13 +13,13 @@ interface Props {
 export default function Proj({ prj }: Props) {
   prj.modules.sort((a, b) => a.name.localeCompare(b.name));
   return (
-    <Box>
+    <div>
       <Documentation>{prj.documentation}</Documentation>
       <SymbolLinkTable
         title="Modules"
         url={(mod) => url.mod(prj, mod)}
         symbols={prj.modules}
       />
-    </Box>
+    </div>
   );
 }

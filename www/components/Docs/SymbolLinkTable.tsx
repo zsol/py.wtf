@@ -1,15 +1,11 @@
-import { Box } from "@welcome-ui/box";
-import { Link as WUILink } from "@welcome-ui/link";
-import { Text } from "@welcome-ui/text";
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
-import NextLink from "next/link";
-
-import Table from "@/components/CondensedTable";
 
 import { sortedBy } from "@/lib/sorting";
 import { withoutPrefix } from "@/lib/url";
 
+import { TBody, Table, Td, Tr } from "../core/layout/CondensedTable";
+import { Link, RouterLink } from "../core/navigation/Link";
+import { H3 } from "../core/typography/Heading";
 import Documentation from "./Documentation";
 
 export interface Sym {
@@ -42,39 +38,36 @@ export default function SymbolLinkTable<T extends Sym>({
   useReactRouter = true,
 }: Props<T>) {
   if (symbols.length === 0) {
-    return <></>;
+    return null;
   }
-  const Link = ({ to, children }) =>
-    useReactRouter ? (
-      <RouterLink to={to}>{children}</RouterLink>
-    ) : (
-      <NextLink href={to}>{children}</NextLink>
-    );
+
   return (
-    <Box>
-      <Text variant="h3">{title}</Text>
+    <div>
+      <H3>{title}</H3>
       <Table>
-        <Table.Tbody>
+        <TBody>
           {deduplicate(symbols).map((sym) => {
+            const linkText = stripPrefix
+              ? withoutPrefix(stripPrefix, sym.name)
+              : sym.name;
+
             return (
-              <Table.Tr key={sym.name}>
-                <Table.Th>
-                  <Link to={url(sym)}>
-                    <WUILink>
-                      {stripPrefix
-                        ? withoutPrefix(stripPrefix, sym.name)
-                        : sym.name}
-                    </WUILink>
-                  </Link>
-                </Table.Th>
-                <Table.Td>
+              <Tr key={sym.name}>
+                <Td>
+                  {useReactRouter ? (
+                    <RouterLink to={url(sym)}>{linkText}</RouterLink>
+                  ) : (
+                    <Link href={url(sym)}>{linkText}</Link>
+                  )}
+                </Td>
+                <Td>
                   <Documentation.Short>{sym.documentation}</Documentation.Short>
-                </Table.Td>
-              </Table.Tr>
+                </Td>
+              </Tr>
             );
           })}
-        </Table.Tbody>
+        </TBody>
       </Table>
-    </Box>
+    </div>
   );
 }

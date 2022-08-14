@@ -1,5 +1,3 @@
-import { Box } from "@welcome-ui/box";
-import { Text } from "@welcome-ui/text";
 import React from "react";
 
 import Intersperse from "@/components/Intersperse";
@@ -7,6 +5,8 @@ import * as hl from "@/components/highlight";
 
 import * as docs from "@/lib/docs";
 
+import { Code } from "../core/typography/Code";
+import { H5 } from "../core/typography/Heading";
 import Documentation from "./Documentation";
 import Function from "./Function";
 import Variable from "./Variable";
@@ -21,7 +21,7 @@ function Methods({ cls }: Props) {
   }
   return (
     <>
-      <Text variant="h5">Methods</Text>
+      <H5>Methods</H5>
       {cls.methods.map((method, index) => (
         <Function key={`${method.name}/${index}`} func={method} />
       ))}
@@ -41,7 +41,7 @@ function Variables({
   }
   return (
     <>
-      <Text variant="h5">{title}</Text>
+      <H5>{title}</H5>
       {variables.map((v) => (
         <Variable key={v.name} variable={v} />
       ))}
@@ -58,8 +58,8 @@ const InstanceVariables = ({ cls }: Props) => (
 
 export default function Class({ cls }: Props) {
   return (
-    <Box>
-      <hl.Container variant="h4">
+    <div>
+      <Code>
         <hl.Keyword>class</hl.Keyword> <hl.Ty>{cls.name}</hl.Ty>(
         <Intersperse separator=", ">
           {cls.bases.map((base) => (
@@ -67,7 +67,7 @@ export default function Class({ cls }: Props) {
           ))}
         </Intersperse>
         )
-      </hl.Container>
+      </Code>
       <Documentation>{cls.documentation}</Documentation>
       <Methods cls={cls} />
       <ClassVariables cls={cls} />
@@ -76,6 +76,6 @@ export default function Class({ cls }: Props) {
         // TODO: Make the inner-class-ness obvious from looking at the page
         <Class key={inner.name} cls={inner} />
       ))}
-    </Box>
+    </div>
   );
 }
