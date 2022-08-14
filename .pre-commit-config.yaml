@@ -33,6 +33,15 @@ repos:
           - trailrunner>=1.2.1
           - packaging>=21
           - pytest
+  - repo: local
+    hooks:
+      - id: generate-test-fixtures
+        name: Generate test fixtures
+        language: python
+        types_or: [python, json]
+        entry: "py-wtf generate-test-index"
+        pass_filenames: false
+        require_serial: true
 
 default_language_version:
   python: python3.10
