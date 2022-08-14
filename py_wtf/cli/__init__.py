@@ -15,7 +15,7 @@ import rich
 
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
-from py_wtf.repository import ProjectRepository
+from py_wtf.repository import converter, ProjectRepository
 from py_wtf.types import Documentation, Project, ProjectMetadata, ProjectName
 
 
@@ -92,4 +92,4 @@ def generate_test_index() -> None:
             modules=list(mods),
             documentation=[Documentation(proj_info.summary or "")],
         )
-        (out_dir / f"{proj.name}.json").write_text(proj.to_json())  # type: ignore
+        (out_dir / f"{proj.name}.json").write_text(converter.dumps(proj))
