@@ -6,7 +6,7 @@ from py_wtf.indexer import file as mod_under_test
 from py_wtf.indexer.file import index_dir, index_file
 from py_wtf.types import Module
 
-empty_module = Module("testmod", (), (), (), (), ())
+empty_module = Module("testmod", [], [], [], [], [])
 
 
 def mock_index_file(base_dir: Path, path: Path) -> Module:
