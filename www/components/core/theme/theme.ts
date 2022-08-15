@@ -33,6 +33,7 @@ export const darkTheme = {
     },
     code: {
       background: colors.slate.dark,
+      backgroundHighlighted: "#1b180e", // dark ... yellow ... ish, I guess?
       anchor: colors.slate.light,
     },
     mainText: colors.grey.light,

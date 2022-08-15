@@ -10,6 +10,7 @@ declare module "@emotion/react" {
       };
       code: {
         background: string;
+        backgroundHighlighted: string;
         anchor: string;
       };
       mainText: string;

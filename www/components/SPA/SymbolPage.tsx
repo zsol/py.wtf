@@ -77,7 +77,12 @@ export default function SymbolPage() {
 
             const sidebarContent = cls ? (
               <>
-                <ClassContents prj={prj} mod={mod} cls={cls} currentSymbol="" />
+                <ClassContents
+                  prj={prj}
+                  mod={mod}
+                  cls={cls}
+                  currentSymbol={window.location.hash.slice(1)}
+                />
                 <ModuleContents prj={prj} mod={mod} currentSymbol="" />
               </>
             ) : (
