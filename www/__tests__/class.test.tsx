@@ -17,7 +17,7 @@ describe("Class page", () => {
     // Variable / method links aren't happy yet, see https://github.com/zsol/py.wtf/issues/3
     expect(getByRole("link", { name: "some_variable" })).toHaveAttribute(
       "href",
-      "/project-alpha/alpha.core/Helper"
+      "/project-alpha/alpha.core/Helper#alpha.core.Helper.some_variable"
     );
 
     // Inner class link
@@ -37,28 +37,28 @@ describe("Class page", () => {
     // Class declaration
     getByText(
       (_, element) =>
-        element?.nodeName === "PRE" &&
+        element?.nodeName === "CODE" &&
         element?.textContent === "class alpha.core.Helper()"
     );
 
     // Instance variable
     getByText(
       (_, element) =>
-        element?.nodeName === "PRE" &&
+        element?.nodeName === "CODE" &&
         element?.textContent === "alpha.core.Helper.some_variable: int"
     );
 
     // Inner class declaration
     getByText(
       (_, element) =>
-        element?.nodeName === "PRE" &&
+        element?.nodeName === "CODE" &&
         element?.textContent === "class alpha.core.Helper.Utils()"
     );
 
     // Inner class method
     getByText(
       (_, element) =>
-        element?.nodeName === "PRE" &&
+        element?.nodeName === "CODE" &&
         element?.textContent === "def static_method(\
 \
 foo: int,\
@@ -68,7 +68,7 @@ foo: int,\
     // Double inner class I guess
     getByText(
       (_, element) =>
-        element?.nodeName === "PRE" &&
+        element?.nodeName === "CODE" &&
         element?.textContent === "class alpha.core.Helper.Utils.Common()"
     );
   });
