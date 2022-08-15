@@ -80,7 +80,7 @@ export default function ModulePage() {
             );
 
             if (cls) {
-              return [sidebarContent, <Class cls={cls} />];
+              return [sidebarContent, <Class cls={cls} project={prj} />];
             } else if (func) {
               return [
                 sidebarContent,
@@ -88,7 +88,7 @@ export default function ModulePage() {
                   {mod.functions
                     .filter((f) => f.name === symbol.name)
                     .map((f) => (
-                      <Function func={f} key={f.name} />
+                      <Function func={f} key={f.name} project={prj} />
                     ))}
                 </>,
               ];
@@ -100,7 +100,7 @@ export default function ModulePage() {
                   {mod.variables
                     .filter((v) => v.name === symbol.name)
                     .map((v) => (
-                      <Variable variable={v} />
+                      <Variable variable={v} project={prj} />
                     ))}
                 </>,
               ];

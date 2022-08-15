@@ -3,11 +3,14 @@ import React from "react";
 
 import * as hl from "@/components/highlight";
 
-import { Func } from "@/lib/docs";
+import * as docs from "@/lib/docs";
 
+import { xref } from "../../lib/url";
 import { Code } from "../core/typography/Code";
 import { Text } from "../core/typography/Text";
 import Documentation from "./Documentation";
+import TypeAnnotation from "./TypeAnnotation";
+import { VarWithType, VarWithTypeProps } from "./Variable";
 
 const FuncDocs = styled(Documentation)`
   margin-left: ${(props) => props.theme.spacing.m};
@@ -26,18 +29,23 @@ const ParamWrapper = styled(Text)`
   }
 `;
 
-const Param = (props: hl.VarWithTypeProps) => (
+const Param = (props: VarWithTypeProps) => (
   <ParamWrapper>
-    <hl.VarWithType comma {...props} />
+    <VarWithType comma {...props} />
   </ParamWrapper>
 );
 
-export default function Function({ func }: { func: Func }) {
+export interface FunctionProps {
+  func: docs.Func;
+  project: docs.Project;
+}
+
+export default function Function({ func, project }: FunctionProps) {
   const def = func.asynchronous ? "async def" : "def";
   const ret = func.returns && (
     <>
       {"-> "}
-      <hl.Ty>{func.returns}</hl.Ty>
+      <TypeAnnotation type={func.returns} url={xref.bind(null, project)} />
     </>
   );
   const unqual = func.name.split(".").at(-1);
@@ -47,7 +55,12 @@ export default function Function({ func }: { func: Func }) {
       <Code>
         <hl.Keyword>{def}</hl.Keyword> <hl.Fn>{unqual}</hl.Fn>(
         {func.params.map((param) => (
-          <Param name={param.name} type={param.type} key={param.name} />
+          <Param
+            name={param.name}
+            type={param.type ?? undefined}
+            key={param.name}
+            project={project}
+          />
         ))}
         ) {ret}
       </Code>
