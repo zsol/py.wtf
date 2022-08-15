@@ -16,7 +16,7 @@ interface Props {
 
 export default function ClassContents({ prj, mod, cls, currentSymbol }: Props) {
   const symbolUrl = url.symbol.bind(null, prj, mod);
-  const anchorUrl = url.symbol.bind(null, prj, mod, cls);
+  const anchorUrl = url.classItem.bind(null, prj, mod, cls);
 
   function LinkList<T extends { name: string }>({
     title,
