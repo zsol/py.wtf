@@ -4,7 +4,7 @@ import { renderSPA, setupSPAServer } from "@/lib/test/spa";
 
 setupSPAServer();
 
-describe("Class page", () => {
+describe("Inner class page", () => {
   it("loads and shows correct information", async () => {
     const { getByRole, getByText } = await renderSPA(
       "/project-alpha/alpha.core/Helper.Utils"
@@ -17,7 +17,7 @@ describe("Class page", () => {
     // Variable / method links aren't happy yet, see https://github.com/zsol/py.wtf/issues/3
     expect(getByRole("link", { name: "static_method" })).toHaveAttribute(
       "href",
-      "/project-alpha/alpha.core/Helper.Utils"
+      "/project-alpha/alpha.core/Helper.Utils#alpha.core.Helper.Utils.static_method"
     );
 
     // Inner class link
@@ -37,14 +37,14 @@ describe("Class page", () => {
     // Class declaration
     getByText(
       (_, element) =>
-        element?.nodeName === "PRE" &&
+        element?.nodeName === "CODE" &&
         element?.textContent === "class alpha.core.Helper.Utils()"
     );
 
     // Method
     getByText(
       (_, element) =>
-        element?.nodeName === "PRE" &&
+        element?.nodeName === "CODE" &&
         element?.textContent === "def static_method(\
 \
 foo: int,\
@@ -54,7 +54,7 @@ foo: int,\
     // Inner class declaration
     getByText(
       (_, element) =>
-        element?.nodeName === "PRE" &&
+        element?.nodeName === "CODE" &&
         element?.textContent === "class alpha.core.Helper.Utils.Common()"
     );
   });
