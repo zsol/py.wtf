@@ -94,6 +94,7 @@ async def main() -> None:
         shutil.move("out", tmp_out)
         os.chdir(toplevel)
         await shell("git", "checkout", "pages")
+        await shell("git", "pull")
         for i in ["docs/CNAME", "docs/.nojekyll"]:
             shutil.move(i, tmp_out)
         shutil.rmtree("docs")
