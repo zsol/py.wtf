@@ -35,7 +35,7 @@ function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
   return cls;
 }
 
-export default function ModulePage() {
+export default function SymbolPage() {
   const { prj: projectName, mod: modName, sym: symName } = useParams();
   if (symName === undefined) {
     return <div>Missing "sym" parameter, how did you even get here?</div>;
