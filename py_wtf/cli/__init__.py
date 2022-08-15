@@ -9,6 +9,7 @@ import os
 import shutil
 from functools import partial
 from pathlib import Path
+from typing import Iterable
 
 import click
 import rich
@@ -16,7 +17,14 @@ import rich
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
 from py_wtf.repository import converter, ProjectRepository
-from py_wtf.types import Documentation, FQName, Project, ProjectMetadata, ProjectName
+from py_wtf.types import (
+    Documentation,
+    FQName,
+    Module,
+    Project,
+    ProjectMetadata,
+    ProjectName,
+)
 
 
 @click.group(
@@ -67,9 +75,10 @@ def index_dir_cmd(dir: str) -> None:
 
 
 @py_wtf.command()
-def generate_test_index() -> None:
+@click.argument("dir", required=False)
+def generate_test_index(dir: str | None) -> None:
     root_dir = Path(__file__).parent.parent.parent
-    out_dir = root_dir / "www" / "public" / "_index"
+    out_dir = Path(dir) if dir else root_dir / "www" / "public" / "_index"
     out_dir.mkdir(parents=True, exist_ok=True)
     fixtures = root_dir / "test_fixtures"
     for proj_dir in fixtures.iterdir():
@@ -93,4 +102,21 @@ def generate_test_index() -> None:
             modules=list(mods),
             documentation=[Documentation(proj_info.summary or "")],
         )
-        (out_dir / f"{proj.name}.json").write_text(converter.dumps(proj))
+        (out_dir / f"{proj.name}.json").write_text(converter.dumps(_sort(proj)))
+
+
+def _sort(o: object) -> object:
+    for i in dir(o):
+        if i.startswith("_"):
+            continue
+        if not isinstance(getattr(o, i), (list, tuple)):
+            continue
+        object.__setattr__(
+            o,
+            i,
+            sorted(
+                (_sort(item) for item in getattr(o, i)),
+                key=lambda x: getattr(x, "name", id(x)),
+            ),
+        )
+    return o
