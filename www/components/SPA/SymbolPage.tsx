@@ -16,7 +16,10 @@ import { withoutPrefix } from "@/lib/url";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
 
-function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
+function resolveClass(
+  mod: docs.RichModule,
+  name: string
+): docs.RichClass | undefined {
   // `name` can refer to an inner class like Foo.Bar
   const parts = withoutPrefix(mod.name, name).split(".");
   // First find a module-level class that matches Foo
@@ -49,7 +52,8 @@ export default function ModulePage() {
       </Head>
       <FetchProject
         name={projectName}
-        content={(prj) => {
+        content={(plainPrj) => {
+          const prj = new docs.RichProject(plainPrj);
           const [sidebarContent, content] = (() => {
             const mod = prj.modules.find((mod) => mod.name === modName);
             if (!mod) {
@@ -85,7 +89,7 @@ export default function ModulePage() {
             );
 
             if (cls) {
-              return [sidebarContent, <Class cls={cls} project={prj} />];
+              return [sidebarContent, <Class cls={cls} />];
             } else if (func) {
               return [
                 sidebarContent,

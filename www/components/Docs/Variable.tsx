@@ -1,5 +1,3 @@
-import React from "react";
-
 import * as docs from "../../lib/docs";
 import { xref } from "../../lib/url";
 import { Code } from "../core/typography/Code";

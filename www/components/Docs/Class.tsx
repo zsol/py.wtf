@@ -12,11 +12,10 @@ import Function from "./Function";
 import Variable from "./Variable";
 
 interface Props {
-  cls: docs.Class; // Named to not conflict with the `class` keyword OR the `class` HTML attribute
-  project: docs.Project;
+  cls: docs.RichClass; // Named to not conflict with the `class` keyword OR the `class` HTML attribute
 }
 
-function Methods({ cls, project }: Props) {
+function Methods({ cls }: Props) {
   if (cls.methods.length === 0) {
     return null;
   }
@@ -27,7 +26,7 @@ function Methods({ cls, project }: Props) {
         <Function
           key={`${method.name}/${index}`}
           func={method}
-          project={project}
+          project={cls.module.project}
         />
       ))}
     </>
@@ -56,22 +55,22 @@ function Variables({
   );
 }
 
-const ClassVariables = ({ cls, project }: Props) => (
+const ClassVariables = ({ cls }: Props) => (
   <Variables
     title="Class Variables"
     variables={cls.class_variables}
-    project={project}
+    project={cls.module.project}
   />
 );
-const InstanceVariables = ({ cls, project }: Props) => (
+const InstanceVariables = ({ cls }: Props) => (
   <Variables
     title="Instance Variables"
     variables={cls.instance_variables}
-    project={project}
+    project={cls.module.project}
   />
 );
 
-export default function Class({ cls, project }: Props) {
+export default function Class({ cls }: Props) {
   return (
     <div>
       <Code>
@@ -84,12 +83,12 @@ export default function Class({ cls, project }: Props) {
         )
       </Code>
       <Documentation>{cls.documentation}</Documentation>
-      <Methods cls={cls} project={project} />
-      <ClassVariables cls={cls} project={project} />
-      <InstanceVariables cls={cls} project={project} />
+      <Methods cls={cls} />
+      <ClassVariables cls={cls} />
+      <InstanceVariables cls={cls} />
       {cls.inner_classes.map((inner) => (
         // TODO: Make the inner-class-ness obvious from looking at the page
-        <Class key={inner.name} cls={inner} project={project} />
+        <Class key={inner.name} cls={inner} />
       ))}
     </div>
   );

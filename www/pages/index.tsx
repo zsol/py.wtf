@@ -6,10 +6,10 @@ import Head from "next/head";
 import SymbolLinkTable from "@/components/Docs/SymbolLinkTable";
 import FullPageBackground from "@/components/core/layout/FullPageBackground";
 import { flexColumnCenter } from "@/components/core/layout/helpers";
-import { Link } from "@/components/core/navigation/Link";
 import { darkTheme } from "@/components/core/theme/theme";
 
-import { Project, ProjectMetadata, getProject, listProjects } from "@/lib/docs";
+import { Project } from "@/lib/docs";
+import { getProject, listProjects } from "@/lib/docs_server";
 import * as url from "@/lib/url";
 
 export const getStaticProps: GetStaticProps<Props> = async () => {

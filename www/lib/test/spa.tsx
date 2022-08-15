@@ -4,7 +4,7 @@ import { setupServer } from "msw/node";
 import { MemoryRouter } from "react-router-dom";
 import "whatwg-fetch";
 
-import { getProject } from "@/lib/docs";
+import { getProject } from "@/lib/docs_server";
 
 import SPAIndex from "@/pages/_spa";
 
