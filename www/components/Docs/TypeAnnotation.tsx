@@ -1,5 +1,3 @@
-import React from "react";
-
 import * as docs from "../../lib/docs";
 import Intersperse from "../Intersperse";
 import { RouterLink } from "../core/navigation/Link";
@@ -20,8 +18,8 @@ export default function TypeAnnotation({ type, url }: TypeAnnotationProps) {
         {type.name}
       </SymRef>
     );
-  const params = type.params?.map((param) => (
-    <TypeAnnotation type={param} url={url} />
+  const params = type.params?.map((param, idx) => (
+    <TypeAnnotation key={idx} type={param} url={url} />
   ));
   const lbrak = params === undefined ? null : "[";
   const rbrak = params === undefined ? null : "]";
