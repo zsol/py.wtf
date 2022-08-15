@@ -13,9 +13,10 @@ import Variable from "./Variable";
 
 interface Props {
   cls: docs.Class; // Named to not conflict with the `class` keyword OR the `class` HTML attribute
+  project: docs.Project;
 }
 
-function Methods({ cls }: Props) {
+function Methods({ cls, project }: Props) {
   if (cls.methods.length === 0) {
     return null;
   }
@@ -23,7 +24,11 @@ function Methods({ cls }: Props) {
     <>
       <H5>Methods</H5>
       {cls.methods.map((method, index) => (
-        <Function key={`${method.name}/${index}`} func={method} />
+        <Function
+          key={`${method.name}/${index}`}
+          func={method}
+          project={project}
+        />
       ))}
     </>
   );
@@ -32,9 +37,11 @@ function Methods({ cls }: Props) {
 function Variables({
   title,
   variables,
+  project,
 }: {
   title: string;
   variables: docs.Variable[];
+  project: docs.Project;
 }) {
   if (variables.length === 0) {
     return null;
@@ -43,20 +50,28 @@ function Variables({
     <>
       <H5>{title}</H5>
       {variables.map((v) => (
-        <Variable key={v.name} variable={v} />
+        <Variable key={v.name} variable={v} project={project} />
       ))}
     </>
   );
 }
 
-const ClassVariables = ({ cls }: Props) => (
-  <Variables title="Class Variables" variables={cls.class_variables} />
+const ClassVariables = ({ cls, project }: Props) => (
+  <Variables
+    title="Class Variables"
+    variables={cls.class_variables}
+    project={project}
+  />
 );
-const InstanceVariables = ({ cls }: Props) => (
-  <Variables title="Instance Variables" variables={cls.instance_variables} />
+const InstanceVariables = ({ cls, project }: Props) => (
+  <Variables
+    title="Instance Variables"
+    variables={cls.instance_variables}
+    project={project}
+  />
 );
 
-export default function Class({ cls }: Props) {
+export default function Class({ cls, project }: Props) {
   return (
     <div>
       <Code>
@@ -69,12 +84,12 @@ export default function Class({ cls }: Props) {
         )
       </Code>
       <Documentation>{cls.documentation}</Documentation>
-      <Methods cls={cls} />
-      <ClassVariables cls={cls} />
-      <InstanceVariables cls={cls} />
+      <Methods cls={cls} project={project} />
+      <ClassVariables cls={cls} project={project} />
+      <InstanceVariables cls={cls} project={project} />
       {cls.inner_classes.map((inner) => (
         // TODO: Make the inner-class-ness obvious from looking at the page
-        <Class key={inner.name} cls={inner} />
+        <Class key={inner.name} cls={inner} project={project} />
       ))}
     </div>
   );

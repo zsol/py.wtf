@@ -35,3 +35,14 @@ export function classItem(
 ): string {
   return `${symbol(p, m, c)}#${withoutPrefix(c.name, x.name)}`;
 }
+
+export function xref(p: docs.Project, xref: docs.XRef): string | null {
+  const project = xref.project ?? p.name;
+  const lastDot = xref.fqname.lastIndexOf(".");
+  if (lastDot === -1) {
+    return null;
+  }
+  const m = xref.fqname.slice(0, lastDot);
+  const s = xref.fqname.slice(lastDot + 1);
+  return `/${project}/${m}/${s}`;
+}

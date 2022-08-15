@@ -19,28 +19,27 @@ export async function getProject(name: string): Promise<Project> {
   return JSON.parse(json) as Project;
 }
 
-export type Project = {
-  name: string;
-  metadata: ProjectMetadata;
-  documentation: Array<Documentation>;
-  modules: Array<Module>;
-};
-
 export type Documentation = string;
-export type Module = {
-  name: string;
-  documentation: Array<Documentation>;
-  functions: Array<Func>;
-  variables: Array<Variable>;
-  classes: Array<Class>;
-  exports: Array<string>;
+
+export type XRef = {
+  fqname: string;
+  project?: string;
 };
 
-export type Func = {
+export type Typ = {
   name: string;
-  asynchronous: boolean;
-  params: Array<Param>;
-  returns: Typ | null;
+  xref?: XRef;
+  params?: Array<Typ>;
+};
+
+export type Export = {
+  name: string;
+  xref: XRef;
+};
+
+export type Variable = {
+  name: string;
+  type?: Typ;
   documentation: Array<Documentation>;
 };
 
@@ -50,11 +49,11 @@ export type Param = {
   default: string | null;
 };
 
-export type Typ = string;
-
-export type Variable = {
+export type Func = {
   name: string;
-  type: Typ | null;
+  asynchronous: boolean;
+  params: Array<Param>;
+  returns: Typ | null;
   documentation: Array<Documentation>;
 };
 
@@ -68,6 +67,15 @@ export type Class = {
   documentation: Array<Documentation>;
 };
 
+export type Module = {
+  name: string;
+  documentation: Array<Documentation>;
+  functions: Array<Func>;
+  variables: Array<Variable>;
+  classes: Array<Class>;
+  exports: Array<string>;
+};
+
 export type ProjectMetadata = {
   version: string;
   classifiers?: Array<string>;
@@ -76,4 +84,11 @@ export type ProjectMetadata = {
   documentation_url?: string;
   dependencies: Array<string>;
   summary?: string;
+};
+
+export type Project = {
+  name: string;
+  metadata: ProjectMetadata;
+  documentation: Array<Documentation>;
+  modules: Array<Module>;
 };
