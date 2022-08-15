@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 
 import { flexRow } from "@/components/core/layout/helpers";
 
@@ -35,16 +35,28 @@ interface Props {
   children: ReactNode;
 }
 
-export const Code = ({ anchor, children }: Props) => (
-  <CodeContainer>
-    {(anchor && (
-      <CodeAnchor id={anchor}>
-        <a href={"#" + anchor}>§</a>{" "}
-      </CodeAnchor>
-    )) || <span>&nbsp;&nbsp;</span>}
-    <CodeContent>{children}</CodeContent>
-  </CodeContainer>
-);
+export const Code = ({ anchor, children }: Props) => {
+  const ref = useRef<HTMLPreElement>(null);
+  useEffect(() => {
+    if (!anchor || !ref.current) {
+      return;
+    }
+    if (window.location.hash === "#" + anchor) {
+      ref.current.scrollIntoView({ behavior: "smooth" });
+    }
+  });
+
+  return (
+    <CodeContainer ref={ref}>
+      {(anchor && (
+        <CodeAnchor id={anchor}>
+          <a href={"#" + anchor}>§</a>{" "}
+        </CodeAnchor>
+      )) || <span>&nbsp;&nbsp;</span>}
+      <CodeContent>{children}</CodeContent>
+    </CodeContainer>
+  );
+};
 
 export const dedupAnchors = () => {
   const seen = new Set<string>();

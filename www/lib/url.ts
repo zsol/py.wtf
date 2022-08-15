@@ -33,7 +33,7 @@ export function classItem(
   c: docs.Class,
   x: docs.Func | docs.Variable
 ): string {
-  return `${symbol(p, m, c)}#${withoutPrefix(c.name, x.name)}`;
+  return `${symbol(p, m, c)}#${x.name}`;
 }
 
 export function xref(p: docs.Project, xref: docs.XRef): string | null {
