@@ -17,10 +17,14 @@ import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
 
 function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
+  // `name` can refer to an inner class like Foo.Bar
   const parts = withoutPrefix(mod.name, name).split(".");
+  // First find a module-level class that matches Foo
   let cls = mod.classes.find(
-    (c) => withoutPrefix(mod.name, c.name) === parts.shift()
+    (c) => withoutPrefix(mod.name, c.name) === parts[0]
   );
+  parts.shift();
+  // Keep looking in inner classes until we find a match
   while (cls && parts.length) {
     const parentName = cls.name;
     cls = cls.inner_classes.find(
