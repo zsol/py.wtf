@@ -110,10 +110,16 @@ def extract_documentation(node: HasComment) -> Documentation | None:
 
 
 class Indexer(cst.CSTVisitor):
-    def __init__(self, scope: str, external_symbol_table: SymbolTable) -> None:
+    def __init__(
+        self,
+        scope: str,
+        external_symbol_table: SymbolTable,
+        symbol_table: dict[str, FQName] | None = None,
+    ) -> None:
         super().__init__()
         self._scope_name: str = scope
-        self._symbol_table: dict[str, FQName] = {}
+        # we don't want to modify parent's symbol table copy
+        self._symbol_table: dict[str, FQName] = dict(symbol_table or {})
         self._external_symbol_table = external_symbol_table
         self.classes: list[Class] = []
         self.functions: list[Function] = []
@@ -216,12 +222,14 @@ class Indexer(cst.CSTVisitor):
         return True
 
     def visit_ClassDef(self, node: cst.ClassDef) -> bool:
-        my_name = self.scoped_name(ensure(name(node.name)))
+        unqual_name = ensure(name(node.name))
+        my_name = self.scoped_name(unqual_name)
+        self._symbol_table[unqual_name] = my_name
         bases = list(filter(None, (name(arg.value) for arg in node.bases)))
         comments = filter(
             None, (extract_documentation(line) for line in node.leading_lines)
         )
-        indexer = Indexer(my_name, self._external_symbol_table)
+        indexer = Indexer(my_name, self._external_symbol_table, self._symbol_table)
         node.body.visit(indexer)
         self.classes.append(
             Class(
