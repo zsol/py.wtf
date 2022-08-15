@@ -112,11 +112,6 @@ def _sort(o: object) -> object:
         if not isinstance(getattr(o, i), (list, tuple)):
             continue
         object.__setattr__(
-            o,
-            i,
-            sorted(
-                (_sort(item) for item in getattr(o, i)),
-                key=lambda x: getattr(x, "name", id(x)),
-            ),
+            o, i, sorted((_sort(item) for item in getattr(o, i)), key=str)
         )
     return o
