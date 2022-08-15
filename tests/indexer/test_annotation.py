@@ -68,11 +68,30 @@ def test_pep_604_alternative(indexer: IF) -> None:
     assert indexer("a | b") == Type("a | b", None)
 
 
+def test_empty_callable(indexer: IF) -> None:
+    assert indexer("typing.Callable[[], str]") == Type(
+        "typing.Callable",
+        XRef(FQName("typing.Callable")),
+        params=[Type("", None, params=[]), Type("str", XRef(FQName("str")))],
+    )
+
+
 def test_callable(indexer: IF) -> None:
-    assert indexer("Callable[[], str]") == Type(
-        "Callable",
-        XRef(FQName("Callable")),
-        params=[Type("[]", None), Type("str", XRef(FQName("str")))],
+    assert indexer("typing.Callable[[str], str]") == Type(
+        "typing.Callable",
+        XRef(FQName("typing.Callable")),
+        params=[
+            Type("", None, params=[Type("str", XRef(FQName("str")))]),
+            Type("str", XRef(FQName("str"))),
+        ],
+    )
+
+
+def test_invalid_callable(indexer: IF) -> None:
+    assert indexer("typing.Callable[..., str]") == Type(
+        "typing.Callable",
+        XRef(FQName("typing.Callable")),
+        params=[Type("...", None), Type("str", XRef(FQName("str")))],
     )
 
 

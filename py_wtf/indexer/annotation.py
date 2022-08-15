@@ -34,6 +34,7 @@ def is_fqname(ty: Type, name: FQName) -> bool:
 
 
 typing_Literal = FQName("typing.Literal")
+typing_Callable = FQName("typing.Callable")
 
 
 class AnnotationIndexer(cst.CSTVisitor):
@@ -71,6 +72,8 @@ class AnnotationIndexer(cst.CSTVisitor):
         params: list[Type] = []
         if is_fqname(value, typing_Literal):
             params.extend(self.handle_literal_params(node.slice))
+        elif is_fqname(value, typing_Callable):
+            params.extend(self.handle_callable_args(node.slice))
         else:
             for el in node.slice:
                 if not isinstance(el.slice, cst.Index):
@@ -106,3 +109,28 @@ class AnnotationIndexer(cst.CSTVisitor):
     ) -> Iterable[Type]:
         for param in params:
             yield dumb_annotation(param.slice, warning=False)
+
+    def handle_callable_args(
+        self, args: Sequence[cst.SubscriptElement]
+    ) -> Iterable[Type]:
+        if len(args) != 2:
+            log.warning(f"Callable with {len(args)} args")
+            for arg in args:
+                yield dumb_annotation(arg.slice, warning=False)
+            return
+
+        params = args[0].slice
+        if isinstance(params, cst.Index) and isinstance(params.value, cst.List):
+            yield Type(
+                "",
+                None,
+                params=[self(param.value) for param in params.value.elements],
+            )
+        else:
+            yield dumb_annotation(params)
+
+        ret_ty = args[1].slice
+        if isinstance(ret_ty, cst.Index):
+            yield self(ret_ty.value)
+        else:
+            yield dumb_annotation(ret_ty)
