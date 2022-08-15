@@ -28,8 +28,9 @@ function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
   while (cls && parts.length) {
     const parentName = cls.name;
     cls = cls.inner_classes.find(
-      (c) => withoutPrefix(parentName, c.name) === parts.shift()
+      (c) => withoutPrefix(parentName, c.name) === parts[0]
     );
+    parts.shift();
   }
   return cls;
 }
