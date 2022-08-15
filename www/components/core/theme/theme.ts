@@ -31,7 +31,10 @@ export const darkTheme = {
       mid: colors.slate.mid,
       dark: colors.slate.dark,
     },
-    codeBackground: colors.slate.dark,
+    code: {
+      background: colors.slate.dark,
+      anchor: colors.slate.light,
+    },
     mainText: colors.grey.light,
     link: {
       default: colors.cornflower.mid,

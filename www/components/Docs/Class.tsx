@@ -5,7 +5,7 @@ import * as hl from "@/components/highlight";
 
 import * as docs from "@/lib/docs";
 
-import { Code } from "../core/typography/Code";
+import { Code, dedupAnchors } from "../core/typography/Code";
 import { H5 } from "../core/typography/Heading";
 import Documentation from "./Documentation";
 import Function from "./Function";
@@ -20,12 +20,14 @@ function Methods({ cls, project }: Props) {
   if (cls.methods.length === 0) {
     return null;
   }
+  const anchor = dedupAnchors();
   return (
     <>
       <H5>Methods</H5>
       {cls.methods.map((method, index) => (
         <Function
           key={`${method.name}/${index}`}
+          anchor={anchor(method.name)}
           func={method}
           project={project}
         />
@@ -46,11 +48,17 @@ function Variables({
   if (variables.length === 0) {
     return null;
   }
+  const anchor = dedupAnchors();
   return (
     <>
       <H5>{title}</H5>
       {variables.map((v) => (
-        <Variable key={v.name} variable={v} project={project} />
+        <Variable
+          key={v.name}
+          anchor={anchor(v.name)}
+          variable={v}
+          project={project}
+        />
       ))}
     </>
   );

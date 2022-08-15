@@ -38,9 +38,10 @@ const Param = (props: VarWithTypeProps) => (
 export interface FunctionProps {
   func: docs.Func;
   project: docs.Project;
+  anchor?: string;
 }
 
-export default function Function({ func, project }: FunctionProps) {
+export default function Function({ func, project, anchor }: FunctionProps) {
   const def = func.asynchronous ? "async def" : "def";
   const ret = func.returns && (
     <>
@@ -52,7 +53,7 @@ export default function Function({ func, project }: FunctionProps) {
 
   return (
     <div>
-      <Code>
+      <Code anchor={anchor}>
         <hl.Keyword>{def}</hl.Keyword> <hl.Fn>{unqual}</hl.Fn>(
         {func.params.map((param) => (
           <Param

@@ -1,5 +1,3 @@
-import React from "react";
-
 import * as docs from "../../lib/docs";
 import { xref } from "../../lib/url";
 import { Code } from "../core/typography/Code";
@@ -9,12 +7,13 @@ import TypeAnnotation from "./TypeAnnotation";
 interface Props {
   variable: docs.Variable;
   project: docs.Project;
+  anchor?: string;
 }
 
-export default function Variable({ variable, project }: Props) {
+export default function Variable({ variable, project, anchor }: Props) {
   return (
     <div>
-      <Code>
+      <Code anchor={anchor}>
         <VarWithType
           name={variable.name}
           type={variable.type}
