@@ -8,7 +8,10 @@ declare module "@emotion/react" {
         mid: string;
         dark: string;
       };
-      codeBackground: string;
+      code: {
+        background: string;
+        anchor: string;
+      };
       mainText: string;
       link: {
         default: string;
