@@ -1,3 +1,4 @@
+import styled from "@emotion/styled";
 import { GetStaticProps } from "next";
 
 import SymbolLinkTable from "@/components/Docs/SymbolLinkTable";
@@ -5,6 +6,11 @@ import PageLayout from "@/components/PageLayout";
 
 import { Project, getProject, listProjects } from "@/lib/docs";
 import * as url from "@/lib/url";
+
+const ProjectContainer = styled.div`
+  margin-top: auto;
+  margin-bottom: auto;
+`;
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const projectNames = await listProjects();
@@ -30,12 +36,14 @@ export interface Props {
 export default function Home({ projects }: Props) {
   return (
     <PageLayout title="py.wtf">
-      <SymbolLinkTable
-        title="Projects"
-        url={(prj) => url.project(prj as Project)}
-        symbols={projects}
-        useReactRouter={false}
-      />
+      <ProjectContainer>
+        <SymbolLinkTable
+          title="Projects"
+          url={(prj) => url.project(prj as Project)}
+          symbols={projects}
+          useReactRouter={false}
+        />
+      </ProjectContainer>
     </PageLayout>
   );
 }
