@@ -48,6 +48,9 @@ interface ExportsProps {
 }
 
 function Exports({ prj, exps }: ExportsProps) {
+  if (exps.length === 0) {
+    return null;
+  }
   return (
     <div>
       <H3>Exports</H3>
