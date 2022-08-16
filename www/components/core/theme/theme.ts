@@ -6,7 +6,11 @@ const colors = {
   },
   white: "#ffffff",
   grey: {
-    light: "#dedede",
+    lightest: "#e9e9e9",
+    light: "#d4d4d4",
+    mid: "#9a9a9a",
+    dark: "#707070",
+    darkest: "#454545",
   },
   cornflower: {
     light: "#9ebcf0",
@@ -44,6 +48,9 @@ export const darkTheme = {
     },
     sidebar: {
       highlight: colors.grey.light,
+    },
+    footer: {
+      separator: colors.grey.darkest,
     },
   },
   spacing: spacing,
