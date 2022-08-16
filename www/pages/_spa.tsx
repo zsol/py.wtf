@@ -1,11 +1,9 @@
-import { ThemeProvider } from "@emotion/react";
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import ModulePage from "@/components/SPA/ModulePage";
 import ProjectPage from "@/components/SPA/ProjectPage";
 import SymbolPage from "@/components/SPA/SymbolPage";
-import { darkTheme } from "@/components/core/theme/theme";
 
 import * as spa from "@/lib/spa";
 
@@ -19,14 +17,12 @@ export default function SPAIndex({ router }: Props) {
   spa.receive();
   const Router = router || BrowserRouter;
   return (
-    <ThemeProvider theme={darkTheme}>
-      <Router>
-        <Routes>
-          <Route path="/:prj" element={<ProjectPage />} />
-          <Route path="/:prj/:mod" element={<ModulePage />} />
-          <Route path="/:prj/:mod/:sym" element={<SymbolPage />} />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <Router>
+      <Routes>
+        <Route path="/:prj" element={<ProjectPage />} />
+        <Route path="/:prj/:mod" element={<ModulePage />} />
+        <Route path="/:prj/:mod/:sym" element={<SymbolPage />} />
+      </Routes>
+    </Router>
   );
 }

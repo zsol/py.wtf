@@ -1,5 +1,3 @@
-import Head from "next/head";
-import React from "react";
 import { useParams } from "react-router-dom";
 
 import Class from "@/components/Docs/Class";
@@ -13,6 +11,7 @@ import ModuleList from "@/components/Sidebar/ModuleList";
 import * as docs from "@/lib/docs";
 import { withoutPrefix } from "@/lib/url";
 
+import PageLayout from "../PageLayout";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
 
@@ -37,16 +36,16 @@ function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
 
 export default function SymbolPage() {
   const { prj: projectName, mod: modName, sym: symName } = useParams();
-  if (symName === undefined) {
-    return <div>Missing "sym" parameter, how did you even get here?</div>;
+  if (symName === undefined || modName === undefined) {
+    return (
+      <div>
+        You did not make a choice, or follow any direction, but now, somehow,
+        you are descending from space ...
+      </div>
+    );
   }
   return (
-    <>
-      <Head>
-        <title>
-          py.wtf: {modName}.{symName}
-        </title>
-      </Head>
+    <PageLayout title={`py.wtf: ${modName}.${symName}`}>
       <FetchProject
         name={projectName}
         content={(prj) => {
@@ -126,6 +125,6 @@ export default function SymbolPage() {
           );
         }}
       />
-    </>
+    </PageLayout>
   );
 }
