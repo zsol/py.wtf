@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "baseUrl": "www"
+    },
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*"
+    ]
+}

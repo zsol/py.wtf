@@ -94,7 +94,7 @@ def generate_test_index(dir: str | None) -> None:
             dependencies=proj_metadata["dependencies"],
             summary=proj_metadata.get("summary"),
         )
-        symbol_table = {FQName("alpha.bar"): ProjectName("alpha")}
+        symbol_table = {FQName("alpha.bar"): ProjectName("project-alpha")}
         mods = index_dir(proj_dir, symbol_table)
         proj = Project(
             ProjectName(proj_dir.name),

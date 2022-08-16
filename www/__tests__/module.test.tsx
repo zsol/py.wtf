@@ -34,4 +34,28 @@ describe("Module page", () => {
       );
     }
   });
+
+  it("Displays exports with links", async () => {
+    const { getByRole } = await renderSPA("/project-alpha/alpha");
+
+    // Export links
+    for (const { name, href } of [
+      { name: "alpha.Helper", href: "/project-alpha/alpha.core/Helper" },
+      // NOTE: no exports from import stars
+      { name: "alpha.bar", href: "/project-alpha/foo/bar" },
+    ]) {
+      expect(getByRole("link", { name })).toHaveAttribute("href", href);
+    }
+  });
+
+  it("Displays exports with links to other projects", async () => {
+    const { getByRole } = await renderSPA("/project-beta/beta");
+
+    // Export links
+    for (const { name, href } of [
+      { name: "beta.bar", href: "/project-alpha/alpha/bar" },
+    ]) {
+      expect(getByRole("link", { name })).toHaveAttribute("href", href);
+    }
+  });
 });

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 import Class from "@/components/Docs/Class";
 import Function from "@/components/Docs/Function";
@@ -9,7 +9,7 @@ import ModuleContents from "@/components/Sidebar/ModuleContents";
 import ModuleList from "@/components/Sidebar/ModuleList";
 
 import * as docs from "@/lib/docs";
-import { withoutPrefix } from "@/lib/url";
+import { withoutPrefix, xref } from "@/lib/url";
 
 import PageLayout from "../PageLayout";
 import Sidebar from "../Sidebar/Sidebar";
@@ -65,12 +65,26 @@ export default function SymbolPage() {
             const variable = mod.variables.find(
               (variable) => withoutPrefix(mod.name, variable.name) === symName
             );
-            const symbol = cls || func || variable;
+            const exp = mod.exports.find(
+              (exp) => withoutPrefix(mod.name, exp.name) === symName
+            );
+            const symbol = cls || func || variable || exp;
 
             if (!symbol) {
               return [
                 <ModuleList prj={prj} />,
                 `Symbol ${symName} not found 🤪`,
+              ];
+            }
+
+            if (exp) {
+              const to = xref(prj, exp.xref);
+              return [
+                <></>,
+                <Navigate
+                  to={to ?? `/${prj.name}/${mod.name}`}
+                  replace={true}
+                />,
               ];
             }
 
