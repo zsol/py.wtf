@@ -11,7 +11,9 @@ interface Props {
 const Container = styled.div`
   ${flexRow}
 
-  height: 100vh;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 `;
 
 const SidebarContainer = styled.div`

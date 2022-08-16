@@ -22,6 +22,9 @@ declare module "@emotion/react" {
       sidebar: {
         highlight: string;
       };
+      footer: {
+        separator: string;
+      };
     };
     spacing: {
       xxs: string;

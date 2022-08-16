@@ -16,6 +16,6 @@ interface Props {
   children: ReactNode;
 }
 
-export default function FullPageBackground({ children }: Props) {
-  return <Container>{children}</Container>;
+export default function FullPageBackground({ children, ...rest }: Props) {
+  return <Container {...rest}>{children}</Container>;
 }
