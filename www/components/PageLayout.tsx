@@ -56,15 +56,16 @@ const Content = styled.main`
 `;
 
 export interface Props {
+  title: string;
   children: ReactNode;
 }
 
-export default function PageLayout({ children }: Props) {
+export default function PageLayout({ title, children }: Props) {
   return (
     <ThemeProvider theme={darkTheme}>
       <PageContainer>
         <Head>
-          <title>py.wtf</title>
+          <title>{title}</title>
           {/*<link rel="icon" href="/favicon.ico" /> */}
         </Head>
 

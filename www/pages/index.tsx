@@ -2,7 +2,6 @@ import { GetStaticProps } from "next";
 
 import SymbolLinkTable from "@/components/Docs/SymbolLinkTable";
 import PageLayout from "@/components/PageLayout";
-import { flexColumnCenter } from "@/components/core/layout/helpers";
 
 import { Project, getProject, listProjects } from "@/lib/docs";
 import * as url from "@/lib/url";
@@ -30,7 +29,7 @@ export interface Props {
 
 export default function Home({ projects }: Props) {
   return (
-    <PageLayout>
+    <PageLayout title="py.wtf">
       <SymbolLinkTable
         title="Projects"
         url={(prj) => url.project(prj as Project)}

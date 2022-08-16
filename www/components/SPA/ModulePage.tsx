@@ -1,21 +1,17 @@
-import Head from "next/head";
-import React from "react";
 import { useParams } from "react-router-dom";
 
 import Module from "@/components/Docs/Module";
 import FetchProject from "@/components/FetchProject";
 import ModuleList from "@/components/Sidebar/ModuleList";
 
+import PageLayout from "../PageLayout";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
 
 export default function ModulePage() {
   const { prj: projectName, mod: modName } = useParams();
   return (
-    <>
-      <Head>
-        <title>py.wtf: {modName}</title>
-      </Head>
+    <PageLayout title={`py.wtf: ${modName}`}>
       <FetchProject
         name={projectName}
         content={(prj) => {
@@ -37,6 +33,6 @@ export default function ModulePage() {
           );
         }}
       />
-    </>
+    </PageLayout>
   );
 }
