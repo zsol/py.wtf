@@ -7,8 +7,6 @@ import ProjectPage from "@/components/SPA/ProjectPage";
 import SymbolPage from "@/components/SPA/SymbolPage";
 import { darkTheme } from "@/components/core/theme/theme";
 
-import * as spa from "@/lib/spa";
-
 interface Props {
   // Once we're comfortable getting rid of the `spa.receive()` magic, the `<Router>` node can move out into `_app.tsx`.
   // Then we won't need this DI. For now, this is an easy way to make this testable.
@@ -16,7 +14,6 @@ interface Props {
 }
 
 export default function SPAIndex({ router }: Props) {
-  spa.receive();
   const Router = router || BrowserRouter;
   return (
     <ThemeProvider theme={darkTheme}>
