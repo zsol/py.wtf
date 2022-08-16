@@ -34,4 +34,17 @@ describe("Module page", () => {
       );
     }
   });
+
+  it("Displays exports with links", async () => {
+    const { getByRole } = await renderSPA("/project-alpha/alpha");
+
+    // Export links
+    for (const { name, href } of [
+      { name: "alpha.Helper", href: "/project-alpha/alpha.core/Helper" },
+      // NOTE: no exports from import stars
+      // { name: "alpha.bar", href: "/project-beta/foo/bar" },
+    ]) {
+      expect(getByRole("link", { name })).toHaveAttribute("href", href);
+    }
+  });
 });

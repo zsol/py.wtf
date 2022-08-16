@@ -52,7 +52,7 @@ function Exports({ prj, exps }: ExportsProps) {
     <div>
       <H3>Exports</H3>
       {exps.map((exp) => (
-        <div>
+        <div key={exp.name}>
           <Export prj={prj} exp={exp} />
         </div>
       ))}
