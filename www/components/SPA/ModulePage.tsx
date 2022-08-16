@@ -10,6 +10,14 @@ import ContentWithSidebar from "../core/layout/ContentWithSidebar";
 
 export default function ModulePage() {
   const { prj: projectName, mod: modName } = useParams();
+  if (modName === undefined) {
+    return (
+      <div>
+        You did not make a choice, or follow any direction, but now, somehow,
+        you are descending from space ...
+      </div>
+    );
+  }
   return (
     <PageLayout title={`py.wtf: ${modName}`}>
       <FetchProject
@@ -27,7 +35,7 @@ export default function ModulePage() {
               {mod ? (
                 <Module prj={prj} mod={mod} />
               ) : (
-                `Module "${modName || ""}" not found 🤪`
+                `Module "${modName}" not found 🤪`
               )}
             </ContentWithSidebar>
           );

@@ -36,8 +36,13 @@ function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
 
 export default function SymbolPage() {
   const { prj: projectName, mod: modName, sym: symName } = useParams();
-  if (symName === undefined) {
-    return <div>Missing "sym" parameter, how did you even get here?</div>;
+  if (symName === undefined || modName === undefined) {
+    return (
+      <div>
+        You did not make a choice, or follow any direction, but now, somehow,
+        you are descending from space ...
+      </div>
+    );
   }
   return (
     <PageLayout title={`py.wtf: ${modName}.${symName}`}>
