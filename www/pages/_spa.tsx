@@ -1,10 +1,8 @@
-import { ThemeProvider } from "@emotion/react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import ModulePage from "@/components/SPA/ModulePage";
 import ProjectPage from "@/components/SPA/ProjectPage";
 import SymbolPage from "@/components/SPA/SymbolPage";
-import { darkTheme } from "@/components/core/theme/theme";
 
 export const SPARoutes = (
   <Routes>
@@ -15,9 +13,5 @@ export const SPARoutes = (
 );
 
 export default function SPAIndex() {
-  return (
-    <ThemeProvider theme={darkTheme}>
-      <BrowserRouter>{SPARoutes}</BrowserRouter>
-    </ThemeProvider>
-  );
+  return <BrowserRouter>{SPARoutes}</BrowserRouter>;
 }
