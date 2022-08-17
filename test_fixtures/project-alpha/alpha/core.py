@@ -1,4 +1,7 @@
 # Copyright header thing here
+"""
+core module docs
+"""
 
 
 class Helper:
