@@ -107,7 +107,7 @@ def generate_test_index(dir: str | None) -> None:
 
 def _sort(o: object) -> object:
     for i in dir(o):
-        if i.startswith("_"):
+        if i.startswith("_") or i == "documentation":
             continue
         if not isinstance(getattr(o, i), (list, tuple)):
             continue
