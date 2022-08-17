@@ -6,7 +6,13 @@ interface Props {
 
 export default function Documentation({ children }: Props) {
   if (children.length > 0) {
-    return <Text>{children}</Text>;
+    return (
+      <div>
+        {children.map((child, index) => (
+          <pre key={index}>{child}</pre>
+        ))}
+      </div>
+    );
   }
   return null;
 }
