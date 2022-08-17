@@ -1,8 +1,8 @@
 import itertools
 from functools import partial
+from inspect import cleandoc
 from pathlib import Path
-from textwrap import dedent
-from typing import cast, Iterable, Protocol, Type as TypeOf, TypeVar
+from typing import cast, Iterable, Protocol, TypeVar
 
 import libcst as cst
 import trailrunner
@@ -128,7 +128,7 @@ def extract_docstring(node: cst.Module | cst.BaseSuite) -> list[Documentation]:
         docstring = cast(cst.SimpleString, match["docstring"])
         docstring_quotes = {'"""', "'''"}
         if any(docstring.value.startswith(quote) for quote in docstring_quotes):
-            return [Documentation(dedent(docstring.evaluated_value))]
+            return [Documentation(cleandoc(docstring.evaluated_value))]
     return []
 
 
