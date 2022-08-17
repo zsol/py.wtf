@@ -1,7 +1,7 @@
 import itertools
 from functools import partial
+from inspect import cleandoc
 from pathlib import Path
-from textwrap import dedent
 from typing import cast, Iterable, Protocol, TypeVar
 
 import libcst as cst
@@ -109,6 +109,29 @@ def extract_documentation(node: HasComment) -> Documentation | None:
     return Documentation(node.comment.value[1:].lstrip())
 
 
+def extract_docstring(node: cst.Module | cst.BaseSuite) -> list[Documentation]:
+    if match := m.extract(
+        node,
+        m.TypeOf(m.Module, m.IndentedBlock, m.SimpleStatementSuite)(
+            body=[
+                m.SimpleStatementLine(
+                    body=[
+                        m.Expr(
+                            value=m.SaveMatchedNode(m.SimpleString(), name="docstring")
+                        )
+                    ]
+                ),
+                m.AtLeastN(m.DoNotCare(), n=0),
+            ]
+        ),
+    ):
+        docstring = cast(cst.SimpleString, match["docstring"])
+        docstring_quotes = {'"""', "'''"}
+        if any(docstring.value.startswith(quote) for quote in docstring_quotes):
+            return [Documentation(cleandoc(docstring.evaluated_value))]
+    return []
+
+
 class Indexer(cst.CSTVisitor):
     def __init__(
         self,
@@ -128,27 +151,7 @@ class Indexer(cst.CSTVisitor):
         self.exports: list[Export] = []
 
     def visit_Module(self, node: cst.Module) -> bool:
-        if match := m.extract(
-            node,
-            m.Module(
-                body=[
-                    m.SimpleStatementLine(
-                        body=[
-                            m.Expr(
-                                value=m.SaveMatchedNode(
-                                    m.SimpleString(), name="docstring"
-                                )
-                            )
-                        ]
-                    ),
-                    m.AtLeastN(m.DoNotCare(), n=0),
-                ]
-            ),
-        ):
-            docstring = cast(cst.SimpleString, match["docstring"])
-            docstring_quotes = {'"""', "'''"}
-            if any(docstring.value.startswith(quote) for quote in docstring_quotes):
-                self.documentation.append(Documentation(docstring.evaluated_value))
+        self.documentation.extend(extract_docstring(node))
 
         if node.header:
             self.documentation.extend(
@@ -225,31 +228,6 @@ class Indexer(cst.CSTVisitor):
             self._symbol_table[target] = FQName(source)
         return False
 
-    def visit_IndentedBlock(self, node: cst.IndentedBlock) -> bool:
-        if (hdr := extract_documentation(node.header)) is not None:
-            self.documentation.append(hdr)
-        if len(node.body) == 0:
-            return False
-        first_stmt = node.body[0]
-        if not isinstance(first_stmt, cst.SimpleStatementLine):
-            return True
-        self.documentation.extend(
-            filter(
-                None, (extract_documentation(line) for line in first_stmt.leading_lines)
-            )
-        )
-        if isinstance((first_expr := first_stmt.body[0]), cst.Expr) and isinstance(
-            (docstring := first_expr.value),
-            (cst.SimpleString, cst.ConcatenatedString),
-        ):
-            evaled_docstring = docstring.evaluated_value
-            if evaled_docstring:
-                self.documentation.append(
-                    Documentation(dedent(evaled_docstring).strip())
-                )
-
-        return True
-
     def visit_ClassDef(self, node: cst.ClassDef) -> bool:
         unqual_name = ensure(name(node.name))
         my_name = self.scoped_name(unqual_name)
@@ -258,6 +236,7 @@ class Indexer(cst.CSTVisitor):
         comments = filter(
             None, (extract_documentation(line) for line in node.leading_lines)
         )
+        documentation = extract_docstring(node.body)
         indexer = Indexer(my_name, self._external_symbol_table, self._symbol_table)
         node.body.visit(indexer)
         self.classes.append(
@@ -268,7 +247,7 @@ class Indexer(cst.CSTVisitor):
                 class_variables=indexer.variables,
                 instance_variables=[],  # TODO
                 inner_classes=indexer.classes,
-                documentation=[*indexer.documentation, *comments],
+                documentation=[*documentation, *comments],
             )
         )
         return False
@@ -280,9 +259,7 @@ class Indexer(cst.CSTVisitor):
         comments = filter(
             None, (extract_documentation(line) for line in node.leading_lines)
         )
-        # TODO: this is way too much work for just extracting docs
-        indexer = Indexer(self._scope_name, self._external_symbol_table)
-        node.body.visit(indexer)
+        documentation = extract_docstring(node.body)
 
         params = self.extract_func_params(node.params)
 
@@ -292,7 +269,7 @@ class Indexer(cst.CSTVisitor):
                 asynchronous,
                 params=list(params),
                 returns=returns,
-                documentation=[*indexer.documentation, *comments],
+                documentation=[*documentation, *comments],
             )
         )
         return False
