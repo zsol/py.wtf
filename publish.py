@@ -58,7 +58,7 @@ PROJECTS_TO_INDEX = [
     "more_itertools",
     "usort",
     "black",
-    "libcst",
+    "LibCST",
     "numpy",
 ]
 
