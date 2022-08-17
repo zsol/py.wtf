@@ -23,7 +23,7 @@ describe("Module page", () => {
     // Module heading and documentation
     const moduleHeading = getByRole("heading", { name: "Module alpha.core" });
     expect(moduleHeading.nextSibling).toHaveTextContent(
-      "This is a project for testing purposes it isn't intended for use by anyone. 🤪"
+      "core module docs Copyright header thing here"
     );
 
     // Symbol links
