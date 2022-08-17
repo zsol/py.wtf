@@ -1,5 +1,3 @@
-import React from "react";
-
 import * as docs from "@/lib/docs";
 import * as url from "@/lib/url";
 
@@ -33,7 +31,7 @@ export default function Module({ prj, mod }: Props) {
   return (
     <div>
       <H3>Module {mod.name}</H3>
-      <Documentation>{prj.documentation}</Documentation>
+      <Documentation>{mod.documentation}</Documentation>
       <Exports prj={prj} exps={mod.exports} />
       <LinkTable title="Classes" symbols={mod.classes} />
       <LinkTable title="Functions" symbols={mod.functions} />

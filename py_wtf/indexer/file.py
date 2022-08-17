@@ -2,10 +2,11 @@ import itertools
 from functools import partial
 from pathlib import Path
 from textwrap import dedent
-from typing import Iterable, Protocol, TypeVar
+from typing import cast, Iterable, Protocol, TypeVar
 
 import libcst as cst
 import trailrunner
+from libcst import matchers as m
 from libcst.codemod import CodemodContext
 from libcst.codemod.visitors import GatherExportsVisitor
 from libcst.helpers.expression import get_full_name_for_node
@@ -18,7 +19,6 @@ from py_wtf.types import (
     Function,
     Module,
     Parameter,
-    ProjectName,
     SymbolTable,
     Type,
     Variable,
@@ -126,6 +126,35 @@ class Indexer(cst.CSTVisitor):
         self.variables: list[Variable] = []
         self.documentation: list[Documentation] = []
         self.exports: list[Export] = []
+
+    def visit_Module(self, node: cst.Module) -> bool:
+        if match := m.extract(
+            node,
+            m.Module(
+                body=[
+                    m.SimpleStatementLine(
+                        body=[
+                            m.Expr(
+                                value=m.SaveMatchedNode(
+                                    m.SimpleString(), name="docstring"
+                                )
+                            )
+                        ]
+                    ),
+                    m.AtLeastN(m.DoNotCare(), n=0),
+                ]
+            ),
+        ):
+            docstring = cast(cst.SimpleString, match["docstring"])
+            docstring_quotes = {'"""', "'''"}
+            if any(docstring.value.startswith(quote) for quote in docstring_quotes):
+                self.documentation.append(Documentation(docstring.evaluated_value))
+
+        if node.header:
+            self.documentation.extend(
+                filter(None, (extract_documentation(line) for line in node.header))
+            )
+        return True
 
     def leave_Module(self, original_node: cst.Module) -> None:
         vis = GatherExportsVisitor(CodemodContext())
