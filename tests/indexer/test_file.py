@@ -4,7 +4,15 @@ from textwrap import dedent
 import pytest
 from py_wtf.indexer import file as mod_under_test
 from py_wtf.indexer.file import index_dir, index_file
-from py_wtf.types import Export, FQName, Module, ProjectName, SymbolTable, XRef
+from py_wtf.types import (
+    Documentation,
+    Export,
+    FQName,
+    Module,
+    ProjectName,
+    SymbolTable,
+    XRef,
+)
 
 empty_module = Module("testmod", [], [], [], [], [])
 
@@ -42,6 +50,8 @@ def module_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     some_file = tmp_path / name
     code = dedent(
         """
+    # header
+    '''module docs'''
     import sys
     from os import path
     var_with_ann: str = "foo"
@@ -145,3 +155,7 @@ def test_index_package_exports_with_dependencies(package_with_dep: Module) -> No
             XRef(FQName("mypackage.foo"), None),
         ),
     }
+
+
+def test_module_docs(mod: Module) -> None:
+    assert mod.documentation == [Documentation("module docs"), Documentation("header")]
