@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { GetStaticProps } from "next";
 
 import SymbolLinkTable from "@/components/Docs/SymbolLinkTable";
+import Header from "@/components/Header";
 import PageLayout from "@/components/PageLayout";
 
 import { Project, getProject, listProjects } from "@/lib/docs";
@@ -35,7 +36,7 @@ export interface Props {
 
 export default function Home({ projects }: Props) {
   return (
-    <PageLayout title="py.wtf">
+    <PageLayout title="py.wtf" header={<Header showSearch={false} />}>
       <ProjectContainer>
         <SymbolLinkTable
           title="Projects"

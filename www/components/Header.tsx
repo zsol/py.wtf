@@ -40,26 +40,32 @@ const HeaderText = styled(Text)`
   margin-block-end: 0;
 `;
 
-const Header = () => {
+type HeaderProps = {
+  showSearch?: boolean;
+};
+
+const Header = ({ showSearch = true }: HeaderProps) => {
   return (
     <HeaderContainer>
       <HeaderContent>
-        <HeaderItem width="60%">
+        <HeaderItem width={showSearch ? "60%" : "100%"}>
           <HeaderText>Python. Wabbajack Theatrical Fantasy</HeaderText>
         </HeaderItem>
-        <HeaderItem width="40%">
-          <Search
-            itemList={[
-              "alma",
-              "almale",
-              "almaszorp",
-              "korte",
-              "kortelekvar",
-              "ribizli",
-              "ribizliszorp",
-            ]}
-          />
-        </HeaderItem>
+        {showSearch && (
+          <HeaderItem width="40%">
+            <Search
+              itemList={[
+                "alma",
+                "almale",
+                "almaszorp",
+                "korte",
+                "kortelekvar",
+                "ribizli",
+                "ribizliszorp",
+              ]}
+            />
+          </HeaderItem>
+        )}
       </HeaderContent>
     </HeaderContainer>
   );

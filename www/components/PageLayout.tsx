@@ -37,10 +37,14 @@ const Content = styled.main`
 
 export interface Props {
   title: string;
+  header?: ReactNode;
   children: ReactNode;
+  showSearchInHeader?: boolean;
 }
 
-export default function PageLayout({ title, children }: Props) {
+export default function PageLayout({ title, header, children }: Props) {
+  console.log("header", header);
+
   return (
     <ThemeProvider theme={darkTheme}>
       <PageContainer>
@@ -49,8 +53,10 @@ export default function PageLayout({ title, children }: Props) {
           {/*<link rel="icon" href="/favicon.ico" /> */}
         </Head>
 
-        <Header />
+        {header}
+
         <Content>{children}</Content>
+
         <Footer>
           <FrameContent>
             <FrameText>

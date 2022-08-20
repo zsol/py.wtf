@@ -4,6 +4,7 @@ import Module from "@/components/Docs/Module";
 import FetchProject from "@/components/FetchProject";
 import ModuleList from "@/components/Sidebar/ModuleList";
 
+import Header from "../Header";
 import PageLayout from "../PageLayout";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
@@ -19,7 +20,7 @@ export default function ModulePage() {
     );
   }
   return (
-    <PageLayout title={`py.wtf: ${modName}`}>
+    <PageLayout title={`py.wtf: ${modName}`} header={<Header />}>
       <FetchProject
         name={projectName}
         content={(prj) => {

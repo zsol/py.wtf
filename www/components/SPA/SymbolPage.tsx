@@ -11,6 +11,7 @@ import ModuleList from "@/components/Sidebar/ModuleList";
 import * as docs from "@/lib/docs";
 import { withoutPrefix, xref } from "@/lib/url";
 
+import Header from "../Header";
 import PageLayout from "../PageLayout";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
@@ -45,7 +46,7 @@ export default function SymbolPage() {
     );
   }
   return (
-    <PageLayout title={`py.wtf: ${modName}.${symName}`}>
+    <PageLayout title={`py.wtf: ${modName}.${symName}`} header={<Header />}>
       <FetchProject
         name={projectName}
         content={(prj) => {

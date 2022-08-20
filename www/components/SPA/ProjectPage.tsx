@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Project from "@/components/Docs/Project";
 import FetchProject from "@/components/FetchProject";
 
+import Header from "../Header";
 import PageLayout from "../PageLayout";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
@@ -19,7 +20,7 @@ export default function ProjectPage() {
     );
   }
   return (
-    <PageLayout title={`py.wtf: ${prj}`}>
+    <PageLayout title={`py.wtf: ${prj}`} header={<Header />}>
       <FetchProject
         name={prj}
         content={(prj) => (
