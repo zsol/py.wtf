@@ -55,13 +55,13 @@ const Header = ({ showSearch = true }: HeaderProps) => {
           <HeaderItem width="40%">
             <Search
               itemList={[
-                "alma",
-                "almale",
-                "almaszorp",
-                "korte",
-                "kortelekvar",
-                "ribizli",
-                "ribizliszorp",
+                { name: "alma", url: "/black" },
+                { name: "almale", url: "/black" },
+                { name: "almaszorp", url: "/black" },
+                { name: "korte", url: "/black" },
+                { name: "kortelekvar", url: "/black" },
+                { name: "ribizli", url: "/black" },
+                { name: "ribizliszorp", url: "/black" },
               ]}
             />
           </HeaderItem>

@@ -2,13 +2,15 @@ import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 
 import { flexColumn } from "./layout/helpers";
-import { Link, RouterLink } from "./navigation/Link";
+import { Link } from "./navigation/Link";
 
-// type SearchItem = {
-// };
+type SearchItem = {
+  name: string;
+  url: string;
+};
 
 type SearchParams = {
-  itemList: Array<string>;
+  itemList: Array<SearchItem>;
 };
 
 const SearchContainer = styled.div`
@@ -45,12 +47,12 @@ const ItemLink = styled(Link)`
 
 export const Search = ({ itemList = [] }: SearchParams) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<Array<SearchItem>>([]);
 
   useEffect(() => {
     // TODO: debounce this
     if (searchTerm) {
-      setResults(itemList.filter((item) => item.includes(searchTerm)));
+      setResults(itemList.filter((item) => item?.name?.includes(searchTerm)));
     } else {
       setResults([]);
     }
@@ -67,9 +69,9 @@ export const Search = ({ itemList = [] }: SearchParams) => {
         <SearchResultContainer>
           {results.length === 0 && "No results found"}
           {results?.length > 0 &&
-            results.map((item) => (
+            results.map((item: SearchItem) => (
               <SearchResultItem>
-                <ItemLink href={`/${item as string}`}>{item}</ItemLink>
+                <ItemLink href={`/${item.url}`}>{item.name}</ItemLink>
               </SearchResultItem>
             ))}
         </SearchResultContainer>
