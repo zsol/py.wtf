@@ -49,11 +49,7 @@ export default function PageLayout({ title, children }: Props) {
           {/*<link rel="icon" href="/favicon.ico" /> */}
         </Head>
 
-        <Header>
-          <FrameContent>
-            <FrameText>Python. Wabbajack Theatrical Fantasy</FrameText>
-          </FrameContent>
-        </Header>
+        <Header />
         <Content>{children}</Content>
         <Footer>
           <FrameContent>
