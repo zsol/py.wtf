@@ -101,6 +101,22 @@ def package_file(tmp_path: Path) -> Path:
 
 
 @pytest.fixture
+def package_file_without_all(tmp_path: Path) -> Path:
+    some_file = tmp_path / "mypackage" / "__init__.py"
+    some_file.parent.mkdir()
+    code = dedent(
+        """
+        from dependencyproject import helper
+        def foo(): ...
+        bar = 2
+
+        """
+    )
+    some_file.write_text(code)
+    return some_file
+
+
+@pytest.fixture
 def mod(module_file: Path) -> Module:
     return index_file(module_file.parent, module_file)
 
@@ -108,6 +124,11 @@ def mod(module_file: Path) -> Module:
 @pytest.fixture
 def package(package_file: Path) -> Module:
     return index_file(package_file.parent.parent, package_file)
+
+
+@pytest.fixture
+def package_without_all(package_file_without_all: Path) -> Module:
+    return index_file(package_file_without_all.parent.parent, package_file_without_all)
 
 
 def test_index_file_mod_name(mod: Module, module_file: Path) -> None:
@@ -132,6 +153,15 @@ def test_index_package_exports(package: Module) -> None:
             FQName("mypackage.foo"),
             XRef(FQName("mypackage.foo"), None),
         ),
+    }
+
+
+def test_index_package_no_explicit_exports(package_without_all: Module) -> None:
+    assert set(package_without_all.exports) == {
+        Export(
+            FQName("mypackage.helper"),
+            XRef(FQName("dependencyproject.helper"), None),
+        )
     }
 
 

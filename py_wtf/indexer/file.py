@@ -55,10 +55,12 @@ def index_file(
     if not symbol_table:
         symbol_table = {}
     name_parts = path.relative_to(base_dir).with_suffix("").parts
+    is_pkg = False
     if name_parts[-1] == "__init__":
         name_parts = name_parts[:-1]
+        is_pkg = True
     name = ".".join(name_parts)
-    indexer = Indexer(name, symbol_table)
+    indexer = Indexer(is_pkg, name, symbol_table)
     try:
         mod = cst.MetadataWrapper(
             cst.parse_module(path.read_bytes()), unsafe_skip_copy=True
@@ -135,11 +137,13 @@ def extract_docstring(node: cst.Module | cst.BaseSuite) -> list[Documentation]:
 class Indexer(cst.CSTVisitor):
     def __init__(
         self,
+        is_pkg: bool,
         scope: str,
         external_symbol_table: SymbolTable,
         symbol_table: dict[str, FQName] | None = None,
     ) -> None:
         super().__init__()
+        self._is_pkg = is_pkg
         self._scope_name: str = scope
         # we don't want to modify parent's symbol table copy
         self._symbol_table: dict[str, FQName] = dict(symbol_table or {})
@@ -162,6 +166,11 @@ class Indexer(cst.CSTVisitor):
     def leave_Module(self, original_node: cst.Module) -> None:
         vis = GatherExportsVisitor(CodemodContext())
         original_node.visit(vis)
+        if vis.explicit_exported_objects:
+            # This means there's an __all__, so we don't need exports coming from
+            # imports
+
+            self.exports = []
         for name in vis.explicit_exported_objects:
             fqname = self._symbol_table.get(name, self.scoped_name(name))
             self.exports.append(
@@ -225,7 +234,18 @@ class Indexer(cst.CSTVisitor):
                 if (asname := name.evaluated_alias) is not None
                 else name.evaluated_name
             )
-            self._symbol_table[target] = FQName(source)
+            source_fqname = FQName(source)
+            self._symbol_table[target] = source_fqname
+            if self._is_pkg:
+                self.exports.append(
+                    Export(
+                        self.scoped_name(target),
+                        XRef(
+                            source_fqname,
+                            self._external_symbol_table.get(source_fqname),
+                        ),
+                    )
+                )
         return False
 
     def visit_ClassDef(self, node: cst.ClassDef) -> bool:
@@ -237,7 +257,9 @@ class Indexer(cst.CSTVisitor):
             None, (extract_documentation(line) for line in node.leading_lines)
         )
         documentation = extract_docstring(node.body)
-        indexer = Indexer(my_name, self._external_symbol_table, self._symbol_table)
+        indexer = Indexer(
+            False, my_name, self._external_symbol_table, self._symbol_table
+        )
         node.body.visit(indexer)
         self.classes.append(
             Class(
