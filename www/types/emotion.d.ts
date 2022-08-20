@@ -25,6 +25,12 @@ declare module "@emotion/react" {
       footer: {
         separator: string;
       };
+      input: {
+        background: string;
+        border: string;
+        text: string;
+        hover: string;
+      };
     };
     spacing: {
       xxs: string;

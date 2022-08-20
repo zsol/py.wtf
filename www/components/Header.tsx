@@ -58,9 +58,6 @@ const Header = () => {
               "ribizli",
               "ribizliszorp",
             ]}
-            onSelect={(alma) => {
-              console.log(alma);
-            }}
           />
         </HeaderItem>
       </HeaderContent>
