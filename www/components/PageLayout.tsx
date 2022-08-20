@@ -8,42 +8,22 @@ import { flexColumn, flexColumnCenter } from "@/components/core/layout/helpers";
 import { Link } from "@/components/core/navigation/Link";
 import { darkTheme } from "@/components/core/theme/theme";
 
+import Header from "./Header";
+import {
+  FrameContent,
+  FrameText,
+  frameStyles,
+} from "./core/layout/frameHelpers";
 import { Text } from "./core/typography/Text";
 
 const PageContainer = styled(FullPageBackground)`
   max-height: 100vh;
 `;
 
-const frameStyles = css`
-  ${flexColumnCenter}
-  flex-shrink: 0;
-
-  width: 100%;
-  min-height: 30px;
-`;
-
-const Header = styled.header`
-  ${frameStyles}
-
-  border-bottom: 1px solid ${(props) => props.theme.colors.footer.separator};
-`;
-
 const Footer = styled.footer`
   ${frameStyles}
 
   border-top: 1px solid ${(props) => props.theme.colors.footer.separator};
-`;
-
-const FrameContent = styled.div`
-  text-align: center;
-
-  padding: ${(props) => props.theme.spacing.m};
-`;
-
-const FrameText = styled(Text)`
-  margin: 0;
-  margin-block-start: 0;
-  margin-block-end: 0;
 `;
 
 const Content = styled.main`
