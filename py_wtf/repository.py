@@ -40,8 +40,9 @@ class ProjectRepository:
         index_file = self._index_file(key)
         index_contents = index_file.read_bytes()
         proj = converter.loads(index_contents, Project)
-        loop = asyncio.get_event_loop_policy().get_event_loop()
-        self._cache[key] = Future(loop=loop)
+        if key not in self._cache:
+            loop = asyncio.get_event_loop_policy().get_event_loop()
+            self._cache[key] = Future(loop=loop)
         self._cache[key].set_result(proj)
 
     def _save(self, project: Project) -> None:
