@@ -165,12 +165,13 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
         ).json()
         pypi_info = proj_data["info"]
         latest_version = pypi_info["version"]
+        project_urls = pypi_info.get("project_urls") or {}
         proj_metadata = ProjectMetadata(
             latest_version,
             summary=pypi_info.get("summary"),
             home_page=pypi_info.get("home_page"),
             license=pypi_info.get("license"),
-            documentation_url=pypi_info.get("project_urls", {}).get("Documentation"),
+            documentation_url=project_urls.get("Documentation"),
             classifiers=pypi_info.get("classifiers"),
             dependencies=parse_deps(pypi_info.get("requires_dist")),
         )
