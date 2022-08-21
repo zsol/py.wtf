@@ -1,16 +1,13 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 
-import { flexColumn } from "./layout/helpers";
-import { Link } from "./navigation/Link";
+import { SearchDescriptor } from "@/lib/searchDescriptor";
 
-type SearchItem = {
-  name: string;
-  url: string;
-};
+import { flexColumn } from "./layout/helpers";
+import { Link, RouterLink } from "./navigation/Link";
 
 type SearchParams = {
-  itemList: Array<SearchItem>;
+  descriptors: Array<SearchDescriptor>;
 };
 
 const SearchContainer = styled.div`
@@ -25,6 +22,7 @@ const SearchResultContainer = styled.div`
   width: 100%;
   max-height: 200px;
   padding: ${(props) => props.theme.spacing.xs} 0;
+  overflow: scroll;
 
   background-color: ${(props) => props.theme.colors.input.background};
   border-color: ${(props) => props.theme.colors.input.border};
@@ -38,21 +36,25 @@ const SearchResultItem = styled.div`
   }
 `;
 
-const ItemLink = styled(Link)`
+const ItemLink = styled(RouterLink)`
   display: block;
   padding: ${(props) => props.theme.spacing.xs};
 
   width: 100%;
 `;
 
-export const Search = ({ itemList = [] }: SearchParams) => {
+export const Search = ({ descriptors = [] }: SearchParams) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [results, setResults] = useState<Array<SearchItem>>([]);
+  const [results, setResults] = useState<Array<SearchDescriptor>>([]);
 
   useEffect(() => {
     // TODO: debounce this
     if (searchTerm) {
-      setResults(itemList.filter((item) => item?.name?.includes(searchTerm)));
+      setResults(
+        descriptors.filter((item: SearchDescriptor) =>
+          item?.name?.includes(searchTerm)
+        )
+      );
     } else {
       setResults([]);
     }
@@ -69,9 +71,9 @@ export const Search = ({ itemList = [] }: SearchParams) => {
         <SearchResultContainer>
           {results.length === 0 && "No results found"}
           {results?.length > 0 &&
-            results.map((item: SearchItem) => (
-              <SearchResultItem>
-                <ItemLink href={`/${item.url}`}>{item.name}</ItemLink>
+            results.map((item: SearchDescriptor, index: number) => (
+              <SearchResultItem key={`${item.name}_${index}`}>
+                <ItemLink to={`${item.url}`}>{item.name}</ItemLink>
               </SearchResultItem>
             ))}
         </SearchResultContainer>

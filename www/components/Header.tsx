@@ -1,5 +1,8 @@
 import styled from "@emotion/styled";
 
+import { Project } from "@/lib/docs";
+import { generateSearchDescriptors } from "@/lib/searchDescriptor";
+
 import { Search } from "./core/Search";
 import { flexColumn, flexColumnCenter, flexRow } from "./core/layout/helpers";
 import { Text } from "./core/typography/Text";
@@ -42,28 +45,19 @@ const HeaderText = styled(Text)`
 
 type HeaderProps = {
   showSearch?: boolean;
+  project?: Project;
 };
 
-const Header = ({ showSearch = true }: HeaderProps) => {
+const Header = ({ project, showSearch = true }: HeaderProps) => {
   return (
     <HeaderContainer>
       <HeaderContent>
         <HeaderItem width={showSearch ? "60%" : "100%"}>
           <HeaderText>Python. Wabbajack Theatrical Fantasy</HeaderText>
         </HeaderItem>
-        {showSearch && (
+        {showSearch && project && (
           <HeaderItem width="40%">
-            <Search
-              itemList={[
-                { name: "alma", url: "/black" },
-                { name: "almale", url: "/black" },
-                { name: "almaszorp", url: "/black" },
-                { name: "korte", url: "/black" },
-                { name: "kortelekvar", url: "/black" },
-                { name: "ribizli", url: "/black" },
-                { name: "ribizliszorp", url: "/black" },
-              ]}
-            />
+            <Search descriptors={generateSearchDescriptors(project)} />
           </HeaderItem>
         )}
       </HeaderContent>
