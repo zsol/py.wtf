@@ -43,8 +43,6 @@ export interface Props {
 }
 
 export default function PageLayout({ title, header, children }: Props) {
-  console.log("header", header);
-
   return (
     <ThemeProvider theme={darkTheme}>
       <PageContainer>
