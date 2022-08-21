@@ -1,6 +1,6 @@
 from dataclasses import replace
 from pathlib import Path
-from typing import Iterable
+from typing import AsyncIterable
 
 import pytest
 from py_wtf.repository import converter, ProjectRepository
@@ -35,21 +35,24 @@ def test_empty_raises(repo: ProjectRepository) -> None:
         repo[ProjectName("foo")]
 
 
-def test_get_calls_factory_once(repo: ProjectRepository, project: Project) -> None:
+@pytest.mark.asyncio
+async def test_get_calls_factory_once(
+    repo: ProjectRepository, project: Project
+) -> None:
     called = False
 
-    def factory(key: ProjectName) -> Iterable[Project]:
+    async def factory(key: ProjectName) -> AsyncIterable[Project]:
         nonlocal called
         called = True
         yield project
 
-    ret = repo.get(project.name, factory)
+    ret = await repo.get(project.name, factory)
     assert called
     assert ret == project
 
     called = False
 
-    ret = repo.get(project.name, factory)
+    ret = await repo.get(project.name, factory)
     assert not called
     assert ret == project
 

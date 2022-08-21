@@ -3,13 +3,16 @@
 # SPDX-License-Identifier: MIT
 from __future__ import annotations
 
+import asyncio
+
 import json
 import logging
 import os
 import shutil
-from functools import partial
+from functools import partial, wraps
 from pathlib import Path
-from typing import Iterable
+
+from typing import Callable, Coroutine, ParamSpec, TypeVar
 
 import click
 import rich
@@ -17,14 +20,18 @@ import rich
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
 from py_wtf.repository import converter, ProjectRepository
-from py_wtf.types import (
-    Documentation,
-    FQName,
-    Module,
-    Project,
-    ProjectMetadata,
-    ProjectName,
-)
+from py_wtf.types import Documentation, FQName, Project, ProjectMetadata, ProjectName
+
+P = ParamSpec("P")
+T = TypeVar("T")
+
+
+def coroutine(f: Callable[P, Coroutine[None, None, T]]) -> Callable[P, T]:
+    @wraps(f)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        return asyncio.run(f(*args, **kwargs))
+
+    return wrapper
 
 
 @click.group(
@@ -43,14 +50,15 @@ def py_wtf(ctx: click.Context) -> None:
 @click.option("--project-name", required=True)
 @click.option("--pretty", is_flag=True)
 @click.option("--force", is_flag=True, help="Blow away index repository and reindex")
-def index(project_name: str, directory: str, pretty: bool, force: bool) -> None:
+@coroutine
+async def index(project_name: str, directory: str, pretty: bool, force: bool) -> None:
     out_dir = Path(directory)
     if force:
         shutil.rmtree(out_dir, ignore_errors=True)
     out_dir.mkdir(parents=True, exist_ok=True)
     repo = ProjectRepository(out_dir)
 
-    proj = repo.get(ProjectName(project_name), partial(index_project, repo=repo))
+    proj = await repo.get(ProjectName(project_name), partial(index_project, repo=repo))
 
     if pretty:
         rich.print(proj)

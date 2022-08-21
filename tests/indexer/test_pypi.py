@@ -1,16 +1,14 @@
 import json
-from contextlib import contextmanager
-from io import BytesIO
 from pathlib import Path
 from tarfile import TarFile
-from typing import Callable, ContextManager, Generator, IO
 from zipfile import ZipFile
 
 import pytest
-from py_wtf.indexer import pypi as module_under_test
 
 from py_wtf.indexer.pypi import _build_symbol_table, download
 from py_wtf.types import FQName, Project
+
+from pytest_httpx import HTTPXMock
 
 
 @pytest.fixture(params=[None, ["click (>=8.0.0)", "aiohttp (>=3.7.4) ; extra == 'd'"]])
@@ -19,47 +17,39 @@ def requirements(request: pytest.FixtureRequest) -> None | list[str]:
 
 
 @pytest.fixture
-def pypi_json(
-    requirements: None | list[str],
-) -> Callable[[...], ContextManager[IO[bytes]]]:  # type: ignore
-    @contextmanager
-    def inner(*args, **kwargs) -> Generator[BytesIO, None, None]:  # type: ignore
-        yield BytesIO(
-            json.dumps(
-                {
-                    "info": {
-                        "author": "foo",
-                        "classifiers": [
-                            "Development Status :: 5 - Production/Stable",
-                            "Environment :: Console",
-                            "Intended Audience :: Developers",
-                        ],
-                        "description": "description",
-                        "summary": "The summary of foo",
-                        "version": "0.0",
-                        "license": "BSD",
-                        "home_page": "https://rick.ro/ll",
-                        "project_urls": {
-                            "Homepage": "https://rick.ro/ll",
-                            "Documentation": "https://tinyurl.com/alpha-docs",
-                        },
-                        "requires_dist": requirements,
+def pypi_json(requirements: None | list[str]) -> bytes:
+    return json.dumps(
+        {
+            "info": {
+                "author": "foo",
+                "classifiers": [
+                    "Development Status :: 5 - Production/Stable",
+                    "Environment :: Console",
+                    "Intended Audience :: Developers",
+                ],
+                "description": "description",
+                "summary": "The summary of foo",
+                "version": "0.0",
+                "license": "BSD",
+                "home_page": "https://rick.ro/ll",
+                "project_urls": {
+                    "Homepage": "https://rick.ro/ll",
+                    "Documentation": "https://tinyurl.com/alpha-docs",
+                },
+                "requires_dist": requirements,
+            },
+            "releases": {
+                "0.0": [
+                    {"packagetype": "ivenoidea"},
+                    {
+                        "packagetype": "sdist",
+                        "url": "https://files.pythonhosted.org/packages/lol.tar.gz",
+                        "md5_digest": "HAHA I'm an MD5 hash",
                     },
-                    "releases": {
-                        "0.0": [
-                            {"packagetype": "ivenoidea"},
-                            {
-                                "packagetype": "sdist",
-                                "url": "https://files.pythonhosted.org/packages/lol.tar.gz",
-                                "md5_digest": "HAHA I'm an MD5 hash",
-                            },
-                        ]
-                    },
-                }
-            ).encode()
-        )
-
-    return inner
+                ]
+            },
+        }
+    ).encode()
 
 
 @pytest.fixture(params=["foo.whl", "foo.zip", "foo.tar.gz", "foo.tar.bz2"])
@@ -77,31 +67,31 @@ def pypi_artifact(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     return out_file
 
 
-@pytest.fixture(autouse=True)
-def no_pypi_requests(
-    monkeypatch: pytest.MonkeyPatch, pypi_json: ContextManager[IO[bytes]]
+@pytest.mark.asyncio
+async def test_download(
+    tmp_path: Path, httpx_mock: HTTPXMock, pypi_json: bytes, pypi_artifact: Path
 ) -> None:
-    monkeypatch.setattr(module_under_test, "urlopen", pypi_json)
-
-
-@pytest.fixture(autouse=True)
-def no_pypi_downloads(monkeypatch: pytest.MonkeyPatch, pypi_artifact: Path) -> None:
-    monkeypatch.setattr(
-        module_under_test,
-        "urlretrieve",
-        lambda *args, **kwargs: (pypi_artifact, None),
+    httpx_mock.add_response(url="https://pypi.org/pypi/foo/json", content=pypi_json)
+    httpx_mock.add_response(
+        url=f"https://files.pythonhosted.org/packages/lol.tar.gz",
+        content=pypi_artifact.read_bytes(),
     )
-
-
-def test_download(tmp_path: Path) -> None:
-    path, metadata = download("foo", tmp_path)
+    path, metadata = await download("foo", tmp_path)
     assert metadata.license == "BSD"
     assert path.is_relative_to(tmp_path)
     assert (path / "foo_mod.py").exists()
 
 
-def test_no_extras_in_deps(tmp_path: Path) -> None:
-    _, metadata = download("foo", tmp_path)
+@pytest.mark.asyncio
+async def test_no_extras_in_deps(
+    tmp_path: Path, httpx_mock: HTTPXMock, pypi_json: bytes, pypi_artifact: Path
+) -> None:
+    httpx_mock.add_response(url="https://pypi.org/pypi/foo/json", content=pypi_json)
+    httpx_mock.add_response(
+        url=f"https://files.pythonhosted.org/packages/lol.tar.gz",
+        content=pypi_artifact.read_bytes(),
+    )
+    _, metadata = await download("foo", tmp_path)
     assert "aiohttp" not in metadata.dependencies
 
 

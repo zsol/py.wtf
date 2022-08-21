@@ -1,6 +1,8 @@
+import asyncio
+from asyncio import Future
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Iterable
+from typing import AsyncIterable, Callable
 
 from cattrs.preconf.json import make_converter
 
@@ -13,7 +15,7 @@ converter = make_converter()
 class ProjectRepository:
     directory: Path
 
-    _cache: dict[ProjectName, Project] = field(init=False)
+    _cache: dict[ProjectName, Future[Project]] = field(init=False)
 
     def __post_init__(self) -> None:
         self._cache = {}
@@ -25,7 +27,11 @@ class ProjectRepository:
             except OSError:
                 raise KeyError(key)
 
-        return self._cache[key]
+        fut = self._cache[key]
+        if not fut.done():
+            raise KeyError(key)
+
+        return fut.result()
 
     def _index_file(self, key: ProjectName) -> Path:
         return self.directory / f"{key}.json"
@@ -34,28 +40,36 @@ class ProjectRepository:
         index_file = self._index_file(key)
         index_contents = index_file.read_bytes()
         proj = converter.loads(index_contents, Project)
-        self._cache[key] = proj
+        loop = asyncio.get_event_loop_policy().get_event_loop()
+        self._cache[key] = Future(loop=loop)
+        self._cache[key].set_result(proj)
 
     def _save(self, project: Project) -> None:
         name = ProjectName(project.name)
-        if name in self._cache:
+        if name in self._cache and self._cache[name].done():
             return
 
-        self._cache[name] = project
+        loop = asyncio.get_event_loop_policy().get_event_loop()
+        self._cache[name] = Future(loop=loop)
+        self._cache[name].set_result(project)
         index_file = self._index_file(name)
         index_file.write_text(converter.dumps(project))
 
-    def get(
+    async def get(
         self,
         key: ProjectName,
-        factory: Callable[[ProjectName], Iterable[Project]],
+        factory: Callable[[ProjectName], AsyncIterable[Project]],
     ) -> Project:
+        if key in self._cache:
+            return await self._cache[key]
+
         try:
-            return self[key]
-        except KeyError:
+            self._load_from_disk(key)
+            return await self._cache[key]
+        except OSError:
             pass  # continued below
-        projects = factory(key)
-        for project in projects:
+
+        async for project in factory(key):
             self._save(project)
 
         return self[key]
