@@ -88,7 +88,7 @@ async def index_top_pypi(directory: str, top: int) -> None:
 
     with rich.progress.Progress(
         rich.progress.TimeElapsedColumn(),
-        rich.progress.TextColumn("{task.description}"),
+        rich.progress.TextColumn("{task.fields[action]} {task.description}"),
         rich.progress.BarColumn(),
     ) as progress:
         rets = await asyncio.gather(

@@ -66,12 +66,14 @@ async def index_project(
 ) -> AsyncIterable[Project]:
     task_id = TaskID(0)
     if progress:
-        task_id = progress.add_task(f"Indexing {project_name}", total=3)
+        task_id = progress.add_task(project_name, action="Fetching", total=3)
     deps: list[Project] = []
     with TemporaryDirectory() as tmpdir:
         src_dir, info = await download(project_name, Path(tmpdir))
         if progress:
-            progress.advance(task_id)
+            progress.update(
+                task_id, action="Gathering deps for", visible=False, advance=1
+            )
         dep_project_names = [ProjectName(dep) for dep in info.dependencies]
 
         dep_projects = await asyncio.gather(
@@ -91,7 +93,7 @@ async def index_project(
         symbols = _build_symbol_table(deps)
 
         if progress:
-            progress.advance(task_id)
+            progress.update(task_id, action="Indexing", visible=True, advance=1)
 
         modules = [mod async for mod in index_dir(src_dir, symbols, executor)]
 

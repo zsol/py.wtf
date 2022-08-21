@@ -23,7 +23,8 @@ def mock_index_file(
     return empty_module
 
 
-def test_index_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+@pytest.mark.asyncio
+async def test_index_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(
         mod_under_test,
         "index_file",
@@ -32,7 +33,7 @@ def test_index_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
     some_file = tmp_path / "somefile.py"
     some_file.touch()
-    assert list(index_dir(tmp_path)) == [empty_module]
+    assert [mod async for mod in index_dir(tmp_path)] == [empty_module]
 
 
 def test_index_file_syntax_error(tmp_path: Path) -> None:
