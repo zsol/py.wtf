@@ -1,7 +1,7 @@
+import useFetchModule from "hooks/fetchModule";
 import { useParams } from "react-router-dom";
 
 import Module from "@/components/Docs/Module";
-import FetchProject from "@/components/FetchProject";
 import ModuleList from "@/components/Sidebar/ModuleList";
 
 import Header from "../Header";
@@ -10,8 +10,9 @@ import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
 
 export default function ModulePage() {
-  const { prj: projectName, mod: modName } = useParams();
-  if (modName === undefined) {
+  const { prj: projectName, mod: moduleName } = useParams();
+
+  if (projectName == null || moduleName == null) {
     return (
       <div>
         You did not make a choice, or follow any direction, but now, somehow,
@@ -19,29 +20,44 @@ export default function ModulePage() {
       </div>
     );
   }
+
+  const { project, module, projectJsonUrl, isLoading, error } = useFetchModule(
+    projectName,
+    moduleName
+  );
+
+  if (project && module) {
+    return (
+      <PageLayout
+        title={`py.wtf: ${module.name}`}
+        header={<Header project={project} />}
+      >
+        <ContentWithSidebar
+          sidebar={
+            <Sidebar project={project}>
+              <ModuleList prj={project} currentModule={module} />
+            </Sidebar>
+          }
+        >
+          {module ? (
+            <Module prj={project} mod={module} />
+          ) : (
+            `Module "${moduleName}" not found 🤪`
+          )}
+        </ContentWithSidebar>
+      </PageLayout>
+    );
+  }
+
+  // TODO: Make this a common component
   return (
-    <PageLayout title={`py.wtf: ${modName}`} header={<Header />}>
-      <FetchProject
-        name={projectName}
-        content={(prj) => {
-          const mod = prj.modules.find((mod) => mod.name === modName);
-          return (
-            <ContentWithSidebar
-              sidebar={
-                <Sidebar project={prj}>
-                  <ModuleList prj={prj} currentModule={mod} />
-                </Sidebar>
-              }
-            >
-              {mod ? (
-                <Module prj={prj} mod={mod} />
-              ) : (
-                `Module "${modName}" not found 🤪`
-              )}
-            </ContentWithSidebar>
-          );
-        }}
-      />
-    </PageLayout>
+    <div>
+      {isLoading && <div>Loading...</div>}
+      {error && (
+        <div>
+          Failed to load <code>${projectJsonUrl}</code>: ${error.message}
+        </div>
+      )}
+    </div>
   );
 }

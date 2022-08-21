@@ -34,9 +34,11 @@ export default function ProjectPage() {
       </PageLayout>
     );
   }
+
+  // TODO: Make this a common component
   return (
     <div>
-      {isLoading && <div>Loading...</div>}{" "}
+      {isLoading && <div>Loading...</div>}
       {error && (
         <div>
           Failed to load <code>${projectJsonUrl}</code>: ${error.message}
