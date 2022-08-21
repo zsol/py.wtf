@@ -112,7 +112,7 @@ def parse_deps(maybe_deps: None | Sequence[str]) -> list[str]:
 
 
 async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:
-    async with httpx.AsyncClient(http2=True) as client:
+    async with httpx.AsyncClient() as client:
         proj_data = (
             await client.get(f"https://pypi.org/pypi/{project_name}/json")
         ).json()
