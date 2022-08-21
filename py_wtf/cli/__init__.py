@@ -91,6 +91,7 @@ async def index_top_pypi(directory: str, top: int) -> None:
         rich.progress.TextColumn("{task.fields[action]} {task.description}"),
         rich.progress.BarColumn(),
     ) as progress:
+        progress.console.height = max(2, progress.console.height // 2)
         rets = await asyncio.gather(
             *[
                 repo.get(
