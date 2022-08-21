@@ -49,8 +49,9 @@ class ProjectRepository:
         if name in self._cache and self._cache[name].done():
             return
 
-        loop = asyncio.get_event_loop_policy().get_event_loop()
-        self._cache[name] = Future(loop=loop)
+        if name not in self._cache:
+            loop = asyncio.get_event_loop_policy().get_event_loop()
+            self._cache[name] = Future(loop=loop)
         self._cache[name].set_result(project)
         index_file = self._index_file(name)
         index_file.write_text(converter.dumps(project))
@@ -68,6 +69,8 @@ class ProjectRepository:
             return await self._cache[key]
         except OSError:
             pass  # continued below
+
+        self._cache[key] = Future()
 
         async for project in factory(key):
             self._save(project)

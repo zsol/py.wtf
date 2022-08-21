@@ -1,5 +1,8 @@
+import asyncio
 import logging
 import os
+from concurrent.futures import ProcessPoolExecutor
+from dataclasses import replace
 from functools import partial
 from pathlib import Path
 from tarfile import is_tarfile, TarFile
@@ -11,10 +14,18 @@ import aiofiles.tempfile
 import httpx
 
 from packaging.requirements import Requirement
+from rich.progress import Progress, TaskID
 
 from py_wtf.repository import ProjectRepository
 
-from py_wtf.types import FQName, Project, ProjectMetadata, ProjectName, SymbolTable
+from py_wtf.types import (
+    FQName,
+    Module,
+    Project,
+    ProjectMetadata,
+    ProjectName,
+    SymbolTable,
+)
 from .file import index_dir
 
 logger = logging.getLogger(__name__)
@@ -44,26 +55,61 @@ def _build_symbol_table(projects: Iterable[Project]) -> SymbolTable:
     return ret
 
 
+def _index_dir(dir: Path, symbol_table: SymbolTable) -> list[Module]:
+    return list(index_dir(dir, symbol_table))
+
+
+executor = ProcessPoolExecutor(
+    max_workers=min(30, max(1, ((os.cpu_count() or 1) - 1) // 2))
+)
+
+
 async def index_project(
-    project_name: ProjectName, repo: ProjectRepository
+    project_name: ProjectName, repo: ProjectRepository, progress: Progress | None = None
 ) -> AsyncIterable[Project]:
-    logging.info(f"Indexing {project_name}")
+    task_id = TaskID(0)
+    if progress:
+        task_id = progress.add_task(f"Indexing {project_name}", total=3)
     deps: list[Project] = []
     with TemporaryDirectory() as tmpdir:
         src_dir, info = await download(project_name, Path(tmpdir))
+        if progress:
+            progress.advance(task_id)
         dep_project_names = [ProjectName(dep) for dep in info.dependencies]
-        for name in dep_project_names:
-            proj = await repo.get(name, partial(index_project, repo=repo))
+
+        dep_projects = await asyncio.gather(
+            *[
+                repo.get(name, partial(index_project, repo=repo, progress=progress))
+                for name in dep_project_names
+            ],
+            return_exceptions=True,
+        )
+
+        for proj in dep_projects:
+            if isinstance(proj, Exception):
+                logger.exception(proj)
+                continue
             deps.append(proj)
 
-        modules = list(index_dir(src_dir, _build_symbol_table(deps)))
+        symbols = _build_symbol_table(deps)
+
+        if progress:
+            progress.advance(task_id)
+
+        modules = await asyncio.get_running_loop().run_in_executor(
+            executor, _index_dir, src_dir, symbols
+        )
+        if progress:
+            progress.advance(task_id)
 
     proj = Project(
         project_name,
         metadata=info,
-        modules=modules,
+        modules=list(modules),
         documentation=[],
     )
+    if progress:
+        progress.update(task_id, visible=False)
     yield proj
 
 
@@ -111,8 +157,11 @@ def parse_deps(maybe_deps: None | Sequence[str]) -> list[str]:
     )
 
 
+sem = asyncio.BoundedSemaphore(value=20)
+
+
 async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:
-    async with httpx.AsyncClient(http2=True) as client:
+    async with sem, httpx.AsyncClient(timeout=httpx.Timeout(None)) as client:
         proj_data = (
             await client.get(f"https://pypi.org/pypi/{project_name}/json")
         ).json()
@@ -134,9 +183,9 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
                 # src_md5 = artifact['md5_digest']
                 break
         if not src_url:
-            raise ValueError(
-                f"Couldn't find sdist for {project_name}=={latest_version}"
-            )
+            error = f"Couldn't find sdist for {project_name}=={latest_version}"
+            logger.warning(error)
+            return (directory, replace(proj_metadata, summary=error))
 
         # this is a bit unnecessary 🙃
         async with (
@@ -146,8 +195,9 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
             async for chunk in response.aiter_bytes():
                 await src_archive.write(chunk)
 
-        with open_archive(src_archive.name) as opened:
+        archive_name = str(src_archive.name)
+        with open_archive(archive_name) as opened:
             opened.extractall(directory)
-        os.unlink(src_archive.name)
+        os.unlink(archive_name)
 
     return (pick_project_dir(directory), proj_metadata)

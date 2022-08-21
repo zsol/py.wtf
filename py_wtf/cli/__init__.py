@@ -12,16 +12,20 @@ import shutil
 from functools import partial, wraps
 from pathlib import Path
 
-from typing import Callable, Coroutine, ParamSpec, TypeVar
+from typing import Callable, Coroutine, Iterable, ParamSpec, TypeVar
 
 import click
+import httpx
 import rich
+import rich.progress
 
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
 from py_wtf.repository import converter, ProjectRepository
 from py_wtf.types import Documentation, FQName, Project, ProjectMetadata, ProjectName
 
+
+logger = logging.getLogger(__name__)
 P = ParamSpec("P")
 T = TypeVar("T")
 
@@ -42,7 +46,7 @@ def coroutine(f: Callable[P, Coroutine[None, None, T]]) -> Callable[P, T]:
 @click.pass_context
 def py_wtf(ctx: click.Context) -> None:
     os.environ["LIBCST_PARSER_TYPE"] = "native"
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.ERROR)
 
 
 @py_wtf.command()
@@ -62,6 +66,42 @@ async def index(project_name: str, directory: str, pretty: bool, force: bool) ->
 
     if pretty:
         rich.print(proj)
+
+
+@py_wtf.command()
+@click.argument("directory")
+@click.option("--top", type=int, default=50)
+@coroutine
+async def index_top_pypi(directory: str, top: int) -> None:
+    out_dir = Path(directory)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    repo = ProjectRepository(out_dir)
+    async with httpx.AsyncClient() as client:
+        top_pkgs = (
+            await client.get(
+                "https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.json"
+            )
+        ).json()
+        projects: Iterable[str] = (row["project"] for row in top_pkgs["rows"][:top])
+
+    with rich.progress.Progress(
+        rich.progress.TimeElapsedColumn(),
+        rich.progress.TextColumn("{task.description}"),
+        rich.progress.BarColumn(),
+    ) as progress:
+        rets = await asyncio.gather(
+            *[
+                repo.get(
+                    ProjectName(name),
+                    partial(index_project, repo=repo, progress=progress),
+                )
+                for name in projects
+            ],
+            return_exceptions=True,
+        )
+        for ret in rets:
+            if isinstance(ret, Exception):
+                logger.exception(ret)
 
 
 @py_wtf.command(name="index-file")
