@@ -1,20 +1,18 @@
-import { ThemeProvider, css } from "@emotion/react";
+import { ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
 import Head from "next/head";
 import { ReactNode } from "react";
 
 import FullPageBackground from "@/components/core/layout/FullPageBackground";
-import { flexColumn, flexColumnCenter } from "@/components/core/layout/helpers";
+import { flexColumn } from "@/components/core/layout/helpers";
 import { Link } from "@/components/core/navigation/Link";
 import { darkTheme } from "@/components/core/theme/theme";
 
-import Header from "./Header";
 import {
   FrameContent,
   FrameText,
   frameStyles,
 } from "./core/layout/frameHelpers";
-import { Text } from "./core/typography/Text";
 
 const PageContainer = styled(FullPageBackground)`
   max-height: 100vh;
