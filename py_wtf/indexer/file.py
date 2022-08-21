@@ -1,8 +1,11 @@
+import asyncio
 import itertools
+import logging
+from concurrent.futures import Executor
 from functools import partial
 from inspect import cleandoc
 from pathlib import Path
-from typing import cast, Iterable, Protocol, TypeVar
+from typing import AsyncIterable, Callable, cast, Iterable, Protocol, TypeVar
 
 import libcst as cst
 import trailrunner
@@ -27,8 +30,14 @@ from py_wtf.types import (
 
 from .annotation import index as extract_type
 
+logger = logging.getLogger(__name__)
 
-def index_dir(dir: Path, symbol_table: SymbolTable | None = None) -> Iterable[Module]:
+
+async def index_dir(
+    dir: Path,
+    symbol_table: SymbolTable | None = None,
+    executor: Executor | None = None,
+) -> AsyncIterable[Module]:
     # TODO: do something with .pyi files
     # If there's a .pyi file with no corresponding .py -> just index .pyi
     # If both of them exist, do a best effort merge? 🤷
@@ -36,14 +45,15 @@ def index_dir(dir: Path, symbol_table: SymbolTable | None = None) -> Iterable[Mo
 
     # Skip looking for root markers, we definitely want to index this directory.
     trailrunner.core.ROOT_MARKERS = []
-    for (_, mod) in trailrunner.run_iter(
-        paths=trailrunner.walk(dir),
-        func=partial(
-            index_file,
-            dir,
-            symbol_table=symbol_table,
-        ),
+
+    loop = asyncio.get_event_loop()
+    for coro in asyncio.as_completed(
+        [
+            loop.run_in_executor(executor, index_file, dir, file, symbol_table)
+            for file in trailrunner.walk(dir)
+        ]
     ):
+        mod = await coro
         yield mod
 
 
@@ -69,7 +79,7 @@ def index_file(
     except Exception as e:
         err = Documentation(f"Failed to index {path.relative_to(base_dir)} due to {e}")
         indexer.documentation = [err]
-        print(err)
+        logger.error(err)
     return Module(
         name,
         documentation=indexer.documentation,

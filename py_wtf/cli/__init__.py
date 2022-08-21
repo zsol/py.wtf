@@ -21,6 +21,7 @@ import rich.progress
 
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
+from py_wtf.logging import setup_logging
 from py_wtf.repository import converter, ProjectRepository
 from py_wtf.types import Documentation, FQName, Project, ProjectMetadata, ProjectName
 
@@ -43,10 +44,11 @@ def coroutine(f: Callable[P, Coroutine[None, None, T]]) -> Callable[P, T]:
     invoke_without_command=True,
 )
 @click.version_option(version=__version__, prog_name="py.wtf")
+@click.option("--log-level", type=logging.getLevelName)
 @click.pass_context
-def py_wtf(ctx: click.Context) -> None:
+def py_wtf(ctx: click.Context, log_level: int | None) -> None:
     os.environ["LIBCST_PARSER_TYPE"] = "native"
-    logging.basicConfig(level=logging.ERROR)
+    setup_logging(log_level)
 
 
 @py_wtf.command()
@@ -114,17 +116,20 @@ def index_file_cmd(file: str) -> None:
 
 @py_wtf.command(name="index-dir")
 @click.argument("dir")
-def index_dir_cmd(dir: str) -> None:
+@coroutine
+async def index_dir_cmd(dir: str) -> None:
     path = Path(dir)
     cnt = 0
-    for cnt, mod in enumerate(index_dir(path), start=1):
+    async for mod in index_dir(path):
+        cnt += 1
         rich.print(mod)
     rich.print(f"Found {cnt} modules in total.")
 
 
 @py_wtf.command()
 @click.argument("dir", required=False)
-def generate_test_index(dir: str | None) -> None:
+@coroutine
+async def generate_test_index(dir: str | None) -> None:
     root_dir = Path(__file__).parent.parent.parent
     out_dir = Path(dir) if dir else root_dir / "www" / "public" / "_index"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -143,11 +148,11 @@ def generate_test_index(dir: str | None) -> None:
             summary=proj_metadata.get("summary"),
         )
         symbol_table = {FQName("alpha.bar"): ProjectName("project-alpha")}
-        mods = index_dir(proj_dir, symbol_table)
+        mods = [mod async for mod in index_dir(proj_dir, symbol_table)]
         proj = Project(
             ProjectName(proj_dir.name),
             metadata=proj_info,
-            modules=list(mods),
+            modules=mods,
             documentation=[Documentation(proj_info.summary or "")],
         )
         (out_dir / f"{proj.name}.json").write_text(converter.dumps(_sort(proj)))

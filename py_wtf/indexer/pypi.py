@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import multiprocessing
 import os
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import replace
@@ -16,16 +17,11 @@ import httpx
 from packaging.requirements import Requirement
 from rich.progress import Progress, TaskID
 
+from py_wtf.logging import setup_logging
+
 from py_wtf.repository import ProjectRepository
 
-from py_wtf.types import (
-    FQName,
-    Module,
-    Project,
-    ProjectMetadata,
-    ProjectName,
-    SymbolTable,
-)
+from py_wtf.types import FQName, Project, ProjectMetadata, ProjectName, SymbolTable
 from .file import index_dir
 
 logger = logging.getLogger(__name__)
@@ -55,12 +51,13 @@ def _build_symbol_table(projects: Iterable[Project]) -> SymbolTable:
     return ret
 
 
-def _index_dir(dir: Path, symbol_table: SymbolTable) -> list[Module]:
-    return list(index_dir(dir, symbol_table))
-
-
 executor = ProcessPoolExecutor(
-    max_workers=min(30, max(1, ((os.cpu_count() or 1) - 1) // 2))
+    initializer=setup_logging,
+    initargs=(
+        logging.getLogger().level,
+        True,
+    ),
+    mp_context=multiprocessing.get_context("spawn"),
 )
 
 
@@ -85,9 +82,9 @@ async def index_project(
             return_exceptions=True,
         )
 
-        for proj in dep_projects:
+        for i, proj in enumerate(dep_projects):
             if isinstance(proj, Exception):
-                logger.exception(proj)
+                logger.error(f"Error in {dep_project_names[i]}", exc_info=proj)
                 continue
             deps.append(proj)
 
@@ -96,16 +93,15 @@ async def index_project(
         if progress:
             progress.advance(task_id)
 
-        modules = await asyncio.get_running_loop().run_in_executor(
-            executor, _index_dir, src_dir, symbols
-        )
+        modules = [mod async for mod in index_dir(src_dir, symbols, executor)]
+
         if progress:
             progress.advance(task_id)
 
     proj = Project(
         project_name,
         metadata=info,
-        modules=list(modules),
+        modules=modules,
         documentation=[],
     )
     if progress:
