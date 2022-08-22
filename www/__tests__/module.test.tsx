@@ -16,21 +16,21 @@ describe("Module page", () => {
     for (const mod of ["alpha", "alpha.core", "alpha.foo"]) {
       expect(getByRole("link", { name: mod })).toHaveAttribute(
         "href",
-        `/project-alpha/${mod}`
+        `/project-alpha/${mod}`,
       );
     }
 
     // Module heading and documentation
     const moduleHeading = getByRole("heading", { name: "Module alpha.core" });
     expect(moduleHeading.nextSibling).toHaveTextContent(
-      "core module docsCopyright header thing here"
+      "core module docsCopyright header thing here",
     );
 
     // Symbol links
     for (const sym of ["Helper", "core_main"]) {
       expect(getByRole("link", { name: sym })).toHaveAttribute(
         "href",
-        `/project-alpha/alpha.core/${sym}`
+        `/project-alpha/alpha.core/${sym}`,
       );
     }
   });

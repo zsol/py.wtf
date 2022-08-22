@@ -20,7 +20,7 @@ describe("Project page", () => {
     expect(modulesTable.nodeName).toBe("TABLE");
     for (const mod of ["alpha", "alpha.core", "alpha.foo"]) {
       expect(
-        within(modulesTable).getByRole("link", { name: mod })
+        within(modulesTable).getByRole("link", { name: mod }),
       ).toHaveAttribute("href", `/project-alpha/${mod}`);
     }
   });

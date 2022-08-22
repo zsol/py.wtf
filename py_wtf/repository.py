@@ -1,5 +1,6 @@
 import asyncio
 from asyncio import Future
+from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import AsyncIterable, Callable
@@ -18,20 +19,9 @@ class ProjectRepository:
     _cache: dict[ProjectName, Future[Project]] = field(init=False)
 
     def __post_init__(self) -> None:
-        self._cache = {}
-
-    def __getitem__(self, key: ProjectName) -> Project:
-        if key not in self._cache:
-            try:
-                self._load_from_disk(key)
-            except OSError:
-                raise KeyError(key)
-
-        fut = self._cache[key]
-        if not fut.done():
-            raise KeyError(key)
-
-        return fut.result()
+        self._cache = defaultdict(
+            lambda: Future(loop=asyncio.get_event_loop_policy().get_event_loop())
+        )
 
     def _index_file(self, key: ProjectName) -> Path:
         return self.directory / f"{key}.json"
@@ -40,19 +30,13 @@ class ProjectRepository:
         index_file = self._index_file(key)
         index_contents = index_file.read_bytes()
         proj = converter.loads(index_contents, Project)
-        if key not in self._cache:
-            loop = asyncio.get_event_loop_policy().get_event_loop()
-            self._cache[key] = Future(loop=loop)
         self._cache[key].set_result(proj)
 
     def _save(self, project: Project) -> None:
         name = ProjectName(project.name)
-        if name in self._cache and self._cache[name].done():
+        if self._cache[name].done():
             return
 
-        if name not in self._cache:
-            loop = asyncio.get_event_loop_policy().get_event_loop()
-            self._cache[name] = Future(loop=loop)
         self._cache[name].set_result(project)
         index_file = self._index_file(name)
         index_file.write_text(converter.dumps(project))
@@ -71,7 +55,11 @@ class ProjectRepository:
         except OSError:
             pass  # continued below
 
+        # It's important to force the creation of this future before we await
+        # to make sure everyone awaits on the same future and so avoid duplicating work
+        fut = self._cache[key]
+
         async for project in factory(key):
             self._save(project)
 
-        return self[key]
+        return await fut

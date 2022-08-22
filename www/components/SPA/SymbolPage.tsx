@@ -20,14 +20,14 @@ function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
   const parts = withoutPrefix(mod.name, name).split(".");
   // First find a module-level class that matches Foo
   let cls = mod.classes.find(
-    (c) => withoutPrefix(mod.name, c.name) === parts[0]
+    (c) => withoutPrefix(mod.name, c.name) === parts[0],
   );
   parts.shift();
   // Keep looking in inner classes until we find a match
   while (cls && parts.length) {
     const parentName = cls.name;
     cls = cls.inner_classes.find(
-      (c) => withoutPrefix(parentName, c.name) === parts[0]
+      (c) => withoutPrefix(parentName, c.name) === parts[0],
     );
     parts.shift();
   }
@@ -60,13 +60,13 @@ export default function SymbolPage() {
 
             const cls = resolveClass(mod, symName);
             const func = mod.functions.find(
-              (func) => withoutPrefix(mod.name, func.name) === symName
+              (func) => withoutPrefix(mod.name, func.name) === symName,
             );
             const variable = mod.variables.find(
-              (variable) => withoutPrefix(mod.name, variable.name) === symName
+              (variable) => withoutPrefix(mod.name, variable.name) === symName,
             );
             const exp = mod.exports.find(
-              (exp) => withoutPrefix(mod.name, exp.name) === symName
+              (exp) => withoutPrefix(mod.name, exp.name) === symName,
             );
             const symbol = cls || func || variable || exp;
 
