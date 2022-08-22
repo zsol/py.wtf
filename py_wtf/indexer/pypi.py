@@ -1,5 +1,9 @@
+import asyncio
 import logging
+import multiprocessing
 import os
+from concurrent.futures import ProcessPoolExecutor
+from dataclasses import replace
 from functools import partial
 from pathlib import Path
 from tarfile import is_tarfile, TarFile
@@ -11,6 +15,9 @@ import aiofiles.tempfile
 import httpx
 
 from packaging.requirements import Requirement
+from rich.progress import Progress, TaskID
+
+from py_wtf.logging import setup_logging
 
 from py_wtf.repository import ProjectRepository
 
@@ -44,19 +51,54 @@ def _build_symbol_table(projects: Iterable[Project]) -> SymbolTable:
     return ret
 
 
+executor = ProcessPoolExecutor(
+    initializer=setup_logging,
+    initargs=(
+        logging.getLogger().level,
+        True,
+    ),
+    mp_context=multiprocessing.get_context("spawn"),
+)
+
+
 async def index_project(
-    project_name: ProjectName, repo: ProjectRepository
+    project_name: ProjectName, repo: ProjectRepository, progress: Progress | None = None
 ) -> AsyncIterable[Project]:
-    logging.info(f"Indexing {project_name}")
+    task_id = TaskID(0)
+    if progress:
+        task_id = progress.add_task(project_name, action="Fetching", total=3)
     deps: list[Project] = []
     with TemporaryDirectory() as tmpdir:
         src_dir, info = await download(project_name, Path(tmpdir))
+        if progress:
+            progress.update(
+                task_id, action="Gathering deps for", visible=False, advance=1
+            )
         dep_project_names = [ProjectName(dep) for dep in info.dependencies]
-        for name in dep_project_names:
-            proj = await repo.get(name, partial(index_project, repo=repo))
+
+        dep_projects = await asyncio.gather(
+            *[
+                repo.get(name, partial(index_project, repo=repo, progress=progress))
+                for name in dep_project_names
+            ],
+            return_exceptions=True,
+        )
+
+        for i, proj in enumerate(dep_projects):
+            if isinstance(proj, Exception):
+                logger.error(f"Error in {dep_project_names[i]}", exc_info=proj)
+                continue
             deps.append(proj)
 
-        modules = list(index_dir(src_dir, _build_symbol_table(deps)))
+        symbols = _build_symbol_table(deps)
+
+        if progress:
+            progress.update(task_id, action="Indexing", visible=True, advance=1)
+
+        modules = [mod async for mod in index_dir(src_dir, symbols, executor)]
+
+        if progress:
+            progress.advance(task_id)
 
     proj = Project(
         project_name,
@@ -64,6 +106,8 @@ async def index_project(
         modules=modules,
         documentation=[],
     )
+    if progress:
+        progress.update(task_id, visible=False)
     yield proj
 
 
@@ -111,8 +155,11 @@ def parse_deps(maybe_deps: None | Sequence[str]) -> list[str]:
     )
 
 
+sem = asyncio.BoundedSemaphore(value=20)
+
+
 async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:
-    async with httpx.AsyncClient() as client:
+    async with sem, httpx.AsyncClient(timeout=httpx.Timeout(None)) as client:
         proj_data = (
             await client.get(f"https://pypi.org/pypi/{project_name}/json")
         ).json()
@@ -134,9 +181,9 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
                 # src_md5 = artifact['md5_digest']
                 break
         if not src_url:
-            raise ValueError(
-                f"Couldn't find sdist for {project_name}=={latest_version}"
-            )
+            error = f"Couldn't find sdist for {project_name}=={latest_version}"
+            logger.warning(error)
+            return (directory, replace(proj_metadata, summary=error))
 
         # this is a bit unnecessary 🙃
         async with (
@@ -146,8 +193,9 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
             async for chunk in response.aiter_bytes():
                 await src_archive.write(chunk)
 
-        with open_archive(src_archive.name) as opened:
+        archive_name = str(src_archive.name)
+        with open_archive(archive_name) as opened:
             opened.extractall(directory)
-        os.unlink(src_archive.name)
+        os.unlink(archive_name)
 
     return (pick_project_dir(directory), proj_metadata)

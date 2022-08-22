@@ -12,16 +12,21 @@ import shutil
 from functools import partial, wraps
 from pathlib import Path
 
-from typing import Callable, Coroutine, ParamSpec, TypeVar
+from typing import Callable, Coroutine, Iterable, ParamSpec, TypeVar
 
 import click
+import httpx
 import rich
+import rich.progress
 
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
+from py_wtf.logging import setup_logging
 from py_wtf.repository import converter, ProjectRepository
 from py_wtf.types import Documentation, FQName, Project, ProjectMetadata, ProjectName
 
+
+logger = logging.getLogger(__name__)
 P = ParamSpec("P")
 T = TypeVar("T")
 
@@ -39,10 +44,11 @@ def coroutine(f: Callable[P, Coroutine[None, None, T]]) -> Callable[P, T]:
     invoke_without_command=True,
 )
 @click.version_option(version=__version__, prog_name="py.wtf")
+@click.option("--log-level", type=logging.getLevelName)
 @click.pass_context
-def py_wtf(ctx: click.Context) -> None:
+def py_wtf(ctx: click.Context, log_level: int | None) -> None:
     os.environ["LIBCST_PARSER_TYPE"] = "native"
-    logging.basicConfig(level=logging.INFO)
+    setup_logging(log_level)
 
 
 @py_wtf.command()
@@ -64,6 +70,43 @@ async def index(project_name: str, directory: str, pretty: bool, force: bool) ->
         rich.print(proj)
 
 
+@py_wtf.command()
+@click.argument("directory")
+@click.option("--top", type=int, default=50)
+@coroutine
+async def index_top_pypi(directory: str, top: int) -> None:
+    out_dir = Path(directory)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    repo = ProjectRepository(out_dir)
+    async with httpx.AsyncClient() as client:
+        top_pkgs = (
+            await client.get(
+                "https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.json"
+            )
+        ).json()
+        projects: Iterable[str] = (row["project"] for row in top_pkgs["rows"][:top])
+
+    with rich.progress.Progress(
+        rich.progress.TimeElapsedColumn(),
+        rich.progress.TextColumn("{task.fields[action]} {task.description}"),
+        rich.progress.BarColumn(),
+    ) as progress:
+        progress.console.height = max(2, progress.console.height // 2)
+        rets = await asyncio.gather(
+            *[
+                repo.get(
+                    ProjectName(name),
+                    partial(index_project, repo=repo, progress=progress),
+                )
+                for name in projects
+            ],
+            return_exceptions=True,
+        )
+        for ret in rets:
+            if isinstance(ret, Exception):
+                logger.exception(ret)
+
+
 @py_wtf.command(name="index-file")
 @click.argument("file")
 def index_file_cmd(file: str) -> None:
@@ -74,17 +117,20 @@ def index_file_cmd(file: str) -> None:
 
 @py_wtf.command(name="index-dir")
 @click.argument("dir")
-def index_dir_cmd(dir: str) -> None:
+@coroutine
+async def index_dir_cmd(dir: str) -> None:
     path = Path(dir)
     cnt = 0
-    for cnt, mod in enumerate(index_dir(path), start=1):
+    async for mod in index_dir(path):
+        cnt += 1
         rich.print(mod)
     rich.print(f"Found {cnt} modules in total.")
 
 
 @py_wtf.command()
 @click.argument("dir", required=False)
-def generate_test_index(dir: str | None) -> None:
+@coroutine
+async def generate_test_index(dir: str | None) -> None:
     root_dir = Path(__file__).parent.parent.parent
     out_dir = Path(dir) if dir else root_dir / "www" / "public" / "_index"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -103,11 +149,11 @@ def generate_test_index(dir: str | None) -> None:
             summary=proj_metadata.get("summary"),
         )
         symbol_table = {FQName("alpha.bar"): ProjectName("project-alpha")}
-        mods = index_dir(proj_dir, symbol_table)
+        mods = [mod async for mod in index_dir(proj_dir, symbol_table)]
         proj = Project(
             ProjectName(proj_dir.name),
             metadata=proj_info,
-            modules=list(mods),
+            modules=mods,
             documentation=[Documentation(proj_info.summary or "")],
         )
         (out_dir / f"{proj.name}.json").write_text(converter.dumps(_sort(proj)))
