@@ -7,7 +7,7 @@ setupSPAServer();
 describe("Inner class page", () => {
   it("loads and shows correct information", async () => {
     const { getByRole, getByText } = await renderSPA(
-      "/project-alpha/alpha.core/Helper.Utils"
+      "/project-alpha/alpha.core/Helper.Utils",
     );
 
     // Project heading
@@ -17,20 +17,20 @@ describe("Inner class page", () => {
     // Variable / method links aren't happy yet, see https://github.com/zsol/py.wtf/issues/3
     expect(getByRole("link", { name: "static_method" })).toHaveAttribute(
       "href",
-      "/project-alpha/alpha.core/Helper.Utils#alpha.core.Helper.Utils.static_method"
+      "/project-alpha/alpha.core/Helper.Utils#alpha.core.Helper.Utils.static_method",
     );
 
     // Inner class link
     expect(getByRole("link", { name: "Common" })).toHaveAttribute(
       "href",
-      "/project-alpha/alpha.core/Helper.Utils.Common"
+      "/project-alpha/alpha.core/Helper.Utils.Common",
     );
 
     // Other module member links, hopefully in the sidebar
     for (const sym of ["Helper", "core_main"]) {
       expect(getByRole("link", { name: sym })).toHaveAttribute(
         "href",
-        `/project-alpha/alpha.core/${sym}`
+        `/project-alpha/alpha.core/${sym}`,
       );
     }
 
@@ -38,7 +38,7 @@ describe("Inner class page", () => {
     getByText(
       (_, element) =>
         element?.nodeName === "CODE" &&
-        element?.textContent === "class alpha.core.Helper.Utils()"
+        element?.textContent === "class alpha.core.Helper.Utils()",
     );
 
     // Method
@@ -48,14 +48,14 @@ describe("Inner class page", () => {
         element?.textContent === "def static_method(\
 \
 foo: int,\
-) -> None"
+) -> None",
     );
 
     // Inner class declaration
     getByText(
       (_, element) =>
         element?.nodeName === "CODE" &&
-        element?.textContent === "class alpha.core.Helper.Utils.Common()"
+        element?.textContent === "class alpha.core.Helper.Utils.Common()",
     );
   });
 });
