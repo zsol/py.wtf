@@ -16,10 +16,10 @@ export function setupSPAServer() {
     rest.get("/_index/:file", async (req, res, ctx) => {
       return res(
         ctx.json(
-          await getProject((req.params.file as string).replace(/\.json$/, ""))
-        )
+          await getProject((req.params.file as string).replace(/\.json$/, "")),
+        ),
       );
-    })
+    }),
   );
   beforeAll(() => server.listen());
   afterEach(() => server.resetHandlers());
@@ -30,7 +30,7 @@ export async function renderSPA(path: string): Promise<RenderResult> {
   const result = render(
     <ThemeProvider theme={darkTheme}>
       <MemoryRouter initialEntries={[path]}>{SPARoutes}</MemoryRouter>
-    </ThemeProvider>
+    </ThemeProvider>,
   );
   await waitFor(() => {
     expect(result.container).not.toHaveTextContent("Loading...");

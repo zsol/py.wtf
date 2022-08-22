@@ -22,7 +22,7 @@ export function mod(p: docs.Project, m: docs.Module): string {
 export function symbol(
   p: docs.Project,
   m: docs.Module,
-  s: docs.Class | docs.Func | docs.Variable
+  s: docs.Class | docs.Func | docs.Variable,
 ): string {
   return `${mod(p, m)}/${withoutPrefix(m.name, s.name)}`;
 }
@@ -31,7 +31,7 @@ export function classItem(
   p: docs.Project,
   m: docs.Module,
   c: docs.Class,
-  x: docs.Func | docs.Variable
+  x: docs.Func | docs.Variable,
 ): string {
   return `${symbol(p, m, c)}#${x.name}`;
 }
