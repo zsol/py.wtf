@@ -13,8 +13,8 @@ describe("Export page", () => {
       getByText(
         (_, element) =>
           element?.nodeName === "PRE" &&
-          element?.textContent === "class alpha.core.Helper()"
-      )
+          element?.textContent === "class alpha.core.Helper()",
+      ),
     );
   });
 });

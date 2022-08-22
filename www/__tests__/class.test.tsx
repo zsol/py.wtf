@@ -7,7 +7,7 @@ setupSPAServer();
 describe("Class page", () => {
   it("loads and shows correct information", async () => {
     const { getByRole, getByText } = await renderSPA(
-      "/project-alpha/alpha.core/Helper"
+      "/project-alpha/alpha.core/Helper",
     );
 
     // Project heading
@@ -17,20 +17,20 @@ describe("Class page", () => {
     // Variable / method links aren't happy yet, see https://github.com/zsol/py.wtf/issues/3
     expect(getByRole("link", { name: "some_variable" })).toHaveAttribute(
       "href",
-      "/project-alpha/alpha.core/Helper#alpha.core.Helper.some_variable"
+      "/project-alpha/alpha.core/Helper#alpha.core.Helper.some_variable",
     );
 
     // Inner class link
     expect(getByRole("link", { name: "Utils" })).toHaveAttribute(
       "href",
-      "/project-alpha/alpha.core/Helper.Utils"
+      "/project-alpha/alpha.core/Helper.Utils",
     );
 
     // Other module member links, hopefully in the sidebar
     for (const sym of ["Helper", "core_main"]) {
       expect(getByRole("link", { name: sym })).toHaveAttribute(
         "href",
-        `/project-alpha/alpha.core/${sym}`
+        `/project-alpha/alpha.core/${sym}`,
       );
     }
 
@@ -38,21 +38,21 @@ describe("Class page", () => {
     getByText(
       (_, element) =>
         element?.nodeName === "CODE" &&
-        element?.textContent === "class alpha.core.Helper()"
+        element?.textContent === "class alpha.core.Helper()",
     );
 
     // Instance variable
     getByText(
       (_, element) =>
         element?.nodeName === "CODE" &&
-        element?.textContent === "alpha.core.Helper.some_variable: int"
+        element?.textContent === "alpha.core.Helper.some_variable: int",
     );
 
     // Inner class declaration
     getByText(
       (_, element) =>
         element?.nodeName === "CODE" &&
-        element?.textContent === "class alpha.core.Helper.Utils()"
+        element?.textContent === "class alpha.core.Helper.Utils()",
     );
 
     // Inner class method
@@ -62,14 +62,14 @@ describe("Class page", () => {
         element?.textContent === "def static_method(\
 \
 foo: int,\
-) -> None"
+) -> None",
     );
 
     // Double inner class I guess
     getByText(
       (_, element) =>
         element?.nodeName === "CODE" &&
-        element?.textContent === "class alpha.core.Helper.Utils.Common()"
+        element?.textContent === "class alpha.core.Helper.Utils.Common()",
     );
   });
 });
