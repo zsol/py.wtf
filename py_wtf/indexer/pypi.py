@@ -1,12 +1,14 @@
-import json
 import logging
+import os
 from functools import partial
 from pathlib import Path
 from tarfile import is_tarfile, TarFile
 from tempfile import TemporaryDirectory
-from typing import Iterable, Sequence, Tuple
-from urllib.request import urlopen, urlretrieve
+from typing import AsyncIterable, Iterable, Sequence, Tuple
 from zipfile import is_zipfile, ZipFile
+
+import aiofiles.tempfile
+import httpx
 
 from packaging.requirements import Requirement
 
@@ -42,16 +44,16 @@ def _build_symbol_table(projects: Iterable[Project]) -> SymbolTable:
     return ret
 
 
-def index_project(
+async def index_project(
     project_name: ProjectName, repo: ProjectRepository
-) -> Iterable[Project]:
+) -> AsyncIterable[Project]:
     logging.info(f"Indexing {project_name}")
     deps: list[Project] = []
     with TemporaryDirectory() as tmpdir:
-        src_dir, info = download(project_name, Path(tmpdir))
+        src_dir, info = await download(project_name, Path(tmpdir))
         dep_project_names = [ProjectName(dep) for dep in info.dependencies]
         for name in dep_project_names:
-            proj = repo.get(name, partial(index_project, repo=repo))
+            proj = await repo.get(name, partial(index_project, repo=repo))
             deps.append(proj)
 
         modules = list(index_dir(src_dir, _build_symbol_table(deps)))
@@ -109,30 +111,43 @@ def parse_deps(maybe_deps: None | Sequence[str]) -> list[str]:
     )
 
 
-def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:
-    with urlopen(f"https://pypi.org/pypi/{project_name}/json") as pypi:
-        proj_data = json.load(pypi)
-    pypi_info = proj_data["info"]
-    latest_version = pypi_info["version"]
-    proj_metadata = ProjectMetadata(
-        latest_version,
-        summary=pypi_info.get("summary"),
-        home_page=pypi_info.get("home_page"),
-        license=pypi_info.get("license"),
-        documentation_url=pypi_info.get("project_urls", {}).get("Documentation"),
-        classifiers=pypi_info.get("classifiers"),
-        dependencies=parse_deps(pypi_info.get("requires_dist")),
-    )
-    src_url = None
-    for artifact in proj_data["releases"][latest_version]:
-        if artifact["packagetype"] == "sdist":
-            src_url = artifact["url"]
-            # src_md5 = artifact['md5_digest']
-            break
-    if not src_url:
-        raise ValueError(f"Couldn't find sdist for {project_name}=={latest_version}")
-    src_archive, _ = urlretrieve(src_url)
-    with open_archive(src_archive) as opened:
-        opened.extractall(directory)
+async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:
+    async with httpx.AsyncClient() as client:
+        proj_data = (
+            await client.get(f"https://pypi.org/pypi/{project_name}/json")
+        ).json()
+        pypi_info = proj_data["info"]
+        latest_version = pypi_info["version"]
+        proj_metadata = ProjectMetadata(
+            latest_version,
+            summary=pypi_info.get("summary"),
+            home_page=pypi_info.get("home_page"),
+            license=pypi_info.get("license"),
+            documentation_url=pypi_info.get("project_urls", {}).get("Documentation"),
+            classifiers=pypi_info.get("classifiers"),
+            dependencies=parse_deps(pypi_info.get("requires_dist")),
+        )
+        src_url = None
+        for artifact in proj_data["releases"][latest_version]:
+            if artifact["packagetype"] == "sdist":
+                src_url = artifact["url"]
+                # src_md5 = artifact['md5_digest']
+                break
+        if not src_url:
+            raise ValueError(
+                f"Couldn't find sdist for {project_name}=={latest_version}"
+            )
+
+        # this is a bit unnecessary 🙃
+        async with (
+            client.stream("GET", src_url) as response,
+            aiofiles.tempfile.NamedTemporaryFile("wb+", delete=False) as src_archive,
+        ):
+            async for chunk in response.aiter_bytes():
+                await src_archive.write(chunk)
+
+        with open_archive(src_archive.name) as opened:
+            opened.extractall(directory)
+        os.unlink(src_archive.name)
 
     return (pick_project_dir(directory), proj_metadata)

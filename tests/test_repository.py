@@ -1,6 +1,6 @@
 from dataclasses import replace
 from pathlib import Path
-from typing import Iterable
+from typing import AsyncIterable
 
 import pytest
 from py_wtf.repository import converter, ProjectRepository
@@ -30,33 +30,31 @@ def repo(tmp_path: Path) -> ProjectRepository:
     return ProjectRepository(tmp_path)
 
 
-def test_empty_raises(repo: ProjectRepository) -> None:
-    with pytest.raises(KeyError):
-        repo[ProjectName("foo")]
-
-
-def test_get_calls_factory_once(repo: ProjectRepository, project: Project) -> None:
+@pytest.mark.asyncio
+async def test_get_calls_factory_once(
+    repo: ProjectRepository, project: Project
+) -> None:
     called = False
 
-    def factory(key: ProjectName) -> Iterable[Project]:
+    async def factory(key: ProjectName) -> AsyncIterable[Project]:
         nonlocal called
         called = True
         yield project
 
-    ret = repo.get(project.name, factory)
+    ret = await repo.get(project.name, factory)
     assert called
     assert ret == project
 
     called = False
 
-    ret = repo.get(project.name, factory)
+    ret = await repo.get(project.name, factory)
     assert not called
     assert ret == project
 
 
 def test_index_works(repo: ProjectRepository, project: Project) -> None:
     repo._save(project)
-    assert repo[project.name] == project
+    assert repo._cache[project.name].result() == project
 
 
 def test_save_writes_to_disk(repo: ProjectRepository, project: Project) -> None:
@@ -64,16 +62,24 @@ def test_save_writes_to_disk(repo: ProjectRepository, project: Project) -> None:
     assert (repo.directory / f"{project.name}.json").exists()
 
 
-def test_getitem_loads_from_disk(repo: ProjectRepository, project: Project) -> None:
+@pytest.mark.asyncio
+async def test_get_loads_from_disk(repo: ProjectRepository, project: Project) -> None:
     index_file = repo.directory / f"{project.name}.json"
     index_file.write_text(converter.dumps(project))
-    assert repo[project.name] == project
+
+    async def _factory(_: ProjectName) -> AsyncIterable[Project]:
+        # this should never be called
+        assert False
+        yield project
+
+    got = await repo.get(project.name, _factory)
+    assert got == project
 
 
 def test_double_save(repo: ProjectRepository, project: Project) -> None:
     other_project = replace(project, documentation=["foo"])
     assert project != other_project
     repo._save(project)
-    assert repo[project.name] == project
+    assert repo._cache[project.name].result() == project
     repo._save(other_project)
-    assert repo[other_project.name] == project
+    assert repo._cache[other_project.name].result() == project
