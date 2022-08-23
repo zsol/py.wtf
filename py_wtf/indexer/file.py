@@ -2,10 +2,9 @@ import asyncio
 import itertools
 import logging
 from concurrent.futures import Executor
-from functools import partial
 from inspect import cleandoc
 from pathlib import Path
-from typing import AsyncIterable, Callable, cast, Iterable, Protocol, TypeVar
+from typing import AsyncIterable, cast, Iterable, Protocol, TypeVar
 
 import libcst as cst
 import trailrunner
