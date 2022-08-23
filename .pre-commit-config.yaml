@@ -21,7 +21,7 @@ repos:
     rev: v2.0.0
     hooks:
       - id: ufmt
-        entry: python -c 'import os, subprocess; os.environ["LIBCST_PARSER_TYPE"] = "native"; subprocess.run(["ufmt", "format"], check=True)'
+        entry: python -c 'import os, subprocess; os.environ["LIBCST_PARSER_TYPE"] = "native"; raise SystemExit(subprocess.run(["ufmt", "format"], check=True).returncode)'
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.971"
