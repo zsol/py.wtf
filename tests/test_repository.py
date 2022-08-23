@@ -83,3 +83,12 @@ def test_double_save(repo: ProjectRepository, project: Project) -> None:
     assert repo._cache[project.name].result() == project
     repo._save(other_project)
     assert repo._cache[other_project.name].result() == project
+
+
+@pytest.mark.asyncio
+async def test_get_with_bad_factory(repo: ProjectRepository, project: Project) -> None:
+    async def _factory(_: ProjectName) -> AsyncIterable[Project]:
+        yield project
+
+    with pytest.raises(ValueError):
+        await repo.get(ProjectName("DefinitelyNotproject.name"), _factory)

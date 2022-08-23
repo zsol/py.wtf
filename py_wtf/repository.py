@@ -62,4 +62,6 @@ class ProjectRepository:
         async for project in factory(key):
             self._save(project)
 
-        return await fut
+        if not fut.done():
+            raise ValueError(f"{key} was never yielded by {factory}")
+        return fut.result()
