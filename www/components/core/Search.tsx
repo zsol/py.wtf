@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { SearchDescriptor } from "@/lib/searchDescriptor";
 
 import { flexColumn } from "./layout/helpers";
-import { Link, RouterLink } from "./navigation/Link";
+import { RouterLink } from "./navigation/Link";
 
 type SearchParams = {
   descriptors: Array<SearchDescriptor>;
@@ -70,7 +70,7 @@ export const Search = ({ descriptors = [] }: SearchParams) => {
       {searchTerm && (
         <SearchResultContainer>
           {results.length === 0 && "No results found"}
-          {results?.length > 0 &&
+          {results.length > 0 &&
             results.map((item: SearchDescriptor, index: number) => (
               <SearchResultItem key={`${item.name}_${index}`}>
                 <ItemLink to={`${item.url}`}>{item.name}</ItemLink>
