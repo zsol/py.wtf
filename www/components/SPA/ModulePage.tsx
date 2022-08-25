@@ -23,7 +23,7 @@ export default function ModulePage() {
 
   const { project, module, projectJsonUrl, isLoading, error } = useFetchModule(
     projectName,
-    moduleName
+    moduleName,
   );
 
   if (project && module) {

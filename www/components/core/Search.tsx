@@ -52,8 +52,8 @@ export const Search = ({ descriptors = [] }: SearchParams) => {
     if (searchTerm) {
       setResults(
         descriptors.filter((item: SearchDescriptor) =>
-          item?.name?.includes(searchTerm)
-        )
+          item?.name?.includes(searchTerm),
+        ),
       );
     } else {
       setResults([]);

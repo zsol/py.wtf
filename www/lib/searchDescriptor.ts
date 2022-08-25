@@ -14,7 +14,7 @@ const generateSymbolDescriptors = (
   project: Project,
   module: Module,
   symbols: Array<Class | Func | Variable>,
-  symbolType: SymbolType
+  symbolType: SymbolType,
 ) => {
   symbols.forEach((symbol) => {
     descriptors.push({
@@ -26,7 +26,7 @@ const generateSymbolDescriptors = (
 };
 
 const generateModuleDescriptors = (
-  project: Project
+  project: Project,
 ): Array<SearchDescriptor> => {
   const descriptors: Array<SearchDescriptor> = [];
 
@@ -43,7 +43,7 @@ const generateModuleDescriptors = (
         project,
         module,
         module.functions,
-        "function"
+        "function",
       );
     }
     if (module.variables.length > 0) {
@@ -52,7 +52,7 @@ const generateModuleDescriptors = (
         project,
         module,
         module.variables,
-        "variable"
+        "variable",
       );
     }
     if (module.classes.length > 0) {
@@ -61,7 +61,7 @@ const generateModuleDescriptors = (
         project,
         module,
         module.classes,
-        "class"
+        "class",
       );
     }
   });

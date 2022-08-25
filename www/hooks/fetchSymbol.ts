@@ -8,14 +8,14 @@ function resolveClass(mod: docs.Module, name: string): docs.Class | undefined {
   const parts = withoutPrefix(mod.name, name).split(".");
   // First find a module-level class that matches Foo
   let cls = mod.classes.find(
-    (c) => withoutPrefix(mod.name, c.name) === parts[0]
+    (c) => withoutPrefix(mod.name, c.name) === parts[0],
   );
   parts.shift();
   // Keep looking in inner classes until we find a match
   while (cls && parts.length) {
     const parentName = cls.name;
     cls = cls.inner_classes.find(
-      (c) => withoutPrefix(parentName, c.name) === parts[0]
+      (c) => withoutPrefix(parentName, c.name) === parts[0],
     );
     parts.shift();
   }
@@ -30,7 +30,7 @@ type FindSymbolResult = {
 
 const findSymbol = (
   module: docs.Module,
-  symbolName: string | undefined
+  symbolName: string | undefined,
 ): FindSymbolResult => {
   let symbol;
   let symbolType: SymbolType;
@@ -44,7 +44,7 @@ const findSymbol = (
 
     if (!symbol) {
       const functionMatch = module.functions.find(
-        (func) => withoutPrefix(module.name, func.name) === symbolName
+        (func) => withoutPrefix(module.name, func.name) === symbolName,
       );
       if (functionMatch) {
         symbol = functionMatch;
@@ -54,7 +54,7 @@ const findSymbol = (
 
     if (!symbol) {
       const variableMatch = module.variables.find(
-        (variable) => withoutPrefix(module.name, variable.name) === symbolName
+        (variable) => withoutPrefix(module.name, variable.name) === symbolName,
       );
       if (variableMatch) {
         symbol = variableMatch;
@@ -64,7 +64,7 @@ const findSymbol = (
 
     if (!symbol) {
       const exportMatch = module.exports.find(
-        (exp) => withoutPrefix(module.name, exp.name) === symbolName
+        (exp) => withoutPrefix(module.name, exp.name) === symbolName,
       );
       if (exportMatch) {
         symbol = exportMatch;
@@ -82,11 +82,11 @@ const findSymbol = (
 const useFetchSymbol = (
   projectName: string,
   moduleName: string,
-  symbolName: string
+  symbolName: string,
 ) => {
   const { project, module, projectJsonUrl, error, isLoading } = useFetchModule(
     projectName,
-    moduleName
+    moduleName,
   );
 
   let symbol;
