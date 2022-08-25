@@ -74,13 +74,7 @@ export const generateSearchDescriptors = (project: Project) => {
     return [];
   }
 
-  const descriptors = [
-    {
-      name: project.name,
-      type: "project",
-      url: generateProjectUrl(project),
-    },
-  ];
+  const descriptors: Array<SearchDescriptor> = [];
 
   if (project.modules?.length > 0) {
     generateModuleDescriptors(descriptors, project);
