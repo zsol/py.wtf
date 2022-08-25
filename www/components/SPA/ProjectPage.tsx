@@ -1,8 +1,9 @@
+import useFetchProject from "hooks/fetchProject";
 import { useParams } from "react-router-dom";
 
 import Project from "@/components/Docs/Project";
-import FetchProject from "@/components/FetchProject";
 
+import Header from "../Header";
 import PageLayout from "../PageLayout";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
@@ -18,16 +19,31 @@ export default function ProjectPage() {
       </div>
     );
   }
+
+  const { project, error, isLoading, projectJsonUrl } = useFetchProject(prj);
+
+  if (project) {
+    return (
+      <PageLayout
+        title={`py.wtf: ${project.name}`}
+        header={<Header project={project} />}
+      >
+        <ContentWithSidebar sidebar={<Sidebar project={project} />}>
+          <Project prj={project} />
+        </ContentWithSidebar>
+      </PageLayout>
+    );
+  }
+
+  // TODO: Make this a common component
   return (
-    <PageLayout title={`py.wtf: ${prj}`}>
-      <FetchProject
-        name={prj}
-        content={(prj) => (
-          <ContentWithSidebar sidebar={<Sidebar project={prj} />}>
-            <Project prj={prj} />
-          </ContentWithSidebar>
-        )}
-      />
-    </PageLayout>
+    <div>
+      {isLoading && <div>Loading...</div>}
+      {error && (
+        <div>
+          Failed to load <code>{projectJsonUrl}</code>: {error.message}
+        </div>
+      )}
+    </div>
   );
 }

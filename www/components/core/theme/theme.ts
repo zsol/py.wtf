@@ -5,6 +5,7 @@ const colors = {
     dark: "#191c20",
   },
   white: "#ffffff",
+  black: "#000000",
   grey: {
     lightest: "#e9e9e9",
     light: "#d4d4d4",
@@ -51,6 +52,12 @@ export const darkTheme = {
     },
     footer: {
       separator: colors.grey.darkest,
+    },
+    input: {
+      background: colors.white,
+      border: colors.grey.lightest,
+      text: colors.black,
+      hover: colors.grey.lightest,
     },
   },
   spacing: spacing,
