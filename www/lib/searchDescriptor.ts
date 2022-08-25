@@ -38,7 +38,7 @@ const generateModuleDescriptors = (
       url: generateModuleUrl(project, module),
     });
 
-    if (module.functions?.length > 0) {
+    if (module.functions.length > 0) {
       generateSymbolDescriptors(
         descriptors,
         project,
@@ -47,7 +47,7 @@ const generateModuleDescriptors = (
         "function"
       );
     }
-    if (module.variables?.length > 0) {
+    if (module.variables.length > 0) {
       generateSymbolDescriptors(
         descriptors,
         project,
@@ -56,7 +56,7 @@ const generateModuleDescriptors = (
         "variable"
       );
     }
-    if (module.classes?.length > 0) {
+    if (module.classes.length > 0) {
       generateSymbolDescriptors(
         descriptors,
         project,
