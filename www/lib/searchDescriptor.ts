@@ -1,9 +1,5 @@
 import { Class, Func, Module, Project, Variable } from "./docs";
-import {
-  mod as generateModuleUrl,
-  project as generateProjectUrl,
-  symbol as generateSymbolUrl,
-} from "./url";
+import { mod as generateModuleUrl, symbol as generateSymbolUrl } from "./url";
 
 type SymbolType = "module" | "function" | "variable" | "class" | "export";
 
@@ -30,9 +26,10 @@ const generateSymbolDescriptors = (
 };
 
 const generateModuleDescriptors = (
-  descriptors: Array<SearchDescriptor>,
   project: Project
-) => {
+): Array<SearchDescriptor> => {
+  const descriptors: Array<SearchDescriptor> = [];
+
   project.modules.forEach((module) => {
     descriptors.push({
       name: module.name,
@@ -68,6 +65,8 @@ const generateModuleDescriptors = (
       );
     }
   });
+
+  return descriptors;
 };
 
 // TODO: memoize this
@@ -76,11 +75,7 @@ export const generateSearchDescriptors = (project: Project) => {
     return [];
   }
 
-  const descriptors: Array<SearchDescriptor> = [];
-
-  if (project.modules?.length > 0) {
-    generateModuleDescriptors(descriptors, project);
-  }
-
-  return descriptors;
+  // TODO: Think about whether it's a good pattern for this to have a different signature than the rest of the
+  // generators.
+  return generateModuleDescriptors(project);
 };
