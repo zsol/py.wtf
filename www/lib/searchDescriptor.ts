@@ -7,8 +7,7 @@ import {
 
 export type SearchDescriptor = {
   name: string;
-  // TODO: finish this list
-  type?: "project" | "module" | "function" | string;
+  type: "project" | "module" | "function" | "variable" | "class" | "export";
   url: string;
 };
 
