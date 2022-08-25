@@ -111,7 +111,7 @@ export default function SymbolPage() {
   return (
     <div>
       {isLoading && <div>Loading...</div>}
-      {error && <div>Failed to load: ${error.message}</div>}
+      {error && <div>Failed to load: {error.message}</div>}
     </div>
   );
 }

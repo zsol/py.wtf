@@ -41,7 +41,7 @@ export default function ProjectPage() {
       {isLoading && <div>Loading...</div>}
       {error && (
         <div>
-          Failed to load <code>${projectJsonUrl}</code>: ${error.message}
+          Failed to load <code>{projectJsonUrl}</code>: {error.message}
         </div>
       )}
     </div>
