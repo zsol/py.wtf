@@ -22,7 +22,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
         name,
         documentation: [`${proj.metadata.summary ?? ""}`],
       };
-    })
+    }),
   );
   return {
     props: {
