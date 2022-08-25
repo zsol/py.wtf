@@ -5,9 +5,11 @@ import {
   symbol as generateSymbolUrl,
 } from "./url";
 
+type SymbolType = "module" | "function" | "variable" | "class" | "export";
+
 export type SearchDescriptor = {
   name: string;
-  type: "project" | "module" | "function" | "variable" | "class" | "export";
+  type: SymbolType;
   url: string;
 };
 
@@ -16,7 +18,7 @@ const generateSymbolDescriptors = (
   project: Project,
   module: Module,
   symbols: Array<Class | Func | Variable>,
-  symbolType: string
+  symbolType: SymbolType
 ) => {
   symbols.forEach((symbol) => {
     descriptors.push({
