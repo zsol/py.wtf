@@ -11,7 +11,7 @@ RST_ROLE = re.compile(r":[a-zA-Z]+:`")
 def convert_to_myst(src: str) -> Documentation:
     text = cleandoc(src)
     if is_rst(text):
-        text = rst_to_myst.rst_to_myst(src).text
+        text = rst_to_myst.rst_to_myst(text).text
     return Documentation(text)
 
 
