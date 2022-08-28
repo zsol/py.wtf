@@ -43,6 +43,9 @@ py-wtf = "py_wtf.cli:py_wtf"
 [tool.hatch.version]
 path = "py_wtf/__about__.py"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.hatch.build.targets.sdist]
 [tool.hatch.build.targets.wheel]
 
