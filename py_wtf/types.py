@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import NewType, TYPE_CHECKING
 
-
 if not TYPE_CHECKING:
     NewType = lambda _, ty: ty
 

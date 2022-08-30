@@ -2,7 +2,6 @@ import asyncio
 import itertools
 import logging
 from concurrent.futures import Executor
-from inspect import cleandoc
 from pathlib import Path
 from typing import AsyncIterable, cast, Iterable, Protocol, TypeVar
 
@@ -12,6 +11,8 @@ from libcst import matchers as m
 from libcst.codemod import CodemodContext
 from libcst.codemod.visitors import GatherExportsVisitor
 from libcst.helpers.expression import get_full_name_for_node
+
+from py_wtf.indexer.documentation import convert_to_myst
 
 from py_wtf.types import (
     Class,
@@ -76,7 +77,9 @@ def index_file(
         )
         mod.visit(indexer)
     except Exception as e:
-        err = Documentation(f"Failed to index {path.relative_to(base_dir)} due to {e}")
+        err = Documentation(
+            f"Failed to index ``{path.relative_to(base_dir)}`` due to ``{e}``"
+        )
         indexer.documentation = [err]
         logger.error(err)
     return Module(
@@ -139,7 +142,7 @@ def extract_docstring(node: cst.Module | cst.BaseSuite) -> list[Documentation]:
         docstring = cast(cst.SimpleString, match["docstring"])
         docstring_quotes = {'"""', "'''"}
         if any(docstring.value.startswith(quote) for quote in docstring_quotes):
-            return [Documentation(cleandoc(docstring.evaluated_value))]
+            return [convert_to_myst(docstring.evaluated_value)]
     return []
 
 
