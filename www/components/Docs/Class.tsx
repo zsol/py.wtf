@@ -91,7 +91,7 @@ export default function Class({ cls, project }: Props) {
         </Intersperse>
         )
       </Code>
-      <Documentation>{cls.documentation}</Documentation>
+      <Documentation project={project}>{cls.documentation}</Documentation>
       <Methods cls={cls} project={project} />
       <ClassVariables cls={cls} project={project} />
       <InstanceVariables cls={cls} project={project} />

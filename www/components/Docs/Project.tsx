@@ -14,7 +14,7 @@ export default function Proj({ prj }: Props) {
   prj.modules.sort((a, b) => a.name.localeCompare(b.name));
   return (
     <div>
-      <Documentation>{prj.documentation}</Documentation>
+      <Documentation project={prj}>{prj.documentation}</Documentation>
       <SymbolLinkTable
         title="Modules"
         url={(mod) => url.mod(prj, mod)}

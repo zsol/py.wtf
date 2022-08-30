@@ -31,7 +31,7 @@ export default function Module({ prj, mod }: Props) {
   return (
     <div>
       <H3>Module {mod.name}</H3>
-      <Documentation>{mod.documentation}</Documentation>
+      <Documentation project={prj}>{mod.documentation}</Documentation>
       <Exports prj={prj} exps={mod.exports} />
       <LinkTable title="Classes" symbols={mod.classes} />
       <LinkTable title="Functions" symbols={mod.functions} />

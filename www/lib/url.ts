@@ -36,8 +36,14 @@ export function classItem(
   return `${symbol(p, m, c)}#${x.name}`;
 }
 
-export function xref(p: docs.Project, xref: docs.XRef): string | null {
-  const project = xref.project ?? p.name;
+export function xref(
+  p: docs.Project | undefined,
+  xref: docs.XRef,
+): string | null {
+  const project = xref.project ?? p?.name;
+  if (project == null) {
+    return null;
+  }
   const lastDot = xref.fqname.lastIndexOf(".");
   if (lastDot === -1) {
     return null;

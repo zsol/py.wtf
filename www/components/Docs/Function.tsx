@@ -65,7 +65,7 @@ export default function Function({ func, project, anchor }: FunctionProps) {
         ))}
         ) {ret}
       </Code>
-      <FuncDocs>{func.documentation}</FuncDocs>
+      <FuncDocs project={project}>{func.documentation}</FuncDocs>
     </div>
   );
 }

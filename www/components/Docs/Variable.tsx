@@ -20,7 +20,7 @@ export default function Variable({ variable, project, anchor }: Props) {
           project={project}
         />
       </Code>
-      <Documentation>{variable.documentation}</Documentation>
+      <Documentation project={project}>{variable.documentation}</Documentation>
     </div>
   );
 }
