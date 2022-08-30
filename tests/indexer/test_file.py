@@ -189,14 +189,17 @@ def test_index_package_exports_with_dependencies(package_with_dep: Module) -> No
 
 
 def test_module_docs(mod: Module) -> None:
-    assert mod.documentation == [Documentation("module docs"), Documentation("header")]
+    assert mod.documentation == [
+        Documentation("module docs\n"),
+        Documentation("header"),
+    ]
 
 
 def test_func_docs(mod: Module) -> None:
     func = [f for f in mod.functions if f.name.endswith(".func")][0]
-    assert func.documentation == [Documentation("func docs")]
+    assert func.documentation == [Documentation("func docs\n")]
 
 
 def test_class_docs(mod: Module) -> None:
     cls = mod.classes[0]
-    assert cls.documentation == [Documentation("class docs")]
+    assert cls.documentation == [Documentation("class docs\n")]

@@ -40,6 +40,7 @@ repos:
           - pytest
           - types-aiofiles==0.8.0
           - types-appdirs==1.4.3
+          - rst-to-myst[sphinx]@git+https://github.com/zsol/rst-to-myst@py.wtf
 
   - repo: local
     hooks:
