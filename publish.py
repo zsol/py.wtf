@@ -97,7 +97,9 @@ async def main() -> None:
         await shell("git", "pull")
         for i in ["docs/CNAME", "docs/.nojekyll"]:
             shutil.move(i, tmp_out)
-        shutil.rmtree("docs")
+        await shell("git", "checkout", "--orphan", "new-pages")
+        await shell("git", "rm", "-rf", ".")
+        await shell("git", "clean", "-fdx")
         shutil.move(tmp_out, "docs")
     await shell("git", "add", "-A")
     await shell(
@@ -107,8 +109,9 @@ async def main() -> None:
         f"Deploy of {rev}",
         additional_env={"PRE_COMMIT_ALLOW_NO_CONFIG": "1"},
     )
-    await shell("git", "push")
+    await shell("git", "push", "origin", "+new-pages:pages")
     await shell("git", "checkout", "-")
+    await shell("git", "branch", "-D", "new-pages")
 
 
 if __name__ == "__main__":
