@@ -1,7 +1,7 @@
-import * as md from "mdast";
+import type * as md from "mdast";
 import { MyST } from "mystjs";
-import React, { ReactElement, useContext } from "react";
-import { Literal, Node } from "unist";
+import { ReactElement, createContext, useContext } from "react";
+import { Literal } from "unist";
 
 export interface MySTMarkupProps extends MySTRoles {
   source: string;
@@ -11,7 +11,7 @@ export interface MySTRoles {
   roles?: (role: MySTRole) => ReactElement;
 }
 
-const MySTContext = React.createContext<MySTRoles>({ roles: (_) => <></> });
+const MySTContext = createContext<MySTRoles>({ roles: (_) => <></> });
 
 export default function MySTMarkup({ source, roles }: MySTMarkupProps) {
   const parser = new MyST();
@@ -23,17 +23,47 @@ export default function MySTMarkup({ source, roles }: MySTMarkupProps) {
   );
 }
 
-interface DispatchProps<T extends Node> {
-  key: number;
-  node: T;
-}
-
 export interface MySTRole extends Literal {
   type: "mystRole";
   name: string;
 }
 
-const dispatch = {
+interface MySTRoleContentMap {
+  mystRole: MySTRole;
+}
+
+interface ContentMap
+  extends md.FrontmatterContentMap,
+    md.DefinitionContentMap,
+    md.ListContentMap,
+    md.TableContentMap,
+    md.RowContentMap,
+    MySTRoleContentMap,
+    Omit<md.BlockContentMap, "thematicbreak">,
+    Omit<
+      md.PhrasingContentMap,
+      "inlinecode" | "imagereference" | "footnotereference"
+    > {
+  thematicBreak: md.BlockContentMap["thematicbreak"];
+  inlineCode: md.PhrasingContentMap["inlinecode"];
+  imageReference: md.PhrasingContentMap["imagereference"];
+  footnoteReference: md.PhrasingContentMap["footnotereference"];
+}
+
+type Content = ContentMap[keyof ContentMap];
+
+interface DispatchProps<T extends Content> {
+  key: number;
+  node: T;
+}
+
+type Dispatch = {
+  [Type in keyof ContentMap]: (
+    props: DispatchProps<ContentMap[Type]>,
+  ) => ReactElement;
+};
+
+const dispatch: Dispatch = {
   paragraph: (props: DispatchProps<md.Paragraph>) => <Paragraph {...props} />,
   heading: (props: DispatchProps<md.Heading>) => <Heading {...props} />,
   thematicBreak: (props: DispatchProps<md.ThematicBreak>) => (
@@ -79,10 +109,14 @@ const dispatch = {
   mystRole: (props: DispatchProps<MySTRole>) => <Role {...props} />,
 };
 
+function MySTChild<K extends keyof Dispatch>(node: ContentMap[K], key: number) {
+  return dispatch[node.type as K]({ key, node });
+}
+
 function MySTParent({ node }: { node: md.Parent }) {
   const ret = node.children.map((node, key) => {
     if (node.type in dispatch) {
-      return dispatch[node.type]({ key, node });
+      return MySTChild(node, key);
     }
     console.log(`Unexpected node with type ${node.type}`, node);
   });
