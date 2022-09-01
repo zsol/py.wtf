@@ -13,7 +13,7 @@ interface Props {
 
 function renderRole(prj: Project | undefined, role: MySTRole) {
   // maybe look at the name?
-  let val = role.value as string;
+  const val = role.value as string;
   const parts = val.split("/", 2);
   const [project, fqname] = parts.length === 2 ? parts : [undefined, parts[0]];
   const ref = xref(prj, { project, fqname });

@@ -1,7 +1,7 @@
 import type * as md from "mdast";
 import { MyST } from "mystjs";
 import { ReactElement, createContext, useContext } from "react";
-import { Literal } from "unist";
+import type { Literal } from "unist";
 
 export interface MySTMarkupProps extends MySTRoles {
   source: string;
@@ -146,10 +146,7 @@ function Heading({ node }: { node: md.Heading }) {
       return <h5>{children}</h5>;
     case 6:
       return <h6>{children}</h6>;
-    default:
-      console.error(`Unexpected heading depth ${node.depth}`);
   }
-  return <></>;
 }
 
 function ThematicBreak() {
@@ -183,22 +180,22 @@ function ListItem({ node }: { node: md.ListItem }) {
   );
 }
 
-function Table({ node }: { node: md.Table }) {
+function Table(_: { node: md.Table }) {
   // TODO: support table https://github.com/syntax-tree/mdast#table
   return <></>;
 }
 
-function TableRow({ node }: { node: md.TableRow }) {
+function TableRow(_: { node: md.TableRow }) {
   // TODO: support tablerow https://github.com/syntax-tree/mdast#tablerow
   return <></>;
 }
 
-function TableCell({ node }: { node: md.TableCell }) {
+function TableCell(_: { node: md.TableCell }) {
   // TODO: support tablecell https://github.com/syntax-tree/mdast#tablecell
   return <></>;
 }
 
-function HTML({ node }: { node: md.HTML }) {
+function HTML(_: { node: md.HTML }) {
   // HTML is unsupported.
   return <></>;
 }
@@ -211,17 +208,17 @@ function Code({ node }: { node: md.Code }) {
   );
 }
 
-function YAML({ node }: { node: md.YAML }) {
+function YAML(_: { node: md.YAML }) {
   // YAML is unsupported.
   return <></>;
 }
 
-function Definition({ node }: { node: md.Definition }) {
+function Definition(_: { node: md.Definition }) {
   // TODO: support definition https://github.com/syntax-tree/mdast#definition
   return <></>;
 }
 
-function FootnoteDefinition({ node }: { node: md.FootnoteDefinition }) {
+function FootnoteDefinition(_: { node: md.FootnoteDefinition }) {
   // TODO: support footnotedefinition https://github.com/syntax-tree/mdast#footnotedefinition
   return <></>;
 }
@@ -258,7 +255,7 @@ function InlineCode({ node }: { node: md.InlineCode }) {
   return <code>{node.value}</code>;
 }
 
-function Break({ node }: { node: md.Break }) {
+function Break(_: { node: md.Break }) {
   return <br />;
 }
 
@@ -275,22 +272,22 @@ function Image({ node }: { node: md.Image }) {
   return <a href={node.url}>{node.alt} (Image)</a>;
 }
 
-function LinkReference({ node }: { node: md.LinkReference }) {
+function LinkReference(_: { node: md.LinkReference }) {
   // TODO: support linkreference https://github.com/syntax-tree/mdast#linkreference
   return <></>;
 }
 
-function ImageReference({ node }: { node: md.ImageReference }) {
+function ImageReference(_: { node: md.ImageReference }) {
   // TODO: support imagereference https://github.com/syntax-tree/mdast#imagereference
   return <></>;
 }
 
-function Footnote({ node }: { node: md.Footnote }) {
+function Footnote(_: { node: md.Footnote }) {
   // TODO: support footnote https://github.com/syntax-tree/mdast#footnote
   return <></>;
 }
 
-function FootnoteReference({ node }: { node: md.FootnoteReference }) {
+function FootnoteReference(_: { node: md.FootnoteReference }) {
   // TODO: support footnotereference https://github.com/syntax-tree/mdast#footnotereference
   return <></>;
 }
