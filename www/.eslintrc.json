@@ -13,13 +13,13 @@
     "plugin:@next/next/recommended",
     "prettier"
   ],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+  },
   "settings": {
     "resolver": "eslint-import-resolver-typescript",
     "import/parsers": {
-      "@typescript-eslint/parser": [
-        ".ts",
-        ".tsx"
-      ]
+      "@typescript-eslint/parser": [".ts", ".tsx"]
     },
     "import/resolver": {
       "typescript": {}
