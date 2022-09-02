@@ -36,6 +36,7 @@
       ]
     }
   ],
+  "badgeTemplate": "[contributors-badge]: https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg",
   "contributorsPerLine": 7,
   "projectName": "py.wtf",
   "projectOwner": "zsol",
