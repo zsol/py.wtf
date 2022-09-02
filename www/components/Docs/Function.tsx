@@ -58,9 +58,10 @@ export default function Function({ func, project, anchor }: FunctionProps) {
         {func.params.map((param) => (
           <Param
             name={param.name}
-            type={param.type ?? undefined}
+            type={param.type}
             key={param.name}
             project={project}
+            default={param.default}
           />
         ))}
         ) {ret}
