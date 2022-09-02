@@ -44,6 +44,9 @@ export function xref(
   if (project == null) {
     return null;
   }
+  if (project == "__std__") {
+    return stdlibRef(xref.fqname);
+  }
   const lastDot = xref.fqname.lastIndexOf(".");
   if (lastDot === -1) {
     return null;
@@ -51,4 +54,16 @@ export function xref(
   const m = xref.fqname.slice(0, lastDot);
   const s = xref.fqname.slice(lastDot + 1);
   return `/${project}/${m}/${s}`;
+}
+
+export function stdlibRef(fqname: string): string {
+  const lastDot = fqname.lastIndexOf(".");
+  const prefix = "//docs.python.org/3/library";
+  if (lastDot == -1) {
+    return `${prefix}/${fqname}.html`;
+  }
+  // TODO: this doesn't work for things like `concurrent.futures.Executor.submit` where
+  // `m` needs to be `concurrent.futures`
+  const m = fqname.slice(0, lastDot);
+  return `${prefix}/${m}.html#${fqname}`;
 }
