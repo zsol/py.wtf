@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import sys
+from collections import UserDict
+
 from dataclasses import dataclass
 from typing import NewType, TYPE_CHECKING
 
@@ -97,4 +100,12 @@ class Project:
     modules: list[Module]
 
 
-SymbolTable = dict[FQName, ProjectName]
+stdlib_project = ProjectName("__std__")
+
+
+class SymbolTable(UserDict[FQName, ProjectName]):
+    def __missing__(self, key: FQName) -> ProjectName:
+        mod, *_ = key.split(".", 2)
+        if mod in sys.stdlib_module_names:
+            return stdlib_project
+        raise KeyError(key)
