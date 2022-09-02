@@ -49,7 +49,7 @@ Just don't.
 
 ## Hacking
 
-Please do. Python 3.10, Node 16.14.
+Please do. Python 3.10, Node 18.
 
 ```shell
 cd py.wtf
