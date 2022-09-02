@@ -1,4 +1,7 @@
 # py.wtf
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/zsol/py.wtf/main.svg)](https://results.pre-commit.ci/latest/github/zsol/py.wtf/main)
 
@@ -72,6 +75,11 @@ This project draws inspiration heavily from the following excellent software:
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/zsol"><img src="https://avatars.githubusercontent.com/u/66740?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Zsolt Dollenstein</b></sub></a><br /><a href="https://github.com/zsol/py.wtf/commits?author=zsol" title="Code">💻</a> <a href="#infra-zsol" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+  </tr>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
@@ -81,3 +89,16 @@ This project draws inspiration heavily from the following excellent software:
 ## License
 
 `py-wtf` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
