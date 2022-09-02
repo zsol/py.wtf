@@ -69,6 +69,15 @@ This project draws inspiration heavily from the following excellent software:
 - [docs.rs](https://docs.rs/about)
 - [Glean](https://glean.software/)
 
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
 ## License
 
 `py-wtf` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
