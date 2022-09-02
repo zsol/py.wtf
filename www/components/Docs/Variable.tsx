@@ -54,7 +54,8 @@ export function VarWithType({
       )}
       {defaultValue !== null && (
         <>
-          {" = "} <hl.Literal>{defaultValue}</hl.Literal>
+          <hl.Operator>=</hl.Operator>
+          <hl.Literal>{defaultValue}</hl.Literal>
         </>
       )}
       {comma && ","}

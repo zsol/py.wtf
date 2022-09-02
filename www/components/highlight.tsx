@@ -20,6 +20,7 @@ export const Keyword = styled.span`
   font-weight: bold;
   color: ${Monokai.Red};
 `;
+export const Operator = Keyword;
 
 export const Fn = styled.span`
   color: ${Monokai.Green};
