@@ -1,9 +1,7 @@
 # py.wtf
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/zsol/py.wtf/main.svg)](https://results.pre-commit.ci/latest/github/zsol/py.wtf/main)
@@ -83,6 +81,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://github.com/zsol"><img src="https://avatars.githubusercontent.com/u/66740?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Zsolt Dollenstein</b></sub></a><br /><a href="https://github.com/zsol/py.wtf/commits?author=zsol" title="Code">💻</a> <a href="#infra-zsol" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+    <td align="center"><a href="https://abesto.net/"><img src="https://avatars.githubusercontent.com/u/59982?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Zoltán Nagy</b></sub></a><br /><a href="https://github.com/zsol/py.wtf/commits?author=abesto" title="Code">💻</a> <a href="#design-abesto" title="Design">🎨</a></td>
+    <td align="center"><a href="https://github.com/anathien"><img src="https://avatars.githubusercontent.com/u/619826?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Adrienn Éva Csengeri-Pap</b></sub></a><br /><a href="https://github.com/zsol/py.wtf/commits?author=anathien" title="Code">💻</a> <a href="#design-anathien" title="Design">🎨</a></td>
   </tr>
 </table>
 
