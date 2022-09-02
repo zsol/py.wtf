@@ -27,5 +27,17 @@ describe("Function page", () => {
       "href",
       "//docs.python.org/3/library/typing.html#typing.Generator",
     );
+    expect(getByRole("link", { name: "int" })).toHaveAttribute(
+      "href",
+      "//docs.python.org/3/library/functions.html#int",
+    );
+    expect(getByRole("link", { name: "None" })).toHaveAttribute(
+      "href",
+      "//docs.python.org/3/library/constants.html#None",
+    );
+    expect(getByRole("link", { name: "str" })).toHaveAttribute(
+      "href",
+      "//docs.python.org/3/library/functions.html#func-str",
+    );
   });
 });

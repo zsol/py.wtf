@@ -4,7 +4,7 @@ from typing import Iterable, Sequence
 
 import libcst as cst
 
-from py_wtf.types import FQName, SymbolTable, Type, XRef
+from py_wtf.types import FQName, ProjectName, stdlib_project, SymbolTable, Type, XRef
 
 log = logging.getLogger(__name__)
 
@@ -36,6 +36,22 @@ def is_fqname(ty: Type, name: FQName) -> bool:
 typing_Literal = FQName("typing.Literal")
 typing_Callable = FQName("typing.Callable")
 
+BUILTIN_CONSTANTS = frozenset(
+    (
+        "False",
+        "True",
+        "None",
+        "NotImplemented",
+        "Ellipsis",
+        "__debug__",
+        "quit",
+        "exit",
+        "copyright",
+        "credits",
+        "license",
+    )
+)
+
 
 class AnnotationIndexer(cst.CSTVisitor):
     def __init__(
@@ -61,8 +77,20 @@ class AnnotationIndexer(cst.CSTVisitor):
 
     def handle_name(self, node: cst.Name) -> Type:
         name = node.value
-        fqname = self._symbols.get(name, FQName(name))
-        return Type(name, XRef(fqname, self._external_symbols.get(fqname)))
+        fqname = self._symbols.get(name)
+        project: ProjectName | None = None
+        if fqname is None and name in __builtins__:  # type: ignore
+            fqname = FQName(
+                f"constants.{name}"
+                if name in BUILTIN_CONSTANTS
+                else f"functions.{name}"
+            )
+            project = stdlib_project
+        elif fqname is None:
+            fqname = FQName(name)
+        if project is None:
+            project = self._external_symbols.get(fqname)
+        return Type(name, XRef(fqname, project))
 
     def handle_subscript(self, node: cst.Subscript) -> Type:
         value = self(node.value)
