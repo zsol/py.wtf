@@ -4,7 +4,7 @@ from typing import Callable
 import pytest
 
 from py_wtf.indexer.annotation import index
-from py_wtf.types import FQName, ProjectName, Type, XRef
+from py_wtf.types import FQName, ProjectName, stdlib_project, SymbolTable, Type, XRef
 
 IF = Callable[[str], Type | None]
 """Indexer Function"""
@@ -16,14 +16,16 @@ def indexer() -> IF:
         "Generator": FQName("typing.Generator"),
         "foo_alias": FQName("foo.Foo"),
     }
-    external_symbols = {
-        FQName("foo.Foo"): ProjectName("foooid"),
-    }
+    external_symbols = SymbolTable(
+        {
+            FQName("foo.Foo"): ProjectName("foooid"),
+        }
+    )
     return partial(index, symbols=symbols, external_symbols=external_symbols)
 
 
 def test_str(indexer: IF) -> None:
-    assert indexer("str") == Type("str", XRef(FQName("str"), None))
+    assert indexer("str") == Type("str", XRef(FQName("functions.str"), stdlib_project))
 
 
 def test_alias(indexer: IF) -> None:
@@ -35,11 +37,11 @@ def test_alias(indexer: IF) -> None:
 def test_generator(indexer: IF) -> None:
     assert indexer("Generator[None, str, None]") == Type(
         "Generator",
-        XRef(FQName("typing.Generator")),
+        XRef(FQName("typing.Generator"), stdlib_project),
         params=[
-            Type("None", XRef(FQName("None"))),
-            Type("str", XRef(FQName("str"))),
-            Type("None", XRef(FQName("None"))),
+            Type("None", XRef(FQName("constants.None"), stdlib_project)),
+            Type("str", XRef(FQName("functions.str"), stdlib_project)),
+            Type("None", XRef(FQName("constants.None"), stdlib_project)),
         ],
     )
 
@@ -47,12 +49,12 @@ def test_generator(indexer: IF) -> None:
 def test_nesting(indexer: IF) -> None:
     assert indexer("list[list[str]]") == Type(
         "list",
-        XRef(FQName("list")),
+        XRef(FQName("functions.list"), stdlib_project),
         params=[
             Type(
                 "list",
-                XRef(FQName("list")),
-                params=[Type("str", XRef(FQName("str")))],
+                XRef(FQName("functions.list"), stdlib_project),
+                params=[Type("str", XRef(FQName("functions.str"), stdlib_project))],
             )
         ],
     )
@@ -71,18 +73,25 @@ def test_pep_604_alternative(indexer: IF) -> None:
 def test_empty_callable(indexer: IF) -> None:
     assert indexer("typing.Callable[[], str]") == Type(
         "typing.Callable",
-        XRef(FQName("typing.Callable")),
-        params=[Type("", None, params=[]), Type("str", XRef(FQName("str")))],
+        XRef(FQName("typing.Callable"), stdlib_project),
+        params=[
+            Type("", None, params=[]),
+            Type("str", XRef(FQName("functions.str"), stdlib_project)),
+        ],
     )
 
 
 def test_callable(indexer: IF) -> None:
     assert indexer("typing.Callable[[str], str]") == Type(
         "typing.Callable",
-        XRef(FQName("typing.Callable")),
+        XRef(FQName("typing.Callable"), stdlib_project),
         params=[
-            Type("", None, params=[Type("str", XRef(FQName("str")))]),
-            Type("str", XRef(FQName("str"))),
+            Type(
+                "",
+                None,
+                params=[Type("str", XRef(FQName("functions.str"), stdlib_project))],
+            ),
+            Type("str", XRef(FQName("functions.str"), stdlib_project)),
         ],
     )
 
@@ -90,8 +99,11 @@ def test_callable(indexer: IF) -> None:
 def test_invalid_callable(indexer: IF) -> None:
     assert indexer("typing.Callable[..., str]") == Type(
         "typing.Callable",
-        XRef(FQName("typing.Callable")),
-        params=[Type("...", None), Type("str", XRef(FQName("str")))],
+        XRef(FQName("typing.Callable"), stdlib_project),
+        params=[
+            Type("...", None),
+            Type("str", XRef(FQName("functions.str"), stdlib_project)),
+        ],
     )
 
 
@@ -102,7 +114,7 @@ def test_string_annotation(indexer: IF) -> None:
 def test_literals(indexer: IF) -> None:
     assert indexer("typing.Literal[1, '2']") == Type(
         "typing.Literal",
-        XRef(FQName("typing.Literal")),
+        XRef(FQName("typing.Literal"), stdlib_project),
         params=[
             Type("1", None),
             Type("'2'", None),

@@ -56,6 +56,24 @@ export function xref(
   return `/${project}/${m}/${s}`;
 }
 
+// These symbols have a different anchor name on docs.python.org/library/functions.html
+interface SpecialFunctions {
+  [name: string]: string;
+}
+const special_functions: SpecialFunctions = {
+  bytearray: "func-bytearray",
+  bytes: "func-bytes",
+  dict: "func-dict",
+  frozenset: "func-frozenset",
+  list: "func-list",
+  memoryview: "func-memoryview",
+  range: "func-range",
+  set: "func-set",
+  str: "func-str",
+  tuple: "func-tuple",
+  __import__: "import__",
+};
+
 export function stdlibRef(fqname: string): string {
   const lastDot = fqname.lastIndexOf(".");
   const prefix = "//docs.python.org/3/library";
@@ -65,5 +83,11 @@ export function stdlibRef(fqname: string): string {
   // TODO: this doesn't work for things like `concurrent.futures.Executor.submit` where
   // `m` needs to be `concurrent.futures`
   const m = fqname.slice(0, lastDot);
+  if (m === "functions" || m === "constants") {
+    fqname = fqname.slice(lastDot + 1);
+    if (fqname in special_functions) {
+      fqname = special_functions[fqname];
+    }
+  }
   return `${prefix}/${m}.html#${fqname}`;
 }
