@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 def _build_symbol_table(projects: Iterable[Project]) -> SymbolTable:
-    ret: SymbolTable = {}
+    ret = SymbolTable()
     for project in projects:
         pname = project.name
         for mod in project.modules:

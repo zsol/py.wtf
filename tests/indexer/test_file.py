@@ -10,6 +10,7 @@ from py_wtf.types import (
     FQName,
     Module,
     ProjectName,
+    stdlib_project,
     SymbolTable,
     XRef,
 )
@@ -171,7 +172,7 @@ def package_with_dep(package_file: Path) -> Module:
     return index_file(
         package_file.parent.parent,
         package_file,
-        {FQName("dependencyproject.helper"): ProjectName("dependency")},
+        SymbolTable({FQName("dependencyproject.helper"): ProjectName("dependency")}),
     )
 
 
@@ -203,3 +204,10 @@ def test_func_docs(mod: Module) -> None:
 def test_class_docs(mod: Module) -> None:
     cls = mod.classes[0]
     assert cls.documentation == [Documentation("class docs\n")]
+
+
+def test_stdlib(mod: Module) -> None:
+    lol, *_ = [v for v in mod.variables if v.name.endswith(".lol")]
+    assert lol.type is not None
+    assert lol.type.xref is not None
+    assert lol.type.xref.project == stdlib_project

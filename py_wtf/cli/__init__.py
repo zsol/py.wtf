@@ -23,7 +23,14 @@ from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
 from py_wtf.logging import setup_logging
 from py_wtf.repository import converter, ProjectRepository
-from py_wtf.types import Documentation, FQName, Project, ProjectMetadata, ProjectName
+from py_wtf.types import (
+    Documentation,
+    FQName,
+    Project,
+    ProjectMetadata,
+    ProjectName,
+    SymbolTable,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -148,7 +155,7 @@ async def generate_test_index(dir: str | None) -> None:
             dependencies=proj_metadata["dependencies"],
             summary=proj_metadata.get("summary"),
         )
-        symbol_table = {FQName("alpha.bar"): ProjectName("project-alpha")}
+        symbol_table = SymbolTable({FQName("alpha.bar"): ProjectName("project-alpha")})
         mods = [mod async for mod in index_dir(proj_dir, symbol_table)]
         proj = Project(
             ProjectName(proj_dir.name),

@@ -63,7 +63,7 @@ def index_file(
     symbol_table: SymbolTable | None = None,
 ) -> Module:
     if not symbol_table:
-        symbol_table = {}
+        symbol_table = SymbolTable()
     name_parts = path.relative_to(base_dir).with_suffix("").parts
     is_pkg = False
     if name_parts[-1] == "__init__":
