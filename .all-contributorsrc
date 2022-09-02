@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "zsol",
+      "name": "Zsolt Dollenstein",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66740?v=4",
+      "profile": "https://github.com/zsol",
+      "contributions": [
+        "code",
+        "infra"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "py.wtf",
+  "projectOwner": "zsol",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
