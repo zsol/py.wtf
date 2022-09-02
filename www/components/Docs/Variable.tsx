@@ -1,6 +1,9 @@
-import * as docs from "../../lib/docs";
-import { xref } from "../../lib/url";
-import { Code } from "../core/typography/Code";
+import { Code } from "@/components/core/typography/Code";
+import * as hl from "@/components/highlight";
+
+import * as docs from "@/lib/docs";
+import { xref } from "@/lib/url";
+
 import Documentation from "./Documentation";
 import TypeAnnotation from "./TypeAnnotation";
 
@@ -16,8 +19,9 @@ export default function Variable({ variable, project, anchor }: Props) {
       <Code anchor={anchor}>
         <VarWithType
           name={variable.name}
-          type={variable.type}
+          type={variable.type ?? null}
           project={project}
+          default={null}
         />
       </Code>
       <Documentation project={project}>{variable.documentation}</Documentation>
@@ -27,8 +31,9 @@ export default function Variable({ variable, project, anchor }: Props) {
 
 export interface VarWithTypeProps {
   name: string;
-  type?: docs.Typ;
+  type: docs.Typ | null;
   project: docs.Project;
+  default: string | null;
   comma?: boolean;
 }
 
@@ -36,14 +41,20 @@ export function VarWithType({
   name,
   type,
   project,
+  default: defaultValue,
   comma = false,
 }: VarWithTypeProps) {
   return (
     <>
       {name}
-      {type != null && (
+      {type !== null && (
         <>
           : <TypeAnnotation type={type} url={xref.bind(null, project)} />
+        </>
+      )}
+      {defaultValue !== null && (
+        <>
+          {" = "} <hl.Literal>{defaultValue}</hl.Literal>
         </>
       )}
       {comma && ","}
