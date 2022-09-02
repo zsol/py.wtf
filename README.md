@@ -1,10 +1,11 @@
 # py.wtf
 
+<!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#acknowledgements)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/zsol/py.wtf/main.svg)](https://results.pre-commit.ci/latest/github/zsol/py.wtf/main)
+<!-- prettier-ignore-end -->
 
 ---
 
