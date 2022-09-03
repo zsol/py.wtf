@@ -11,7 +11,6 @@ import * as url from "@/lib/url";
 const ProjectContainer = styled.div`
   margin-top: auto;
   margin-bottom: auto;
-  overflow: hidden;
 `;
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
