@@ -14,13 +14,13 @@ FQName = NewType("FQName", str)
 ProjectName = NewType("ProjectName", str)
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class XRef:
     fqname: FQName
     project: ProjectName | None = None
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class Type:
     name: str
     xref: XRef | None
@@ -31,27 +31,27 @@ class Type:
         return self.xref is None
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class Export:
     name: FQName
     xref: XRef
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class Variable:
     name: str
     type: Type | None
     documentation: list[Documentation]
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class Parameter:
     name: str
     type: Type | None
     default: str | None
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class Function:
     name: str
     asynchronous: bool
@@ -60,7 +60,7 @@ class Function:
     documentation: list[Documentation]
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class Class:
     name: str
     bases: list[str]
@@ -71,7 +71,7 @@ class Class:
     documentation: list[Documentation]
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class Module:
     name: str
     documentation: list[Documentation]
@@ -81,7 +81,7 @@ class Module:
     exports: list[Export]
 
 
-@dataclass
+@dataclass(slots=True)
 class ProjectMetadata:
     version: str
     classifiers: list[str] | None
@@ -92,7 +92,7 @@ class ProjectMetadata:
     summary: str | None
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class Project:
     name: ProjectName
     metadata: ProjectMetadata
