@@ -21,7 +21,7 @@ import rich.progress
 
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
-from py_wtf.indexer.pypi import parse_deps
+from py_wtf.indexer.pypi import parse_deps, parse_upload_time
 from py_wtf.logging import setup_logging
 from py_wtf.repository import converter, ProjectRepository
 from py_wtf.types import (
@@ -161,6 +161,7 @@ async def generate_test_index(dir: str | None) -> None:
             documentation_url=proj_metadata.get("documentation_url"),
             dependencies=parse_deps(proj_metadata["dependencies"]),
             summary=proj_metadata.get("summary"),
+            upload_time=parse_upload_time(proj_metadata.get("upload_time")),
         )
         symbol_table = SymbolTable({FQName("alpha.bar"): ProjectName("project-alpha")})
         mods = [mod async for mod in index_dir(proj_dir, symbol_table)]

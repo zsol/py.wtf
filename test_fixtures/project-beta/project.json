@@ -1,10 +1,11 @@
 {
-    "version": "1",
-    "home_page": "https://github.com/zsol/py.wtf/",
-    "documentation_url": "https://tinyurl.com/alpha-docs",
-    "dependencies": [
-        "more_itertools > 0.1 ; extra == 'haha'",
-        "project-alpha == 0"
-    ],
-    "summary": "This is a project for testing purposes\nit isn't intended for use by anyone. 🤪"
+  "version": "1",
+  "home_page": "https://github.com/zsol/py.wtf/",
+  "documentation_url": "https://tinyurl.com/alpha-docs",
+  "dependencies": [
+    "more_itertools > 0.1 ; extra == 'haha'",
+    "project-alpha == 0"
+  ],
+  "upload_time": "2022-08-31T22:47:19",
+  "summary": "This is a project for testing purposes\nit isn't intended for use by anyone. 🤪"
 }

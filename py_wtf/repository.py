@@ -89,7 +89,7 @@ class ProjectRepository:
             for dep in project.metadata.dependencies:
                 dep_counts[dep] += 1
 
-            mtime = item.stat().st_mtime
+            mtime = project.metadata.upload_time
             if latest_project_mtimes == []:
                 latest_project_mtimes.append((name, mtime))
             for i in reversed(range(len(latest_project_mtimes))):

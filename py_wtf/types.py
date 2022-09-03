@@ -91,6 +91,7 @@ class ProjectMetadata:
     documentation_url: str | None
     dependencies: list[str]
     summary: str | None
+    upload_time: Timestamp = 0
 
 
 @dataclass(slots=True, frozen=True)

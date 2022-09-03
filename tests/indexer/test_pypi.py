@@ -46,6 +46,7 @@ def pypi_json(requirements: None | list[str]) -> bytes:
                         "url": "https://files.pythonhosted.org/packages/lol.tar.gz",
                         "md5_digest": "HAHA I'm an MD5 hash",
                         "yanked": False,
+                        "upload_time": "2022-09-03T19:50:12",
                     },
                     {
                         "packagetype": "sdist",
@@ -109,7 +110,13 @@ def test_symbol_table_building(project: Project) -> None:
 
 @pytest.fixture
 def sdist_artifact() -> Artifact:
-    return {"filename": "foo", "packagetype": "sdist", "yanked": False, "url": "foo"}
+    return {
+        "filename": "foo",
+        "packagetype": "sdist",
+        "yanked": False,
+        "url": "foo",
+        "upload_time": "",
+    }
 
 
 @pytest.fixture
@@ -119,6 +126,7 @@ def unknown_artifact() -> Artifact:
         "packagetype": "something_unknown",
         "yanked": False,
         "url": "foo",
+        "upload_time": "",
     }
 
 
@@ -129,6 +137,7 @@ def bdist_artifact() -> Artifact:
         "packagetype": "bdist_wheel",
         "yanked": False,
         "url": "foo",
+        "upload_time": "",
     }
 
 
@@ -139,6 +148,7 @@ def pure_python_artifact() -> Artifact:
         "packagetype": "bdist_wheel",
         "yanked": False,
         "url": "foo",
+        "upload_time": "",
     }
 
 

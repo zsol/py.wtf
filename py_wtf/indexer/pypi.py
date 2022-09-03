@@ -4,6 +4,7 @@ import multiprocessing
 import os
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import replace
+from datetime import datetime
 from functools import partial
 from pathlib import Path
 from tarfile import is_tarfile, TarFile
@@ -78,6 +79,7 @@ def blocklisted_project_factory(project_name: ProjectName) -> Project:
             documentation_url=None,
             dependencies=[],
             summary="BLOCKLISTED",
+            upload_time=0,
         ),
         documentation=[],
         modules=[],
@@ -181,11 +183,20 @@ def parse_deps(maybe_deps: None | Sequence[str]) -> list[str]:
     )
 
 
+def parse_upload_time(time: str) -> int:
+    try:
+        dt = datetime.strptime(time, "%Y-%m-%dT%H:%M:%S")
+        return int(dt.timestamp())
+    except ValueError:
+        return 0
+
+
 class Artifact(TypedDict):
     filename: str
     url: str
     yanked: bool
     packagetype: str
+    upload_time: str
 
 
 def pick_artifact(artifacts: list[Artifact]) -> Artifact | None:
@@ -235,6 +246,11 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
             )
             logger.warning(error)
             return (directory, replace(proj_metadata, summary=error))
+
+        proj_metadata = replace(
+            proj_metadata,
+            upload_time=parse_upload_time(artifact["upload_time"]),
+        )
 
         # this is a bit unnecessary 🙃
         async with (
