@@ -21,6 +21,7 @@ import rich.progress
 
 from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
+from py_wtf.indexer.pypi import parse_deps
 from py_wtf.logging import setup_logging
 from py_wtf.repository import converter, ProjectRepository
 from py_wtf.types import (
@@ -76,6 +77,8 @@ async def index(project_name: str, directory: str, pretty: bool, force: bool) ->
     if pretty:
         rich.print(proj)
 
+    repo.write_index()
+
 
 @py_wtf.command()
 @click.argument("directory")
@@ -113,6 +116,8 @@ async def index_top_pypi(directory: str, top: int) -> None:
             if isinstance(ret, Exception):
                 logger.exception(ret)
 
+        repo.write_index()
+
 
 @py_wtf.command(name="index-file")
 @click.argument("file")
@@ -145,25 +150,29 @@ async def generate_test_index(dir: str | None) -> None:
     for proj_dir in fixtures.iterdir():
         if not (proj_json := proj_dir / "project.json").exists():
             continue
+        proj_name = ProjectName(proj_dir.name)
         proj_metadata = json.loads(proj_json.read_bytes())
         proj_info = ProjectMetadata(
+            proj_name,
             proj_metadata["version"],
             classifiers=proj_metadata.get("classifiers"),
             home_page=proj_metadata.get("home_page"),
             license=proj_metadata.get("license"),
             documentation_url=proj_metadata.get("documentation_url"),
-            dependencies=proj_metadata["dependencies"],
+            dependencies=parse_deps(proj_metadata["dependencies"]),
             summary=proj_metadata.get("summary"),
         )
         symbol_table = SymbolTable({FQName("alpha.bar"): ProjectName("project-alpha")})
         mods = [mod async for mod in index_dir(proj_dir, symbol_table)]
         proj = Project(
-            ProjectName(proj_dir.name),
+            proj_name,
             metadata=proj_info,
             modules=mods,
             documentation=[Documentation(proj_info.summary or "")],
         )
         (out_dir / f"{proj.name}.json").write_text(converter.dumps(_sort(proj)))
+    repo = ProjectRepository(out_dir)
+    repo.write_index(1662219954)
 
 
 def _sort(o: object) -> object:

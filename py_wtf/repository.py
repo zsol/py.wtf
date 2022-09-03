@@ -1,15 +1,20 @@
 import asyncio
+import logging
 from asyncio import Future
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import AsyncIterable, Callable
+from time import time
+from typing import AsyncIterable, Callable, Tuple
 
 from cattrs.preconf.json import make_converter
 
-from py_wtf.types import Project, ProjectName
+from py_wtf.types import Index, Project, ProjectMetadata, ProjectName
 
 converter = make_converter()
+logger = logging.getLogger(__name__)
+
+METADATA_FILENAME = ".metadata"
 
 
 @dataclass(slots=True)
@@ -65,3 +70,52 @@ class ProjectRepository:
         if not fut.done():
             raise ValueError(f"{key} was never yielded by {factory}")
         return fut.result()
+
+    def generate_index(self, timestamp: int | None) -> Index:
+        max_counts = 5
+        latest_project_mtimes: list[Tuple[ProjectName, float]] = []
+        all_project_names: list[ProjectName] = []
+        dep_counts: Counter[str] = Counter()
+
+        for item in self.directory.iterdir():
+            if item.suffix != ".json" or not item.is_file():
+                continue
+            name = ProjectName(item.stem)
+            all_project_names.append(name)
+            if name not in self._cache:
+                self._load_from_disk(name)
+            project = self._cache[name].result()
+
+            for dep in project.metadata.dependencies:
+                dep_counts[dep] += 1
+
+            mtime = item.stat().st_mtime
+            if latest_project_mtimes == []:
+                latest_project_mtimes.append((name, mtime))
+            for i in reversed(range(len(latest_project_mtimes))):
+                if mtime < latest_project_mtimes[i][1]:
+                    latest_project_mtimes.insert(i + 1, (name, mtime))
+            while len(latest_project_mtimes) > max_counts:
+                latest_project_mtimes.pop()
+
+        latest_projects = [
+            self._cache[name].result().metadata for name, _ in latest_project_mtimes
+        ]
+        top_projects: list[ProjectMetadata] = []
+        for rawname, _ in dep_counts.most_common(max_counts):
+            prjname = ProjectName(rawname)
+            if prjname not in self._cache:
+                logger.error(f"Top-{max_counts} project '{rawname}' not indexed.")
+                continue
+            top_projects.append(self._cache[prjname].result().metadata)
+
+        return Index(
+            generated_at=int(time()) if timestamp is None else timestamp,
+            latest_projects=latest_projects,
+            top_projects=top_projects,
+            all_project_names=all_project_names,
+        )
+
+    def write_index(self, timestamp: int | None = None) -> None:
+        metadata = self.directory / METADATA_FILENAME
+        metadata.write_text(converter.dumps(self.generate_index(timestamp)))
