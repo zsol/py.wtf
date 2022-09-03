@@ -4,7 +4,7 @@ import multiprocessing
 import os
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import replace
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
 from tarfile import is_tarfile, TarFile
@@ -185,7 +185,7 @@ def parse_deps(maybe_deps: None | Sequence[str]) -> list[str]:
 
 def parse_upload_time(time: str) -> int:
     try:
-        dt = datetime.strptime(time, "%Y-%m-%dT%H:%M:%S")
+        dt = datetime.strptime(time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
         return int(dt.timestamp())
     except ValueError:
         return 0
