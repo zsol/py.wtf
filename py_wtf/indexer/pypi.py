@@ -59,11 +59,36 @@ executor = ProcessPoolExecutor(
     ),
     mp_context=multiprocessing.get_context("spawn"),
 )
+PROJECT_BLOCKLIST = frozenset(
+    {
+        "poetry-plugin-export",  # circular dependency on poetry
+    }
+)
+
+
+def blocklisted_project_factory(project_name: ProjectName) -> Project:
+    return Project(
+        project_name,
+        ProjectMetadata(
+            version="BLOCKLISTED",
+            classifiers=None,
+            home_page=None,
+            license=None,
+            documentation_url=None,
+            dependencies=[],
+            summary="BLOCKLISTED",
+        ),
+        documentation=[],
+        modules=[],
+    )
 
 
 async def index_project(
     project_name: ProjectName, repo: ProjectRepository, progress: Progress | None = None
 ) -> AsyncIterable[Project]:
+    if project_name in PROJECT_BLOCKLIST:
+        yield blocklisted_project_factory(project_name)
+        return
     task_id = TaskID(0)
     if progress:
         task_id = progress.add_task(project_name, action="Fetching", total=3)
