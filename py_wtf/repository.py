@@ -112,7 +112,7 @@ class ProjectRepository:
 
         return Index(
             generated_at=int(time()) if timestamp is None else timestamp,
-            latest_projects=latest_projects,
+            latest_projects=sorted(latest_projects, key=lambda m: -m.upload_time),
             top_projects=top_projects,
             all_project_names=sorted(all_project_names),
         )
