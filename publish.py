@@ -5,6 +5,7 @@ import logging
 import os
 import shlex
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -71,6 +72,10 @@ async def main() -> None:
     index_dir = toplevel / "www" / "public" / "_index"
     for item in index_dir.glob("*.json"):
         item.unlink()
+
+    subprocess.run(
+        ["hatch", "run", "py-wtf", "index-top-pypi", str(index_dir), "--top=50"]
+    ).check_returncode()
     await asyncio.gather(
         *[
             shell(
