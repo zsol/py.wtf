@@ -83,6 +83,7 @@ class Module:
 
 @dataclass(slots=True)
 class ProjectMetadata:
+    name: str
     version: str
     classifiers: list[str] | None
     home_page: str | None
@@ -98,6 +99,17 @@ class Project:
     metadata: ProjectMetadata
     documentation: list[Documentation]
     modules: list[Module]
+
+
+Timestamp = int
+
+
+@dataclass(slots=True, frozen=True)
+class Index:
+    generated_at: Timestamp
+    latest_projects: list[ProjectMetadata]
+    top_projects: list[ProjectMetadata]
+    all_project_names: list[ProjectName]
 
 
 stdlib_project = ProjectName("__std__")

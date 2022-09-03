@@ -70,6 +70,7 @@ def blocklisted_project_factory(project_name: ProjectName) -> Project:
     return Project(
         project_name,
         ProjectMetadata(
+            project_name,
             version="BLOCKLISTED",
             classifiers=None,
             home_page=None,
@@ -218,6 +219,7 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
         latest_version = pypi_info["version"]
         project_urls = pypi_info.get("project_urls") or {}
         proj_metadata = ProjectMetadata(
+            pypi_info.get("name", project_name),
             latest_version,
             summary=pypi_info.get("summary"),
             home_page=pypi_info.get("home_page"),
