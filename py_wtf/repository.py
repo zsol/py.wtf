@@ -90,8 +90,9 @@ class ProjectRepository:
                 dep_counts[dep] += 1
 
             mtime = project.metadata.upload_time
-            if latest_project_mtimes == []:
+            if len(latest_project_mtimes) < max_counts:
                 latest_project_mtimes.append((name, mtime))
+                continue
             for i in reversed(range(len(latest_project_mtimes))):
                 if mtime < latest_project_mtimes[i][1]:
                     latest_project_mtimes.insert(i + 1, (name, mtime))
