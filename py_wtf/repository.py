@@ -113,7 +113,7 @@ class ProjectRepository:
             generated_at=int(time()) if timestamp is None else timestamp,
             latest_projects=latest_projects,
             top_projects=top_projects,
-            all_project_names=all_project_names,
+            all_project_names=sorted(all_project_names),
         )
 
     def write_index(self, timestamp: int | None = None) -> None:
