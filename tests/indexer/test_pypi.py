@@ -5,7 +5,7 @@ from zipfile import ZipFile
 
 import pytest
 
-from py_wtf.indexer.pypi import _build_symbol_table, download
+from py_wtf.indexer.pypi import _build_symbol_table, Artifact, download, pick_artifact
 from py_wtf.types import FQName, Project
 
 from pytest_httpx import HTTPXMock
@@ -40,11 +40,18 @@ def pypi_json(requirements: None | list[str]) -> bytes:
             },
             "releases": {
                 "0.0": [
-                    {"packagetype": "ivenoidea"},
+                    {"packagetype": "ivenoidea", "yanked": False},
                     {
                         "packagetype": "sdist",
                         "url": "https://files.pythonhosted.org/packages/lol.tar.gz",
                         "md5_digest": "HAHA I'm an MD5 hash",
+                        "yanked": False,
+                    },
+                    {
+                        "packagetype": "sdist",
+                        "url": "https://files.pythonhosted.org/packages/aaaaaaaa.tar.gz",
+                        "md5_digest": "HAHA I'm an MD5 hash",
+                        "yanked": True,
                     },
                 ]
             },
@@ -98,3 +105,65 @@ async def test_no_extras_in_deps(
 def test_symbol_table_building(project: Project) -> None:
     table = _build_symbol_table([project])
     assert table[FQName("foo")] == "testproject"
+
+
+@pytest.fixture
+def sdist_artifact() -> Artifact:
+    return {"filename": "foo", "packagetype": "sdist", "yanked": False, "url": "foo"}
+
+
+@pytest.fixture
+def unknown_artifact() -> Artifact:
+    return {
+        "filename": "foo",
+        "packagetype": "something_unknown",
+        "yanked": False,
+        "url": "foo",
+    }
+
+
+@pytest.fixture
+def bdist_artifact() -> Artifact:
+    return {
+        "filename": "foo",
+        "packagetype": "bdist_wheel",
+        "yanked": False,
+        "url": "foo",
+    }
+
+
+@pytest.fixture
+def pure_python_artifact() -> Artifact:
+    return {
+        "filename": "foo-none-any.whl",
+        "packagetype": "bdist_wheel",
+        "yanked": False,
+        "url": "foo",
+    }
+
+
+def test_pick_artifact_chooses_sdist(
+    sdist_artifact: Artifact,
+    unknown_artifact: Artifact,
+    bdist_artifact: Artifact,
+) -> None:
+    assert (
+        pick_artifact([unknown_artifact, bdist_artifact, sdist_artifact])
+        == sdist_artifact
+    )
+
+
+def test_pick_artifact_chooses_pure_python_bdist_wheel(
+    sdist_artifact: Artifact,
+    pure_python_artifact: Artifact,
+) -> None:
+    assert pick_artifact([sdist_artifact, pure_python_artifact]) == pure_python_artifact
+
+
+def test_pick_artifact_skips_yanked(
+    sdist_artifact: Artifact, pure_python_artifact: Artifact
+) -> None:
+    pure_python_artifact["yanked"] = True
+    assert pick_artifact([sdist_artifact, pure_python_artifact]) == sdist_artifact
+    sdist_artifact["yanked"] = True
+    assert pick_artifact([sdist_artifact, pure_python_artifact]) is None

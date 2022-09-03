@@ -8,7 +8,7 @@ from functools import partial
 from pathlib import Path
 from tarfile import is_tarfile, TarFile
 from tempfile import TemporaryDirectory
-from typing import AsyncIterable, Iterable, Sequence, Tuple
+from typing import AsyncIterable, Iterable, Sequence, Tuple, TypedDict
 from zipfile import is_zipfile, ZipFile
 
 import aiofiles.tempfile
@@ -155,6 +155,32 @@ def parse_deps(maybe_deps: None | Sequence[str]) -> list[str]:
     )
 
 
+class Artifact(TypedDict):
+    filename: str
+    url: str
+    yanked: bool
+    packagetype: str
+
+
+def pick_artifact(artifacts: list[Artifact]) -> Artifact | None:
+    sdist: Artifact | None = None
+    candidate: Artifact | None = None
+    for a in artifacts:
+        if a["yanked"]:
+            continue
+        if a["packagetype"] == "sdist":
+            sdist = a
+        if a["packagetype"] == "bdist_wheel" and a["filename"].endswith(
+            "-none-any.whl"
+        ):
+            candidate = a
+            break
+
+    if candidate is None:
+        candidate = sdist
+    return candidate
+
+
 sem = asyncio.BoundedSemaphore(value=20)
 
 
@@ -175,20 +201,17 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
             classifiers=pypi_info.get("classifiers"),
             dependencies=parse_deps(pypi_info.get("requires_dist")),
         )
-        src_url = None
-        for artifact in proj_data["releases"][latest_version]:
-            if artifact["packagetype"] == "sdist":
-                src_url = artifact["url"]
-                # src_md5 = artifact['md5_digest']
-                break
-        if not src_url:
-            error = f"Couldn't find sdist for {project_name}=={latest_version}"
+        artifact = pick_artifact(proj_data["releases"][latest_version])
+        if not artifact:
+            error = (
+                f"Couldn't find suitable artifact for {project_name}=={latest_version}"
+            )
             logger.warning(error)
             return (directory, replace(proj_metadata, summary=error))
 
         # this is a bit unnecessary 🙃
         async with (
-            client.stream("GET", src_url) as response,
+            client.stream("GET", artifact["url"]) as response,
             aiofiles.tempfile.NamedTemporaryFile("wb+", delete=False) as src_archive,
         ):
             async for chunk in response.aiter_bytes():
@@ -199,4 +222,9 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
             opened.extractall(directory)
         os.unlink(archive_name)
 
-    return (pick_project_dir(directory), proj_metadata)
+    return (
+        pick_project_dir(directory)
+        if artifact["packagetype"] == "sdist"
+        else directory,
+        proj_metadata,
+    )
