@@ -73,16 +73,17 @@ const generateModuleDescriptors = (
 };
 
 export const generateSearchDescriptors = memoize((project: Project) => {
+  const options = {
+    keys: ["name"],
+    includeMatches: true,
+  };
   if (!project) {
-    return [];
+    return new Fuse([], options);
   }
 
   // TODO: Think about whether it's a good pattern for this to have a different signature than the rest of the
   // generators.
-  return new Fuse(generateModuleDescriptors(project), {
-    keys: ["name"],
-    includeMatches: true,
-  });
+  return new Fuse(generateModuleDescriptors(project), options);
 });
 
 export type Index = Fuse<SearchDescriptor>;
