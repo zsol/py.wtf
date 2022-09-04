@@ -1,3 +1,5 @@
+import memoize from "nano-memoize";
+
 import { Class, Func, Module, Project, Variable } from "./docs";
 import { mod as generateModuleUrl, symbol as generateSymbolUrl } from "./url";
 
@@ -69,8 +71,7 @@ const generateModuleDescriptors = (
   return descriptors;
 };
 
-// TODO: memoize this
-export const generateSearchDescriptors = (project: Project) => {
+export const generateSearchDescriptors = memoize((project: Project) => {
   if (!project) {
     return [];
   }
@@ -78,4 +79,4 @@ export const generateSearchDescriptors = (project: Project) => {
   // TODO: Think about whether it's a good pattern for this to have a different signature than the rest of the
   // generators.
   return generateModuleDescriptors(project);
-};
+});
