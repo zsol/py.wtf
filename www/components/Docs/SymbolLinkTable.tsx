@@ -13,7 +13,7 @@ export interface Sym {
   documentation: string[];
 }
 
-interface Props<T extends Sym> {
+export interface SymbolLinkTableProps<T extends Sym> {
   title: string;
   stripPrefix?: string;
   symbols: T[];
@@ -36,7 +36,7 @@ export default function SymbolLinkTable<T extends Sym>({
   symbols,
   url,
   useReactRouter = true,
-}: Props<T>) {
+}: SymbolLinkTableProps<T>) {
   if (symbols.length === 0) {
     return null;
   }

@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 
 import { Project } from "@/lib/docs";
-import { generateSearchDescriptors } from "@/lib/searchDescriptor";
+import { generateProjectIndex } from "@/lib/searchDescriptor";
 
 import { Search } from "./core/Search";
 import { flexColumn, flexColumnCenter, flexRow } from "./core/layout/helpers";
@@ -57,7 +57,7 @@ const Header = ({ project, showSearch = true }: HeaderProps) => {
         </HeaderItem>
         {showSearch && project && (
           <HeaderItem width="40%">
-            <Search descriptors={generateSearchDescriptors(project)} />
+            <Search descriptors={generateProjectIndex(project)} />
           </HeaderItem>
         )}
       </HeaderContent>

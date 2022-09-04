@@ -9,10 +9,12 @@ describe("Index", () => {
     expect(propsResult).toHaveProperty("props");
     const props = (propsResult as { props: Props }).props;
 
-    const { getByRole } = render(<Index {...props} />);
-    const link = getByRole("link", { name: "project-alpha" });
-    expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/project-alpha");
-    expect(link.parentElement).toHaveTextContent("project-alpha");
+    const { getAllByRole } = render(<Index {...props} />);
+    const links = getAllByRole("link", { name: "project-alpha" });
+    links.forEach((link) => {
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute("href", "/project-alpha");
+      expect(link.parentElement).toHaveTextContent("project-alpha");
+    });
   });
 });
