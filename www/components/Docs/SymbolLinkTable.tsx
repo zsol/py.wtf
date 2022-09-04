@@ -1,4 +1,4 @@
-import React from "react";
+import { useInRouterContext } from "react-router-dom";
 
 import { sortedBy } from "@/lib/sorting";
 import { withoutPrefix } from "@/lib/url";
@@ -18,7 +18,6 @@ export interface SymbolLinkTableProps<T extends Sym> {
   stripPrefix?: string;
   symbols: T[];
   url: (sym: T) => string;
-  useReactRouter?: boolean;
 }
 
 function deduplicate<T extends Sym>(xs: T[]): T[] {
@@ -35,8 +34,8 @@ export default function SymbolLinkTable<T extends Sym>({
   stripPrefix,
   symbols,
   url,
-  useReactRouter = true,
 }: SymbolLinkTableProps<T>) {
+  const useReactRouter = useInRouterContext();
   if (symbols.length === 0) {
     return null;
   }
