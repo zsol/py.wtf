@@ -34,6 +34,15 @@
         "code",
         "design"
       ]
+    },
+    {
+      "login": "anuj98",
+      "name": "Anuj Upadhyaya",
+      "avatar_url": "https://avatars.githubusercontent.com/u/30874550?v=4",
+      "profile": "https://github.com/anuj98",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "badgeTemplate": "[contributors-badge]: https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg",
