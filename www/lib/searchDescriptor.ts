@@ -1,3 +1,4 @@
+import Fuse from "fuse.js";
 import memoize from "nano-memoize";
 
 import { Class, Func, Module, Project, Variable } from "./docs";
@@ -78,5 +79,14 @@ export const generateSearchDescriptors = memoize((project: Project) => {
 
   // TODO: Think about whether it's a good pattern for this to have a different signature than the rest of the
   // generators.
-  return generateModuleDescriptors(project);
+  return new Fuse(generateModuleDescriptors(project), {
+    keys: ["name"],
+    includeMatches: true,
+  });
 });
+
+export type Index = Fuse<SearchDescriptor>;
+export type Result = Fuse.FuseResult<SearchDescriptor>;
+
+export const search = (index: Index, term: string): Result[] =>
+  index.search(term, { limit: 50 });
