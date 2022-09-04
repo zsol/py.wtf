@@ -16,6 +16,7 @@ import {
 
 const PageContainer = styled(FullPageBackground)`
   max-height: 100vh;
+  overflow: hidden;
 `;
 
 const Footer = styled.footer`
