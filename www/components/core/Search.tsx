@@ -1,13 +1,13 @@
 import styled from "@emotion/styled";
-import { useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 
-import { SearchDescriptor } from "@/lib/searchDescriptor";
+import { Index, Result, search } from "@/lib/searchDescriptor";
 
 import { flexColumn } from "./layout/helpers";
 import { RouterLink } from "./navigation/Link";
 
 type SearchParams = {
-  descriptors: Array<SearchDescriptor>;
+  descriptors: Index;
 };
 
 const SearchContainer = styled.div`
@@ -43,18 +43,38 @@ const ItemLink = styled(RouterLink)`
   width: 100%;
 `;
 
-export const Search = ({ descriptors = [] }: SearchParams) => {
+interface MatchProps {
+  result: Result;
+}
+function Match({ result }: MatchProps): ReactElement {
+  if (!result.matches) {
+    return <span>{result.item.name}</span>;
+  }
+
+  const ret = [];
+  let nameInd = 0;
+  for (const ind of result.matches[0].indices) {
+    const [matchStart, matchEnd] = ind;
+    if (matchStart !== nameInd) {
+      ret.push(<span>{result.item.name.slice(nameInd, matchStart)}</span>);
+    }
+    ret.push(<b>{result.item.name.slice(matchStart, matchEnd + 1)}</b>);
+    nameInd = matchEnd + 1;
+  }
+  if (nameInd !== result.item.name.length) {
+    ret.push(<span>{result.item.name.slice(nameInd)}</span>);
+  }
+  return <>{ret}</>;
+}
+
+export const Search = ({ descriptors }: SearchParams) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [results, setResults] = useState<Array<SearchDescriptor>>([]);
+  const [results, setResults] = useState<Array<Result>>([]);
 
   useEffect(() => {
     // TODO: debounce this
     if (searchTerm) {
-      setResults(
-        descriptors.filter((item: SearchDescriptor) =>
-          item?.name?.includes(searchTerm),
-        ),
-      );
+      setResults(search(descriptors, searchTerm));
     } else {
       setResults([]);
     }
@@ -71,9 +91,11 @@ export const Search = ({ descriptors = [] }: SearchParams) => {
         <SearchResultContainer>
           {results.length === 0 && "No results found"}
           {results.length > 0 &&
-            results.map((item: SearchDescriptor, index: number) => (
-              <SearchResultItem key={`${item.name}_${index}`}>
-                <ItemLink to={`${item.url}`}>{item.name}</ItemLink>
+            results.map((result: Result, ind: number) => (
+              <SearchResultItem key={`${result.item.name}_${ind}`}>
+                <ItemLink to={`${result.item.url}`}>
+                  <Match result={result} />
+                </ItemLink>
               </SearchResultItem>
             ))}
         </SearchResultContainer>
