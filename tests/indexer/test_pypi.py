@@ -84,7 +84,7 @@ async def test_download(
         url=f"https://files.pythonhosted.org/packages/lol.tar.gz",
         content=pypi_artifact.read_bytes(),
     )
-    path, metadata = await download("foo", tmp_path)
+    path, metadata, _ = await download("foo", tmp_path)
     assert metadata.license == "BSD"
     assert path.is_relative_to(tmp_path)
     assert (path / "foo_mod.py").exists()
@@ -99,7 +99,7 @@ async def test_no_extras_in_deps(
         url=f"https://files.pythonhosted.org/packages/lol.tar.gz",
         content=pypi_artifact.read_bytes(),
     )
-    _, metadata = await download("foo", tmp_path)
+    _, metadata, _ = await download("foo", tmp_path)
     assert "aiohttp" not in metadata.dependencies
 
 

@@ -18,6 +18,8 @@ import httpx
 from packaging.requirements import Requirement
 from rich.progress import Progress, TaskID
 
+from py_wtf.indexer.documentation import convert_to_myst
+
 from py_wtf.logging import setup_logging
 
 from py_wtf.repository import ProjectRepository
@@ -97,7 +99,7 @@ async def index_project(
         task_id = progress.add_task(project_name, action="Fetching", total=3)
     deps: list[Project] = []
     with TemporaryDirectory() as tmpdir:
-        src_dir, info = await download(project_name, Path(tmpdir))
+        src_dir, info, description = await download(project_name, Path(tmpdir))
         if progress:
             progress.update(
                 task_id, action="Gathering deps for", visible=False, advance=1
@@ -132,7 +134,7 @@ async def index_project(
         project_name,
         metadata=info,
         modules=modules,
-        documentation=[],
+        documentation=[convert_to_myst(description)],
     )
     if progress:
         progress.update(task_id, visible=False)
@@ -221,7 +223,9 @@ def pick_artifact(artifacts: list[Artifact]) -> Artifact | None:
 sem = asyncio.BoundedSemaphore(value=20)
 
 
-async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMetadata]:
+async def download(
+    project_name: str, directory: Path
+) -> Tuple[Path, ProjectMetadata, str]:
     async with sem, httpx.AsyncClient(timeout=httpx.Timeout(None)) as client:
         proj_data = (
             await client.get(f"https://pypi.org/pypi/{project_name}/json")
@@ -229,6 +233,7 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
         pypi_info = proj_data["info"]
         latest_version = pypi_info["version"]
         project_urls = pypi_info.get("project_urls") or {}
+        doc: str = pypi_info.get("description", "")
         proj_metadata = ProjectMetadata(
             pypi_info.get("name", project_name),
             latest_version,
@@ -245,7 +250,7 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
                 f"Couldn't find suitable artifact for {project_name}=={latest_version}"
             )
             logger.warning(error)
-            return (directory, replace(proj_metadata, summary=error))
+            return (directory, replace(proj_metadata, summary=error), doc)
 
         proj_metadata = replace(
             proj_metadata,
@@ -270,4 +275,5 @@ async def download(project_name: str, directory: Path) -> Tuple[Path, ProjectMet
         if artifact["packagetype"] == "sdist"
         else directory,
         proj_metadata,
+        doc,
     )
