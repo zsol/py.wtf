@@ -1,5 +1,11 @@
 import * as docs from "./docs";
 
+export function normalizeProjectName(name: string): string {
+  // perform PEP-426 project name normalization, just like pypi does in
+  // https://github.com/pypi/warehouse/blob/39daea188d2e1e6494c50753cd48cb5a8da3e8c4/warehouse/migrations/versions/23a3c4ffe5d_relax_normalization_rules.py
+  return name.toLowerCase().replaceAll(/\.|_/gi, "-");
+}
+
 export function withoutPrefix(prefix: string, s: string) {
   if (s.startsWith(`${prefix}.`)) {
     return s.slice(prefix.length + 1); // +1 for the dot
@@ -8,7 +14,7 @@ export function withoutPrefix(prefix: string, s: string) {
 }
 
 export function projectJson(name: string): string {
-  return `/_index/${name}.json`;
+  return `/_index/${normalizeProjectName(name)}.json`;
 }
 
 export function project(p: docs.Project): string {
@@ -44,7 +50,7 @@ export function xref(
   if (project == null) {
     return null;
   }
-  if (project == "__std__") {
+  if (project == "--std--") {
     return stdlibRef(xref.fqname);
   }
   const lastDot = xref.fqname.lastIndexOf(".");

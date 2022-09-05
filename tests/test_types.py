@@ -47,3 +47,15 @@ def test_export_serialization(xref: XRef) -> None:
 @pytest.fixture
 def export(fqname: FQName, xref: XRef) -> Export:
     return Export(fqname, xref)
+
+
+def test_project_name_normalization() -> None:
+    for expected, actuals in [
+        ("foo", ["Foo", "FOO"]),
+        (
+            "zope-interface",
+            ["zope.interface", "zope_interface", "Zope-Interface", "Zope.Interface"],
+        ),
+    ]:
+        for actual in actuals:
+            assert ProjectName(expected) == ProjectName(actual)
