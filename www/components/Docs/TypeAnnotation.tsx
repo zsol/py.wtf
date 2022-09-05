@@ -1,6 +1,6 @@
 import * as docs from "../../lib/docs";
 import Intersperse from "../Intersperse";
-import { RouterLink } from "../core/navigation/Link";
+import { Link } from "../core/navigation/Link";
 
 type UrlMaker = (xref: docs.XRef) => string | null;
 
@@ -43,9 +43,5 @@ function SymRef({
   children: string;
 }) {
   const to = url(xref);
-  return to != null ? (
-    <RouterLink to={to}>{children}</RouterLink>
-  ) : (
-    <span>{children}</span>
-  );
+  return to != null ? <Link to={to}>{children}</Link> : <span>{children}</span>;
 }

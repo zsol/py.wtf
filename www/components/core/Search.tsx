@@ -1,11 +1,10 @@
 import styled from "@emotion/styled";
 import { ReactElement, useEffect, useState } from "react";
-import { useInRouterContext } from "react-router-dom";
 
 import { Index, Result, search } from "@/lib/searchDescriptor";
 
 import { flexColumn } from "./layout/helpers";
-import { Link, RouterLink } from "./navigation/Link";
+import { Link } from "./navigation/Link";
 
 type SearchParams = {
   descriptors: Index;
@@ -35,13 +34,6 @@ const SearchResultItem = styled.div`
   &:hover {
     background-color: ${(props) => props.theme.colors.input.hover};
   }
-`;
-
-const ItemRouterLink = styled(RouterLink)`
-  display: block;
-  padding: ${(props) => props.theme.spacing.xs};
-
-  width: 100%;
 `;
 
 const ItemLink = styled(Link)`
@@ -78,7 +70,6 @@ function Match({ result }: MatchProps): ReactElement {
 export const Search = ({ descriptors }: SearchParams) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<Array<Result>>([]);
-  const useReactRouter = useInRouterContext();
 
   useEffect(() => {
     // TODO: debounce this
@@ -102,15 +93,9 @@ export const Search = ({ descriptors }: SearchParams) => {
           {results.length > 0 &&
             results.map((result: Result, ind: number) => (
               <SearchResultItem key={`${result.item.name}_${ind}`}>
-                {useReactRouter ? (
-                  <ItemRouterLink to={`${result.item.url}`}>
-                    <Match result={result} />
-                  </ItemRouterLink>
-                ) : (
-                  <ItemLink href={`${result.item.url}`}>
-                    <Match result={result} />
-                  </ItemLink>
-                )}
+                <ItemLink to={`${result.item.url}`}>
+                  <Match result={result} />
+                </ItemLink>
               </SearchResultItem>
             ))}
         </SearchResultContainer>

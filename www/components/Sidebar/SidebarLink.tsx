@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
 import React from "react";
 
-import { RouterLink } from "../core/navigation/Link";
+import { Link } from "../core/navigation/Link";
 
-const StyledRouterLink = styled(RouterLink)<{ active: string }>`
+const StyledRouterLink = styled(Link)<{ active: string }>`
   display: flex;
   box-sizing: border-box;
   width: 100%;

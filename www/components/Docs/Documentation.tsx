@@ -3,7 +3,7 @@ import MyST, { MySTRole } from "@/components/MyST";
 import { Project } from "@/lib/docs";
 import { xref } from "@/lib/url";
 
-import { RouterLink } from "../core/navigation/Link";
+import { Link } from "../core/navigation/Link";
 import { MarginlessText } from "../core/typography/Text";
 
 interface Props {
@@ -20,7 +20,7 @@ function renderRole(prj: Project | undefined, role: MySTRole) {
   if (ref == null) {
     return <code>{fqname}</code>;
   }
-  return <RouterLink to={ref}>{fqname.split(".").pop()}</RouterLink>;
+  return <Link to={ref}>{fqname.split(".").pop()}</Link>;
 }
 
 export default function Documentation({ children, project }: Props) {

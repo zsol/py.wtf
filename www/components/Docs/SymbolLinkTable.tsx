@@ -1,10 +1,8 @@
-import { useInRouterContext } from "react-router-dom";
-
 import { sortedBy } from "@/lib/sorting";
 import { withoutPrefix } from "@/lib/url";
 
 import { TBody, Table, Td, Tr } from "../core/layout/CondensedTable";
-import { Link, RouterLink } from "../core/navigation/Link";
+import { Link } from "../core/navigation/Link";
 import { H3 } from "../core/typography/Heading";
 import Documentation from "./Documentation";
 
@@ -35,7 +33,6 @@ export default function SymbolLinkTable<T extends Sym>({
   symbols,
   url,
 }: SymbolLinkTableProps<T>) {
-  const useReactRouter = useInRouterContext();
   if (symbols.length === 0) {
     return null;
   }
@@ -53,11 +50,7 @@ export default function SymbolLinkTable<T extends Sym>({
             return (
               <Tr key={sym.name}>
                 <Td>
-                  {useReactRouter ? (
-                    <RouterLink to={url(sym)}>{linkText}</RouterLink>
-                  ) : (
-                    <Link href={url(sym)}>{linkText}</Link>
-                  )}
+                  <Link to={url(sym)}>{linkText}</Link>
                 </Td>
                 <Td>
                   <Documentation.Short>{sym.documentation}</Documentation.Short>

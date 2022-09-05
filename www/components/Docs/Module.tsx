@@ -1,7 +1,7 @@
 import * as docs from "@/lib/docs";
 import * as url from "@/lib/url";
 
-import { RouterLink } from "../core/navigation/Link";
+import { Link } from "../core/navigation/Link";
 import { H3 } from "../core/typography/Heading";
 import Documentation from "./Documentation";
 import SymbolLinkTable from "./SymbolLinkTable";
@@ -68,9 +68,5 @@ interface ExportProps {
 
 function Export({ prj, exp }: ExportProps) {
   const to = url.xref(prj, exp.xref);
-  return to == null ? (
-    <span>{exp.name}</span>
-  ) : (
-    <RouterLink to={to}>{exp.name}</RouterLink>
-  );
+  return to == null ? <span>{exp.name}</span> : <Link to={to}>{exp.name}</Link>;
 }
