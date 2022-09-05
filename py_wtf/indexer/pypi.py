@@ -102,7 +102,7 @@ async def index_project(
         src_dir, info, description = await download(project_name, Path(tmpdir))
         if progress:
             progress.update(
-                task_id, action="Gathering deps for", visible=False, advance=1
+                task_id, action="Gathering deps for", visible=True, advance=1
             )
         dep_project_names = [ProjectName(dep) for dep in info.dependencies]
 
