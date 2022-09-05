@@ -7,7 +7,12 @@ import rst_to_myst
 from py_wtf.types import Documentation
 
 logger = logging.getLogger(__name__)
-RST_ROLE = re.compile(r":[a-zA-Z]+:`")
+RST_ROLE = re.compile(
+    r"(:[a-zA-Z]+:`)"  # references
+    r"|(::\n)"  # literal blocks
+    r"|((^|\n)\.\. )"  # definitions
+    r"|([^`]``[^`]+``[^`])"  # inline literal
+)
 
 
 def convert_to_myst(src: str) -> Documentation:
@@ -21,4 +26,4 @@ def convert_to_myst(src: str) -> Documentation:
 
 
 def is_rst(src: str) -> bool:
-    return bool(RST_ROLE.finditer(src))
+    return bool(RST_ROLE.search(src))
