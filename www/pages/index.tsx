@@ -35,15 +35,21 @@ const SearchContainer = styled.div`
 
 const ProjectTables = styled.div`
   ${flexRow}
+  // TODO: move this into the theme's breakpoints once they exist
   @media screen and (max-width: 500px) {
-    flex-direction: column;
-    align-items: center;
+    ${flexColumnCenter}
   }
   justify-content: center;
 `;
 
 const ProjectTableWrapper = styled.div`
   max-width: 50%;
+`;
+
+const TimestampFooter = styled.div`
+  ${flexColumnCenter}
+  padding-top: ${(props) => props.theme.spacing.xl};
+  color: ${(props) => props.theme.colors.footer.text};
 `;
 
 function ProjectTable<T extends Sym>(props: SymbolLinkTableProps<T>) {
@@ -53,12 +59,6 @@ function ProjectTable<T extends Sym>(props: SymbolLinkTableProps<T>) {
     </ProjectTableWrapper>
   );
 }
-
-const TimestampFooter = styled.div`
-  ${flexColumnCenter}
-  padding-top: ${(props) => props.theme.spacing.xl};
-  color: ${(props) => props.theme.colors.footer.text};
-`;
 
 interface ProjectSymbol {
   name: string;
