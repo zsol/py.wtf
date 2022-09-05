@@ -52,18 +52,6 @@ async def shell(
     return output
 
 
-PROJECTS_TO_INDEX = [
-    "click",
-    "aioitertools",
-    "aiomultiprocess",
-    "more_itertools",
-    "usort",
-    "black",
-    "LibCST",
-    "numpy",
-]
-
-
 async def main() -> None:
     toplevel = Path(__file__).parent
     os.chdir(toplevel)
@@ -74,21 +62,8 @@ async def main() -> None:
         item.unlink()
 
     subprocess.run(
-        ["hatch", "run", "py-wtf", "index-top-pypi", str(index_dir), "--top=50"]
+        ["hatch", "run", "py-wtf", "index-top-pypi", str(index_dir), "--top=500"]
     ).check_returncode()
-    await asyncio.gather(
-        *[
-            shell(
-                "hatch",
-                "run",
-                "py-wtf",
-                "index",
-                str(index_dir),
-                f"--project-name={proj}",
-            )
-            for proj in PROJECTS_TO_INDEX
-        ]
-    )
 
     os.chdir(toplevel / "www")
     await shell(NPM, "install")
