@@ -24,7 +24,14 @@ from py_wtf.logging import setup_logging
 
 from py_wtf.repository import ProjectRepository
 
-from py_wtf.types import FQName, Project, ProjectMetadata, ProjectName, SymbolTable
+from py_wtf.types import (
+    Documentation,
+    FQName,
+    Project,
+    ProjectMetadata,
+    ProjectName,
+    SymbolTable,
+)
 from .file import index_dir
 
 logger = logging.getLogger(__name__)
@@ -130,11 +137,18 @@ async def index_project(
         if progress:
             progress.advance(task_id)
 
+    try:
+        documentation = [convert_to_myst(description)]
+    except Exception as e:
+        msg = f"Error while parsing description for {project_name}"
+        logger.exception(msg)
+        documentation = [Documentation(msg), Documentation(str(e))]
+
     proj = Project(
         project_name,
         metadata=info,
         modules=modules,
-        documentation=[convert_to_myst(description)],
+        documentation=documentation,
     )
     if progress:
         progress.update(task_id, visible=False)
