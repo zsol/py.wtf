@@ -5,7 +5,7 @@ import { useInRouterContext } from "react-router-dom";
 import { Index, Result, search } from "@/lib/searchDescriptor";
 
 import { flexColumn } from "./layout/helpers";
-import { Link, RouterLink } from "./navigation/Link";
+import { RawLink, RouterLink } from "./navigation/Link";
 
 type SearchParams = {
   descriptors: Index;
@@ -44,7 +44,7 @@ const ItemRouterLink = styled(RouterLink)`
   width: 100%;
 `;
 
-const ItemLink = styled(Link)`
+const ItemLink = styled(RawLink)`
   display: block;
   padding: ${(props) => props.theme.spacing.xs};
 

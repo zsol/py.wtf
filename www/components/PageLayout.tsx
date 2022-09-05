@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 
 import FullPageBackground from "@/components/core/layout/FullPageBackground";
 import { flexColumn } from "@/components/core/layout/helpers";
-import { Link } from "@/components/core/navigation/Link";
+import { RawLink } from "@/components/core/navigation/Link";
 import { darkTheme } from "@/components/core/theme/theme";
 
 import {
@@ -58,11 +58,13 @@ export default function PageLayout({ title, header, children }: Props) {
           <FrameContent>
             <FrameText>
               Footer™: This is a hobby project, please be gentle. Send issues{" "}
-              <Link href="https://github.com/zsol/py.wtf/issues/">here</Link>.
-              Bugs courtesy of{" "}
-              <Link href="https://github.com/abesto">abesto</Link>,{" "}
-              <Link href="https://github.com/anathien">anathien</Link>,{" "}
-              <Link href="https://github.com/zsol">zsol</Link>.
+              <RawLink href="https://github.com/zsol/py.wtf/issues/">
+                here
+              </RawLink>
+              . Bugs courtesy of{" "}
+              <RawLink href="https://github.com/abesto">abesto</RawLink>,{" "}
+              <RawLink href="https://github.com/anathien">anathien</RawLink>,{" "}
+              <RawLink href="https://github.com/zsol">zsol</RawLink>.
             </FrameText>
           </FrameContent>
         </Footer>

@@ -4,7 +4,7 @@ import { sortedBy } from "@/lib/sorting";
 import { withoutPrefix } from "@/lib/url";
 
 import { TBody, Table, Td, Tr } from "../core/layout/CondensedTable";
-import { Link, RouterLink } from "../core/navigation/Link";
+import { RawLink, RouterLink } from "../core/navigation/Link";
 import { H3 } from "../core/typography/Heading";
 import Documentation from "./Documentation";
 
@@ -57,7 +57,7 @@ export default function SymbolLinkTable<T extends Sym>({
                   {useReactRouter ? (
                     <RouterLink to={url(sym)}>{linkText}</RouterLink>
                   ) : (
-                    <Link href={url(sym)}>{linkText}</Link>
+                    <RawLink href={url(sym)}>{linkText}</RawLink>
                   )}
                 </Td>
                 <Td>
