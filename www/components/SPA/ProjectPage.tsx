@@ -5,6 +5,7 @@ import Project from "@/components/Docs/Project";
 
 import Header from "../Header";
 import PageLayout from "../PageLayout";
+import ModuleList from "../Sidebar/ModuleList";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
 
@@ -28,7 +29,13 @@ export default function ProjectPage() {
         title={`py.wtf: ${project.name}`}
         header={<Header project={project} />}
       >
-        <ContentWithSidebar sidebar={<Sidebar project={project} />}>
+        <ContentWithSidebar
+          sidebar={
+            <Sidebar project={project}>
+              <ModuleList prj={project} />
+            </Sidebar>
+          }
+        >
           <Project prj={project} />
         </ContentWithSidebar>
       </PageLayout>
