@@ -21,8 +21,8 @@ list is yielded.
     """
     result = convert_to_myst(docstring)
     assert "{func}`grouper`" in result
-    # four lines of total blockquotes
-    assert result.count("\n> ") == 4
+    # two code blocks in total (4 markers)
+    assert result.count("```") == 4
 
 
 def test_is_rst() -> None:
