@@ -4,7 +4,13 @@ import memoize from "nano-memoize";
 import { Class, Func, Module, Project, Variable } from "./docs";
 import { mod as generateModuleUrl, symbol as generateSymbolUrl } from "./url";
 
-type SymbolType = "module" | "function" | "variable" | "class" | "export";
+export type SymbolType =
+  | "module"
+  | "function"
+  | "variable"
+  | "class"
+  | "export"
+  | "project";
 
 export type SearchDescriptor = {
   name: string;
@@ -72,19 +78,18 @@ const generateModuleDescriptors = (
   return descriptors;
 };
 
-export const generateSearchDescriptors = memoize((project: Project) => {
-  const options = {
-    keys: ["name"],
-    includeMatches: true,
-  };
+export const generateProjectIndex = memoize((project: Project) => {
   if (!project) {
-    return new Fuse([], options);
+    return makeIndex([]);
   }
 
   // TODO: Think about whether it's a good pattern for this to have a different signature than the rest of the
   // generators.
-  return new Fuse(generateModuleDescriptors(project), options);
+  return makeIndex(generateModuleDescriptors(project));
 });
+
+export const makeIndex = (descriptors: SearchDescriptor[]): Index =>
+  new Fuse(descriptors, { keys: ["name"], includeMatches: true });
 
 export type Index = Fuse<SearchDescriptor>;
 export type Result = Fuse.FuseResult<SearchDescriptor>;

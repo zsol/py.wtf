@@ -4,7 +4,7 @@ import { sortedBy } from "@/lib/sorting";
 import { withoutPrefix } from "@/lib/url";
 
 import { TBody, Table, Td, Tr } from "../core/layout/CondensedTable";
-import { Link, RouterLink } from "../core/navigation/Link";
+import { RawLink, RouterLink } from "../core/navigation/Link";
 import { H3 } from "../core/typography/Heading";
 import Documentation from "./Documentation";
 
@@ -13,7 +13,7 @@ export interface Sym {
   documentation: string[];
 }
 
-interface Props<T extends Sym> {
+export interface SymbolLinkTableProps<T extends Sym> {
   title: string;
   stripPrefix?: string;
   symbols: T[];
@@ -36,7 +36,7 @@ export default function SymbolLinkTable<T extends Sym>({
   symbols,
   url,
   useReactRouter = true,
-}: Props<T>) {
+}: SymbolLinkTableProps<T>) {
   if (symbols.length === 0) {
     return null;
   }
@@ -57,7 +57,7 @@ export default function SymbolLinkTable<T extends Sym>({
                   {useReactRouter ? (
                     <RouterLink to={url(sym)}>{linkText}</RouterLink>
                   ) : (
-                    <Link href={url(sym)}>{linkText}</Link>
+                    <RawLink href={url(sym)}>{linkText}</RawLink>
                   )}
                 </Td>
                 <Td>

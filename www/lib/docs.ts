@@ -7,10 +7,12 @@ const indexDirectory = path.join(
   process.env.INDEX_PATH || path.join("public", "_index"),
 );
 
-export async function listProjects(): Promise<string[]> {
-  const entries = await fs.readdir(indexDirectory);
-  const fileNames = entries.filter((fname) => fname.endsWith(".json"));
-  return fileNames.map((f) => f.replace(/\.json$/, ""));
+export async function getIndexMetadata(): Promise<IndexMetadata> {
+  const json = await fs.readFile(
+    path.join(indexDirectory, ".metadata"),
+    "utf8",
+  );
+  return JSON.parse(json) as IndexMetadata;
 }
 
 export async function getProject(name: string): Promise<Project> {
@@ -77,6 +79,7 @@ export type Module = {
 };
 
 export type ProjectMetadata = {
+  name: string;
   version: string;
   classifiers?: Array<string>;
   home_page?: string;
@@ -91,4 +94,11 @@ export type Project = {
   metadata: ProjectMetadata;
   documentation: Array<Documentation>;
   modules: Array<Module>;
+};
+
+export type IndexMetadata = {
+  generated_at: number;
+  latest_projects: Array<ProjectMetadata>;
+  top_projects: Array<ProjectMetadata>;
+  all_project_names: Array<string>;
 };

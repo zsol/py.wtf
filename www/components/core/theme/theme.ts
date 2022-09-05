@@ -51,6 +51,7 @@ export const darkTheme = {
       highlight: colors.grey.light,
     },
     footer: {
+      text: colors.grey.dark,
       separator: colors.grey.darkest,
     },
     input: {

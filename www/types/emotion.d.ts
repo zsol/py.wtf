@@ -23,6 +23,7 @@ declare module "@emotion/react" {
         highlight: string;
       };
       footer: {
+        text: string;
         separator: string;
       };
       input: {
