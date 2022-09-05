@@ -3,6 +3,8 @@ import { MyST } from "mystjs";
 import { ReactElement, createContext, useContext } from "react";
 import type { Literal } from "unist";
 
+import { RawLink } from "./core/navigation/Link";
+
 export interface MySTMarkupProps extends MySTRoles {
   source: string;
 }
@@ -262,14 +264,14 @@ function Break(_: { node: md.Break }) {
 function Link({ node }: { node: md.Link }) {
   // title gets lost?
   return (
-    <a href={node.url}>
+    <RawLink href={node.url}>
       <MySTParent node={node} />
-    </a>
+    </RawLink>
   );
 }
 
 function Image({ node }: { node: md.Image }) {
-  return <a href={node.url}>{node.alt} (Image)</a>;
+  return <RawLink href={node.url}>{node.alt} (Image)</RawLink>;
 }
 
 function LinkReference(_: { node: md.LinkReference }) {
