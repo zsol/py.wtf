@@ -3,7 +3,7 @@ import logging
 import multiprocessing
 import os
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
@@ -28,6 +28,7 @@ from py_wtf.types import (
     Documentation,
     FQName,
     Project,
+    ProjectDescription,
     ProjectMetadata,
     ProjectName,
     SymbolTable,
@@ -239,7 +240,7 @@ sem = asyncio.BoundedSemaphore(value=20)
 
 async def download(
     project_name: str, directory: Path
-) -> Tuple[Path, ProjectMetadata, str]:
+) -> Tuple[Path, ProjectMetadata, ProjectDescription]:
     async with sem, httpx.AsyncClient(timeout=httpx.Timeout(None)) as client:
         proj_data = (
             await client.get(f"https://pypi.org/pypi/{project_name}/json")
@@ -247,7 +248,9 @@ async def download(
         pypi_info = proj_data["info"]
         latest_version = pypi_info["version"]
         project_urls = pypi_info.get("project_urls") or {}
-        doc: str = pypi_info.get("description", "")
+        doc = ProjectDescription(
+            pypi_info.get("description", ""), pypi_info.get("description_content_type")
+        )
         proj_metadata = ProjectMetadata(
             pypi_info.get("name", project_name),
             latest_version,

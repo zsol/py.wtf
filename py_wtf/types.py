@@ -122,3 +122,9 @@ class SymbolTable(UserDict[FQName, ProjectName]):
         if mod in sys.stdlib_module_names:
             return stdlib_project
         raise KeyError(key)
+
+
+@dataclass(slots=True, frozen=True)
+class ProjectDescription:
+    description: str
+    content_type: str | None

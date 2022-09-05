@@ -1,4 +1,5 @@
 from py_wtf.indexer.documentation import convert_to_myst, is_rst
+from py_wtf.types import ProjectDescription
 
 
 def test_simple_rst() -> None:
@@ -36,3 +37,15 @@ def test_is_rst() -> None:
     """
     )
     assert is_rst("hello\n.. foo:\nbar")
+
+
+def test_description_content_type_md() -> None:
+    assert "like ``foo``." == convert_to_myst(
+        ProjectDescription(description="like ``foo``.", content_type="text/markdown")
+    )
+
+
+def test_description_content_type_rst() -> None:
+    assert "like `foo`.\n" == convert_to_myst(
+        ProjectDescription(description="like ``foo``.", content_type="text/x-rst")
+    )
