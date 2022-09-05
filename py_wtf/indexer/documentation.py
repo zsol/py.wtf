@@ -1,3 +1,4 @@
+import logging
 import re
 from inspect import cleandoc
 
@@ -5,13 +6,17 @@ import rst_to_myst
 
 from py_wtf.types import Documentation
 
+logger = logging.getLogger(__name__)
 RST_ROLE = re.compile(r":[a-zA-Z]+:`")
 
 
 def convert_to_myst(src: str) -> Documentation:
     text = cleandoc(src)
     if is_rst(text):
-        text = rst_to_myst.rst_to_myst(text).text
+        try:
+            text = rst_to_myst.rst_to_myst(text).text
+        except Exception:
+            logger.exception("Error while parsing RST")
     return Documentation(text)
 
 
