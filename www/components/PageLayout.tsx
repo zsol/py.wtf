@@ -62,9 +62,10 @@ export default function PageLayout({ title, header, children }: Props) {
                 here
               </RawLink>
               . Bugs courtesy of{" "}
-              <RawLink href="https://github.com/abesto">abesto</RawLink>,{" "}
-              <RawLink href="https://github.com/anathien">anathien</RawLink>,{" "}
-              <RawLink href="https://github.com/zsol">zsol</RawLink>.
+              <RawLink href="https://github.com/zsol/py.wtf#acknowledgements">
+                ✨The Contributors✨
+              </RawLink>
+              .
             </FrameText>
           </FrameContent>
         </Footer>
