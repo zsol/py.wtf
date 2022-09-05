@@ -271,7 +271,11 @@ function Link({ node }: { node: md.Link }) {
 }
 
 function Image({ node }: { node: md.Image }) {
-  return <RawLink href={node.url}>{node.alt} (Image)</RawLink>;
+  return (
+    <picture>
+      <img src={node.url} alt={node.alt ?? ""} />
+    </picture>
+  );
 }
 
 function LinkReference(_: { node: md.LinkReference }) {
