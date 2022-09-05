@@ -1,10 +1,8 @@
-import React from "react";
-
 import { sortedBy } from "@/lib/sorting";
 import { withoutPrefix } from "@/lib/url";
 
 import { TBody, Table, Td, Tr } from "../core/layout/CondensedTable";
-import { RawLink, RouterLink } from "../core/navigation/Link";
+import { Link } from "../core/navigation/Link";
 import { H3 } from "../core/typography/Heading";
 import Documentation from "./Documentation";
 
@@ -18,7 +16,6 @@ export interface SymbolLinkTableProps<T extends Sym> {
   stripPrefix?: string;
   symbols: T[];
   url: (sym: T) => string;
-  useReactRouter?: boolean;
 }
 
 function deduplicate<T extends Sym>(xs: T[]): T[] {
@@ -35,7 +32,6 @@ export default function SymbolLinkTable<T extends Sym>({
   stripPrefix,
   symbols,
   url,
-  useReactRouter = true,
 }: SymbolLinkTableProps<T>) {
   if (symbols.length === 0) {
     return null;
@@ -54,11 +50,7 @@ export default function SymbolLinkTable<T extends Sym>({
             return (
               <Tr key={sym.name}>
                 <Td>
-                  {useReactRouter ? (
-                    <RouterLink to={url(sym)}>{linkText}</RouterLink>
-                  ) : (
-                    <RawLink href={url(sym)}>{linkText}</RawLink>
-                  )}
+                  <Link to={url(sym)}>{linkText}</Link>
                 </Td>
                 <Td>
                   <Documentation.Short>{sym.documentation}</Documentation.Short>

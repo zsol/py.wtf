@@ -5,7 +5,7 @@ import * as url from "@/lib/url";
 
 import { Project } from "../../lib/docs";
 import { flexColumn } from "../core/layout/helpers";
-import { RawLink, RouterLink } from "../core/navigation/Link";
+import { Link, RawLink } from "../core/navigation/Link";
 import { H3 } from "../core/typography/Heading";
 import { Text } from "../core/typography/Text";
 
@@ -43,9 +43,7 @@ export default function Sidebar({ project, children }: Props) {
     <Container>
       <SidebarHeader>
         <H3>
-          <RouterLink to={url.project(project)}>
-            Project {project.name}
-          </RouterLink>
+          <Link to={url.project(project)}>Project {project.name}</Link>
         </H3>
         <LinkContainer>
           {home_link}

@@ -120,13 +120,11 @@ export default function Home({
             title="Top Projects"
             symbols={topProjects}
             url={(prj) => url.project(prj as Project)}
-            useReactRouter={false}
           />
           <ProjectTable
             title="Recent Projects"
             symbols={recentProjects}
             url={(prj) => url.project(prj as Project)}
-            useReactRouter={false}
           />
         </ProjectTables>
         <TimestampFooter>
