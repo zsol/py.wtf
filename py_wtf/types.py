@@ -11,7 +11,13 @@ if not TYPE_CHECKING:
 
 Documentation = NewType("Documentation", str)
 FQName = NewType("FQName", str)
-ProjectName = NewType("ProjectName", str)
+
+
+class ProjectName(str):
+    def __new__(cls, content: object) -> ProjectName:
+        return super().__new__(
+            cls, str(content).replace(".", "-").replace("_", "-").lower()
+        )
 
 
 @dataclass(slots=True, frozen=True)
@@ -83,7 +89,7 @@ class Module:
 
 @dataclass(slots=True)
 class ProjectMetadata:
-    name: str
+    name: ProjectName
     version: str
     classifiers: list[str] | None
     home_page: str | None
@@ -113,7 +119,7 @@ class Index:
     all_project_names: list[ProjectName]
 
 
-stdlib_project = ProjectName("__std__")
+stdlib_project = ProjectName("--std--")
 
 
 class SymbolTable(UserDict[FQName, ProjectName]):
