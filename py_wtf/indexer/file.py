@@ -191,6 +191,7 @@ class Indexer(cst.CSTVisitor):
                     XRef(fqname, project=self._external_symbol_table.get(fqname)),
                 )
             )
+        self.exports.sort(key=lambda exp: exp.name.casefold())
 
     def extract_type(self, ann: cst.Annotation) -> Type:
         return extract_type(
