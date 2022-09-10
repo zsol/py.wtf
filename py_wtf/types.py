@@ -45,7 +45,7 @@ class Export:
 
 @dataclass(slots=True, frozen=True)
 class Variable:
-    name: str
+    name: FQName
     type: Type | None
     documentation: list[Documentation]
 
@@ -59,7 +59,7 @@ class Parameter:
 
 @dataclass(slots=True, frozen=True)
 class Function:
-    name: str
+    name: FQName
     asynchronous: bool
     params: list[Parameter]
     returns: Type | None
@@ -68,8 +68,8 @@ class Function:
 
 @dataclass(slots=True, frozen=True)
 class Class:
-    name: str
-    bases: list[str]
+    name: FQName
+    bases: list[FQName]
     methods: list[Function]
     class_variables: list[Variable]
     instance_variables: list[Variable]
@@ -79,7 +79,7 @@ class Class:
 
 @dataclass(slots=True, frozen=True)
 class Module:
-    name: str
+    name: FQName
     documentation: list[Documentation]
     functions: list[Function]
     variables: list[Variable]

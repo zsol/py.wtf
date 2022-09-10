@@ -83,7 +83,7 @@ def index_file(
         indexer.documentation = [err]
         logger.error(err)
     return Module(
-        name,
+        FQName(name),
         documentation=indexer.documentation,
         classes=indexer.classes,
         functions=indexer.functions,
@@ -265,7 +265,10 @@ class Indexer(cst.CSTVisitor):
         unqual_name = ensure(name(node.name))
         my_name = self.scoped_name(unqual_name)
         self._symbol_table[unqual_name] = my_name
-        bases = list(filter(None, (name(arg.value) for arg in node.bases)))
+        bases = [
+            FQName(base)
+            for base in filter(None, (name(arg.value) for arg in node.bases))
+        ]
         comments = filter(
             None, (extract_documentation(line) for line in node.leading_lines)
         )
