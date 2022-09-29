@@ -14,7 +14,7 @@ interface Props {
   currentSymbol: string;
 }
 
-export default function ClassContents({ prj, mod, cls, currentSymbol }: Props) {
+export default function ClassContents({ prj, mod, cls, _currentSymbol }: Props) {
   const symbolUrl = url.symbol.bind(null, prj, mod);
   const anchorUrl = url.classItem.bind(null, prj, mod, cls);
 
@@ -31,7 +31,7 @@ export default function ClassContents({ prj, mod, cls, currentSymbol }: Props) {
       <SidebarLinkList<T>
         title={title}
         items={items}
-        active={currentSymbol}
+        active=""
         stripPrefix={cls.name}
         url={url}
       />
