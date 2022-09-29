@@ -11,7 +11,7 @@ interface Props {
   prj: Project;
   mod: Module;
   cls: Class;
-  currentSymbol: string;
+  _currentSymbol: string;
 }
 
 export default function ClassContents({ prj, mod, cls, _currentSymbol }: Props) {
