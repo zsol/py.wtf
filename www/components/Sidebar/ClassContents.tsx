@@ -14,7 +14,12 @@ interface Props {
   _currentSymbol: string;
 }
 
-export default function ClassContents({ prj, mod, cls, _currentSymbol }: Props) {
+export default function ClassContents({
+  prj,
+  mod,
+  cls,
+  _currentSymbol,
+}: Props) {
   const symbolUrl = url.symbol.bind(null, prj, mod);
   const anchorUrl = url.classItem.bind(null, prj, mod, cls);
 
