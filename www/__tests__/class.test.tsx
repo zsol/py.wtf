@@ -59,7 +59,8 @@ describe("Class page", () => {
     getByText(
       (_, element) =>
         element?.nodeName === "CODE" &&
-        element?.textContent === "def static_method(\
+        element?.textContent ===
+          "def static_method(\
 \
 foo: int,\
 ) -> None",
