@@ -12,19 +12,19 @@ repos:
       - id: check-toml
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.0.0-alpha.0" # Use the sha / tag you want to point at
+    rev: "v3.0.0-alpha.1" # Use the sha / tag you want to point at
     hooks:
       - id: prettier
         types_or: [css, javascript, ts, tsx]
 
   - repo: https://github.com/omnilib/ufmt
-    rev: v2.0.0
+    rev: v2.0.1
     hooks:
       - id: ufmt
         entry: python -c 'import os, subprocess; os.environ["LIBCST_PARSER_TYPE"] = "native"; raise SystemExit(subprocess.run(["ufmt", "format"], check=True).returncode)'
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v0.971"
+    rev: "v0.982"
     hooks:
       - id: mypy
         additional_dependencies: &deps
