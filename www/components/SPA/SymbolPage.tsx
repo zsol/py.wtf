@@ -46,7 +46,6 @@ export default function SymbolPage() {
             prj={project}
             mod={module}
             cls={symbol as docs.Class}
-            _currentSymbol={window.location.hash.slice(1)}
           />
           <ModuleContents
             prj={project}
