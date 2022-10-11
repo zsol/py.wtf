@@ -62,7 +62,7 @@ def pypi_json(requirements: None | list[str]) -> bytes:
 
 @pytest.fixture(params=["foo.whl", "foo.zip", "foo.tar.gz", "foo.tar.bz2"])
 def pypi_artifact(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
-    out_file: Path = tmp_path / request.param  # type: ignore
+    out_file: Path = tmp_path / request.param
     if ".tar" in out_file.suffixes:
         with TarFile.open(out_file, mode=f"w:{out_file.suffix.lstrip('.')}") as archive:
             foo = tmp_path / "foo.py"

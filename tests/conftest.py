@@ -1,5 +1,5 @@
 import pytest
-from py_wtf.types import Module, Project, ProjectMetadata, ProjectName
+from py_wtf.types import FQName, Module, Project, ProjectMetadata, ProjectName
 
 
 @pytest.fixture
@@ -17,6 +17,6 @@ def project() -> Project:
             dependencies=[],
             summary=None,
         ),
-        modules=[Module("foo", [], [], [], [], [])],
+        modules=[Module(FQName("foo"), [], [], [], [], [])],
         documentation=[],
     )

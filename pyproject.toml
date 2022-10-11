@@ -58,7 +58,7 @@ dependencies = [
   "types-aiofiles==0.8.0",
   "types-appdirs==1.4.3",
   "ufmt >= 2.0.0",
-  "mypy >= 0.971",
+  "mypy >= 0.982",
 ]
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=py_wtf --cov=tests"

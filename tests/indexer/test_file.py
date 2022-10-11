@@ -15,7 +15,7 @@ from py_wtf.types import (
     XRef,
 )
 
-empty_module = Module("testmod", [], [], [], [], [])
+empty_module = Module(FQName("testmod"), [], [], [], [], [])
 
 
 def mock_index_file(
@@ -48,7 +48,7 @@ def test_index_file_syntax_error(tmp_path: Path) -> None:
 
 @pytest.fixture(params=["one", "two", "three"])
 def module_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
-    name = f"{request.param}.py"  # type: ignore
+    name = f"{request.param}.py"
     some_file = tmp_path / name
     code = dedent(
         """

@@ -11,12 +11,12 @@ T = TypeVar("T")
 
 @pytest.fixture(params=["str", "foo.bar.Foo.Bar.foo"])
 def fqname(request: pytest.FixtureRequest) -> FQName:
-    return FQName(request.param)  # type: ignore
+    return FQName(request.param)
 
 
 @pytest.fixture(params=[None, ProjectName("alpha")])
 def xref(request: pytest.FixtureRequest, fqname: FQName) -> XRef:
-    return XRef(fqname, project=request.param)  # type: ignore
+    return XRef(fqname, project=request.param)
 
 
 def roundtrip(obj: T) -> T:
@@ -36,7 +36,7 @@ def test_type_serialization(xref: XRef) -> None:
 
 @pytest.fixture(params=[None, [], [Type("foo", None)]])
 def ty(request: pytest.FixtureRequest, xref: XRef) -> Type:
-    return Type("ty", xref, params=request.param)  # type: ignore
+    return Type("ty", xref, params=request.param)
 
 
 def test_export_serialization(xref: XRef) -> None:
