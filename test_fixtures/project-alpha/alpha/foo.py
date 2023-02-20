@@ -2,6 +2,7 @@
 
 from typing import Generator
 
+
 # bar comment
 def bar() -> Generator[int, None, str]:
     # bar inner comment
