@@ -73,6 +73,7 @@ executor = ProcessPoolExecutor(
 PROJECT_BLOCKLIST = frozenset(
     {
         "poetry-plugin-export",  # circular dependency on poetry
+        "apache-airflow",  # circular dependencies between airflow and some providers
     }
 )
 
