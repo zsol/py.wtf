@@ -126,6 +126,8 @@ class AnnotationIndexer(cst.CSTVisitor):
         contents = node.evaluated_value
         if not contents:
             return dumb_annotation(node)
+        if isinstance(contents, bytes):
+            contents = contents.decode()
         try:
             return self(cst.parse_expression(contents))
         except Exception as e:
