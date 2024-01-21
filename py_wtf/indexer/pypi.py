@@ -289,9 +289,11 @@ async def download(
         os.unlink(archive_name)
 
     return (
-        pick_project_dir(directory)
-        if artifact["packagetype"] == "sdist"
-        else directory,
+        (
+            pick_project_dir(directory)
+            if artifact["packagetype"] == "sdist"
+            else directory
+        ),
         proj_metadata,
         doc,
     )

@@ -50,8 +50,7 @@ def test_index_file_syntax_error(tmp_path: Path) -> None:
 def module_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     name = f"{request.param}.py"
     some_file = tmp_path / name
-    code = dedent(
-        """
+    code = dedent("""
     # header
     '''module docs'''
     import sys
@@ -79,8 +78,7 @@ def module_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     # this is a factory, not a fact
     def fact() -> Cls:
         return Cls()
-    """
-    )
+    """)
     some_file.write_text(code)
     return some_file
 
@@ -89,15 +87,13 @@ def module_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
 def package_file(tmp_path: Path) -> Path:
     some_file = tmp_path / "mypackage" / "__init__.py"
     some_file.parent.mkdir()
-    code = dedent(
-        """
+    code = dedent("""
         from dependencyproject import helper
         def foo(): ...
         bar = 2
 
         __all__ = ["foo", "helper"]
-        """
-    )
+        """)
     some_file.write_text(code)
     return some_file
 
@@ -106,14 +102,12 @@ def package_file(tmp_path: Path) -> Path:
 def package_file_without_all(tmp_path: Path) -> Path:
     some_file = tmp_path / "mypackage" / "__init__.py"
     some_file.parent.mkdir()
-    code = dedent(
-        """
+    code = dedent("""
         from dependencyproject import helper
         def foo(): ...
         bar = 2
 
-        """
-    )
+        """)
     some_file.write_text(code)
     return some_file
 

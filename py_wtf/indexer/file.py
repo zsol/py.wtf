@@ -113,8 +113,7 @@ def ensure(val: T | None) -> T:
 
 class HasComment(Protocol):
     @property
-    def comment(self) -> cst.Comment | None:
-        ...
+    def comment(self) -> cst.Comment | None: ...
 
 
 def extract_documentation(node: HasComment) -> Documentation | None:
