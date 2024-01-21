@@ -53,7 +53,7 @@ async def shell(
 
 
 async def main() -> None:
-    toplevel = Path(__file__).parent
+    toplevel = Path(__file__).parent.parent
     os.chdir(toplevel)
     await shell("hatch", "--version")
     await shell(NPM, "--version")
