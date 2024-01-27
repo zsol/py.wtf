@@ -23,6 +23,8 @@ jobs:
         with:
           cache: "npm"
           cache-dependency-path: "www/package-lock.json"
+      - run: npm install
+        working-directory: www
       - name: Run prettier
         run: npx prettier -w .
         working-directory: www
