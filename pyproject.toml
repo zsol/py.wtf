@@ -6,18 +6,18 @@ build-backend = "hatchling.build"
 name = "py-wtf"
 description = 'Documentation index'
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = "MIT"
 keywords = []
 authors = [{ name = "Zsolt Dollenstein", email = "zsol.zsol@gmail.com" }]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
 dependencies = [
-  "aiofiles==0.8.0",
+  "aiofiles==23.2.1",
   "appdirs==1.4.4",
   "cattrs==22.1.0",
   "click>=8.1.3",
@@ -53,7 +53,7 @@ dependencies = [
   "pytest-cov",
   "pytest-asyncio",
   "pytest-httpx",
-  "types-aiofiles==0.8.0",
+  "types-aiofiles>=23.2.0",
   "types-appdirs==1.4.3",
   "ufmt >= 2.0.0",
   "pyright >= 1.1.348",
@@ -64,7 +64,7 @@ no-cov = "cov --no-cov"
 check-types = "pyright"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["310"]
+python = ["312"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
