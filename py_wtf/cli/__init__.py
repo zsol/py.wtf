@@ -7,7 +7,6 @@ import asyncio
 
 import json
 import logging
-import os
 import shutil
 from functools import partial, wraps
 from pathlib import Path
@@ -55,7 +54,6 @@ def coroutine(f: Callable[P, Coroutine[None, None, T]]) -> Callable[P, T]:
 @click.option("--log-level", type=logging.getLevelName)
 @click.pass_context
 def py_wtf(ctx: click.Context, log_level: int | None) -> None:
-    os.environ["LIBCST_PARSER_TYPE"] = "native"
     setup_logging(log_level)
 
 
