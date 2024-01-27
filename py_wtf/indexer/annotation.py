@@ -89,7 +89,11 @@ class AnnotationIndexer(cst.CSTVisitor):
         elif fqname is None:
             fqname = FQName(name)
         if project is None:
-            project = self._external_symbols.get(fqname)
+            try:
+                # this is done to trigger `__missing__` on the `SymbolTable`
+                project = self._external_symbols[fqname]
+            except KeyError:
+                pass
         return Type(name, XRef(fqname, project))
 
     def handle_subscript(self, node: cst.Subscript) -> Type:
