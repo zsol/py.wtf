@@ -23,11 +23,16 @@ repos:
       - id: ufmt
         entry: python -c 'import os, subprocess; os.environ["LIBCST_PARSER_TYPE"] = "native"; raise SystemExit(subprocess.run(["ufmt", "format"], check=True).returncode)'
 
-  - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.348
+  - repo: local
     hooks:
-      - id: pyright
-        additional_dependencies: &deps
+      - id: generate-test-fixtures
+        name: Generate test fixtures
+        language: python
+        types_or: [python, json]
+        entry: "python -m py_wtf generate-test-index www/__tests__/index"
+        pass_filenames: false
+        require_serial: true
+        additional_dependencies:
           - aiofiles==0.8.0
           - appdirs==1.4.4
           - cattrs==22.1.0
@@ -41,17 +46,6 @@ repos:
           - types-aiofiles==0.8.0
           - types-appdirs==1.4.3
           - rst-to-myst[sphinx]@git+https://github.com/zsol/rst-to-myst@py.wtf
-
-  - repo: local
-    hooks:
-      - id: generate-test-fixtures
-        name: Generate test fixtures
-        language: python
-        types_or: [python, json]
-        entry: "python -m py_wtf generate-test-index www/__tests__/index"
-        pass_filenames: false
-        require_serial: true
-        additional_dependencies: *deps
 
 default_language_version:
   python: python3.10
