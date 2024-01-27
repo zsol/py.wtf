@@ -11,6 +11,7 @@ repos:
       - id: check-added-large-files
       - id: check-toml
 
+  - repo: local
     hooks:
       - id: generate-test-fixtures
         name: Generate test fixtures
