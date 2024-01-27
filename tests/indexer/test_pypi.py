@@ -50,7 +50,9 @@ def pypi_json(requirements: None | list[str]) -> bytes:
                     },
                     {
                         "packagetype": "sdist",
-                        "url": "https://files.pythonhosted.org/packages/aaaaaaaa.tar.gz",
+                        "url": (
+                            "https://files.pythonhosted.org/packages/aaaaaaaa.tar.gz"
+                        ),
                         "md5_digest": "HAHA I'm an MD5 hash",
                         "yanked": True,
                     },
