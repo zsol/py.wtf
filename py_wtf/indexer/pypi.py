@@ -3,7 +3,7 @@ import logging
 import multiprocessing
 import os
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import dataclass, replace
+from dataclasses import replace
 from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
@@ -124,7 +124,7 @@ async def index_project(
         )
 
         for i, proj in enumerate(dep_projects):
-            if isinstance(proj, Exception):
+            if isinstance(proj, BaseException):
                 logger.error(f"Error in {dep_project_names[i]}", exc_info=proj)
                 continue
             deps.append(proj)
@@ -289,9 +289,11 @@ async def download(
         os.unlink(archive_name)
 
     return (
-        pick_project_dir(directory)
-        if artifact["packagetype"] == "sdist"
-        else directory,
+        (
+            pick_project_dir(directory)
+            if artifact["packagetype"] == "sdist"
+            else directory
+        ),
         proj_metadata,
         doc,
     )
