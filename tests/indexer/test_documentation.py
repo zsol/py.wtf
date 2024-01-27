@@ -31,9 +31,11 @@ def test_is_rst() -> None:
     assert not is_rst("foo")
     assert is_rst(".. foo:")
     assert is_rst("like ``foo``.")
-    assert is_rst("""blahblah::
+    assert is_rst(
+        """blahblah::
 
-    """)
+    """
+    )
     assert is_rst("hello\n.. foo:\nbar")
 
 
