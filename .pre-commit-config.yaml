@@ -23,10 +23,10 @@ repos:
       - id: ufmt
         entry: python -c 'import os, subprocess; os.environ["LIBCST_PARSER_TYPE"] = "native"; raise SystemExit(subprocess.run(["ufmt", "format"], check=True).returncode)'
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.4.1"
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.348
     hooks:
-      - id: mypy
+      - id: pyright
         additional_dependencies: &deps
           - aiofiles==0.8.0
           - appdirs==1.4.4

@@ -9,9 +9,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 keywords = []
-authors = [
-  { name = "Zsolt Dollenstein", email = "zsol.zsol@gmail.com" },
-]
+authors = [{ name = "Zsolt Dollenstein", email = "zsol.zsol@gmail.com" }]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
@@ -58,12 +56,12 @@ dependencies = [
   "types-aiofiles==0.8.0",
   "types-appdirs==1.4.3",
   "ufmt >= 2.0.0",
-  "mypy >= 0.982",
+  "pyright >= 1.1.348",
 ]
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=py_wtf --cov=tests"
 no-cov = "cov --no-cov"
-check-types = "mypy py_wtf"
+check-types = "pyright"
 
 [[tool.hatch.envs.test.matrix]]
 python = ["310"]
@@ -74,18 +72,17 @@ testpaths = ["tests"]
 [tool.coverage.run]
 branch = true
 parallel = true
-omit = [
-  "py_wtf/__about__.py",
-]
+omit = ["py_wtf/__about__.py"]
 
 [tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 
-[tool.mypy]
-files = "py_wtf/**/*.py"
-python_version = "3.11"
-strict = true
+[tool.pyright]
+include = ["py_wtf", "scripts"]
+typeCheckingMode = "strict"
+reportUnknownArgumentType = "none"
+reportUnknownLambdaType = "none"
+reportUnknownMemberType = "none"
+reportUnknownParameterType = "none"
+reportUnknownVariableType = "none"
+reportMissingTypeStubs = "none"
