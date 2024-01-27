@@ -68,6 +68,9 @@ check-types = "mypy py_wtf"
 [[tool.hatch.envs.test.matrix]]
 python = ["310"]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
 [tool.coverage.run]
 branch = true
 parallel = true
