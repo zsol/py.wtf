@@ -53,7 +53,7 @@ requires = ["hatch-pip-compile"]
 [tool.hatch.envs.default]
 type = "pip-compile"
 pip-compile-hashes = true
-pip-compile-args = ["--no-annotate"]
+pip-compile-args = ["--no-annotate", "--allow-unsafe"]
 dependencies = [
   "pytest",
   "pytest-cov",

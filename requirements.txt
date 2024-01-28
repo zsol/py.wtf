@@ -577,7 +577,7 @@ usort==1.0.7 \
     --hash=sha256:0c21ae061ef7ad9c8b50b41ff58c6ded31e24e4e5059f39490b8a0feb36045ff \
     --hash=sha256:5724c2c7e6070d170961222d15a35e01e44b81164c6a6dc5e2aed6bcfdff9e8f
 
-# WARNING: The following packages were not pinned, but pip requires them to be
-# pinned when the requirements file includes hashes and the requirement is not
-# satisfied by a package already installed. Consider using the --allow-unsafe flag.
-# setuptools
+# The following packages are considered to be unsafe in a requirements file:
+setuptools==69.0.3 \
+    --hash=sha256:385eb4edd9c9d5c17540511303e39a147ce2fc04bc55289c322b9e5904fe2c05 \
+    --hash=sha256:be1af57fc409f93647f2e8e4573a142ed38724b8cdd389706a867bb4efcf1e78
