@@ -47,7 +47,13 @@ allow-direct-references = true
 [tool.hatch.build.targets.sdist]
 [tool.hatch.build.targets.wheel]
 
+[tool.hatch.env]
+requires = ["hatch-pip-compile"]
+
 [tool.hatch.envs.default]
+type = "pip-compile"
+pip-compile-hashes = true
+pip-compile-args = ["--no-annotate"]
 dependencies = [
   "pytest",
   "pytest-cov",
