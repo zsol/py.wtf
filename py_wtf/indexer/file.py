@@ -3,7 +3,7 @@ import itertools
 import logging
 from concurrent.futures import Executor
 from pathlib import Path
-from typing import AsyncIterable, cast, Iterable, Protocol, TypeVar
+from typing import AsyncIterable, assert_type, cast, Iterable, Protocol, TypeVar
 
 import libcst as cst
 import trailrunner
@@ -11,6 +11,7 @@ from libcst import matchers as m
 from libcst.codemod import CodemodContext
 from libcst.codemod.visitors import GatherExportsVisitor
 from libcst.helpers.expression import get_full_name_for_node
+from libcst.metadata import ParentNodeProvider
 
 from py_wtf.indexer.documentation import convert_to_myst
 
@@ -75,7 +76,8 @@ def index_file(
         mod = cst.MetadataWrapper(
             cst.parse_module(path.read_bytes()), unsafe_skip_copy=True
         )
-        mod.visit(indexer)
+        with indexer.resolve(mod):
+            mod.visit(indexer)
     except Exception as e:
         err = Documentation(
             f"Failed to index ``{path.relative_to(base_dir)}`` due to ``{e}``"
@@ -103,6 +105,7 @@ def name(val: cst.BaseExpression) -> str | None:
 
 
 T = TypeVar("T")
+type ContainerT = cst.Module | cst.BaseSuite
 
 
 def ensure(val: T | None) -> T:
@@ -122,11 +125,12 @@ def extract_documentation(node: HasComment) -> Documentation | None:
     return Documentation(node.comment.value[1:].lstrip())
 
 
-def extract_docstring(node: cst.Module | cst.BaseSuite) -> list[Documentation]:
+def extract_nth_docstring(node: ContainerT, n: int) -> list[Documentation]:
     if match := m.extract(
         node,
         m.TypeOf(m.Module, m.IndentedBlock, m.SimpleStatementSuite)(
             body=[
+                *(m.DoNotCare() for _ in range(n)),
                 m.SimpleStatementLine(
                     body=[
                         m.Expr(
@@ -134,7 +138,7 @@ def extract_docstring(node: cst.Module | cst.BaseSuite) -> list[Documentation]:
                         )
                     ]
                 ),
-                m.AtLeastN(m.DoNotCare(), n=0),
+                m.ZeroOrMore(m.DoNotCare()),
             ]
         ),
     ):
@@ -149,6 +153,8 @@ def extract_docstring(node: cst.Module | cst.BaseSuite) -> list[Documentation]:
 
 
 class Indexer(cst.CSTVisitor):
+    METADATA_DEPENDENCIES = (ParentNodeProvider,)
+
     def __init__(
         self,
         is_pkg: bool,
@@ -169,7 +175,7 @@ class Indexer(cst.CSTVisitor):
         self.exports: list[Export] = []
 
     def visit_Module(self, node: cst.Module) -> bool:
-        self.documentation.extend(extract_docstring(node))
+        self.documentation.extend(extract_nth_docstring(node, 0))
 
         if node.header:
             self.documentation.extend(
@@ -274,10 +280,11 @@ class Indexer(cst.CSTVisitor):
         comments = filter(
             None, (extract_documentation(line) for line in node.leading_lines)
         )
-        documentation = extract_docstring(node.body)
+        documentation = extract_nth_docstring(node.body, 0)
         indexer = Indexer(
             False, my_name, self._external_symbol_table, self._symbol_table
         )
+        indexer.metadata = self.metadata
         node.body.visit(indexer)
         self.classes.append(
             Class(
@@ -299,7 +306,7 @@ class Indexer(cst.CSTVisitor):
         comments = filter(
             None, (extract_documentation(line) for line in node.leading_lines)
         )
-        documentation = extract_docstring(node.body)
+        documentation = extract_nth_docstring(node.body, 0)
 
         params = self.extract_func_params(node.params)
 
@@ -313,6 +320,45 @@ class Indexer(cst.CSTVisitor):
             )
         )
         return False
+
+    def next_statement(self, node: cst.CSTNode) -> tuple[ContainerT, int] | None:
+        """
+        Find the statement after `node` if any. Returns the containing node and the
+        index of the statement of after `node` in its `body`.
+        """
+
+        parent = self.get_metadata(ParentNodeProvider, node)
+        if not isinstance(parent, cst.SimpleStatementLine):
+            return None
+        grandparent = self.get_metadata(ParentNodeProvider, parent)
+        # I wish we could write
+        # if not isinstance(node, ContainerT):
+        if not isinstance(grandparent, (cst.Module, cst.BaseSuite)):
+            return None
+        body = grandparent.body
+        ind = None
+        for ind, child in enumerate(body):
+            if child is parent:
+                break
+        if ind is None or ind + 1 == len(body):
+            # no following statement
+            return None
+        assert body[ind] is parent
+        return (grandparent, ind + 1)
+
+    def extract_variable_documentation(
+        self, node: cst.Assign | cst.AnnAssign
+    ) -> list[Documentation]:
+        docs = []
+
+        if (next_stmt := self.next_statement(node)) is not None:
+            docs = extract_nth_docstring(*next_stmt)
+
+        parent = self.get_metadata(ParentNodeProvider, node)
+        if isinstance(parent, cst.SimpleStatementLine):
+            if comment := extract_documentation(parent.trailing_whitespace):
+                docs.append(comment)
+        return docs
 
     def visit_Assign(self, node: cst.Assign) -> bool:
         if len(node.targets) > 1:
@@ -330,11 +376,13 @@ class Indexer(cst.CSTVisitor):
             # Handled by GatherExportsVisitor
             return False
 
+        docs = self.extract_variable_documentation(node)
+
         self.variables.append(
             Variable(
                 name=self.scoped_name(my_name),
                 type=None,
-                documentation=[],  # TODO
+                documentation=docs,
             )
         )
         return False
@@ -348,11 +396,12 @@ class Indexer(cst.CSTVisitor):
 
         my_name = self.scoped_name(ensure(name(node.target)))
         type = self.extract_type(node.annotation)
+        docs = self.extract_variable_documentation(node)
         self.variables.append(
             Variable(
                 my_name,
                 type,
-                documentation=[],  # TODO
+                documentation=docs,
             )
         )
         return False

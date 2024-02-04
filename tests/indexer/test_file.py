@@ -56,12 +56,12 @@ def module_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     '''module docs'''
     import sys
     from os import path
-    var_with_ann: str = "foo"
+    var_with_ann: str = "foo" # comment for var_with_ann
     '''docs for var_with_ann'''
-    var = "bar"
+    var = "bar"  # comment for var
     '''docs for var'''
     # lol?
-    lol: path
+    lol: path  # lol comment
 
     def func(param: str) -> int:
         '''func docs'''
@@ -204,6 +204,24 @@ def test_func_docs(mod: Module) -> None:
 def test_class_docs(mod: Module) -> None:
     cls = mod.classes[0]
     assert cls.documentation == [Documentation("class docs")]
+
+
+def test_var_docs(mod: Module) -> None:
+    var_with_ann = mod.variables[0]
+    assert var_with_ann.name.rpartition(".")[-1] == "var_with_ann"
+    assert var_with_ann.documentation == [
+        Documentation("docs for var_with_ann"),
+        Documentation("comment for var_with_ann"),
+    ]
+    var = mod.variables[1]
+    assert var.name.rpartition(".")[-1] == "var"
+    assert var.documentation == [
+        Documentation("docs for var"),
+        Documentation("comment for var"),
+    ]
+    lol = mod.variables[2]
+    assert lol.name.rpartition(".")[-1] == "lol"
+    assert lol.documentation == [Documentation("lol comment")]
 
 
 def test_stdlib(mod: Module) -> None:
