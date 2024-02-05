@@ -11,7 +11,7 @@ import shutil
 from functools import partial, wraps
 from pathlib import Path
 
-from typing import Callable, Coroutine, Iterable, ParamSpec, TypeVar
+from typing import Callable, Coroutine, Iterable
 
 import click
 import httpx
@@ -34,11 +34,9 @@ from py_wtf.types import (
 
 
 logger = logging.getLogger(__name__)
-P = ParamSpec("P")
-T = TypeVar("T")
 
 
-def coroutine(f: Callable[P, Coroutine[None, None, T]]) -> Callable[P, T]:
+def coroutine[T, **P](f: Callable[P, Coroutine[None, None, T]]) -> Callable[P, T]:
     @wraps(f)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         return asyncio.run(f(*args, **kwargs))
