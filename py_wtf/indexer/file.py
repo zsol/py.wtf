@@ -143,7 +143,7 @@ def extract_nth_docstring(node: ContainerT, n: int) -> list[Documentation]:
     ):
         docstring = cast(cst.SimpleString, match["docstring"])
         docstring_quotes = {'"""', "'''"}
-        if any(docstring.value.startswith(quote) for quote in docstring_quotes):
+        if docstring.quote in docstring_quotes:
             value = docstring.evaluated_value
             if isinstance(value, bytes):
                 value = value.decode()
