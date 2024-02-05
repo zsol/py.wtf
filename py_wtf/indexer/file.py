@@ -3,7 +3,7 @@ import itertools
 import logging
 from concurrent.futures import Executor
 from pathlib import Path
-from typing import AsyncIterable, assert_type, cast, Iterable, Protocol, TypeVar
+from typing import AsyncIterable, cast, Iterable, Protocol
 
 import libcst as cst
 import trailrunner
@@ -104,11 +104,10 @@ def name(val: cst.BaseExpression) -> str | None:
     return None
 
 
-T = TypeVar("T")
 type ContainerT = cst.Module | cst.BaseSuite
 
 
-def ensure(val: T | None) -> T:
+def ensure[T](val: T | None) -> T:
     if val is None:
         raise ValueError(f"Unexpected None")  # no cov
     return val

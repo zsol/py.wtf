@@ -1,12 +1,8 @@
-from typing import TypeVar
-
 import pytest
 
 from py_wtf.repository import converter
 
 from py_wtf.types import Export, FQName, ProjectName, Type, XRef
-
-T = TypeVar("T")
 
 
 @pytest.fixture(params=["str", "foo.bar.Foo.Bar.foo"])
@@ -19,7 +15,7 @@ def xref(request: pytest.FixtureRequest, fqname: FQName) -> XRef:
     return XRef(fqname, project=request.param)
 
 
-def roundtrip(obj: T) -> T:
+def roundtrip[T](obj: T) -> T:
     return converter.loads(converter.dumps(obj), type(obj))
 
 
