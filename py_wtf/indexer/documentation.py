@@ -3,7 +3,7 @@ import re
 from inspect import cleandoc
 from typing import NoReturn
 
-from docutils.nodes import SkipNode, field_list, Node, table
+from docutils.nodes import field_list, Node, SkipNode, table
 from rst_to_myst import markdownit, to_docutils_ast
 from rst_to_myst.mdformat_render import from_tokens
 from rst_to_myst.nodes import EvalRstNode
