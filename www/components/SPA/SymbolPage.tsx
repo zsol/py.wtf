@@ -15,6 +15,7 @@ import Header from "../Header";
 import PageLayout from "../PageLayout";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
+import Loading from "./Loading";
 
 export default function SymbolPage() {
   const { prj: projectName, mod: moduleName, sym: symbolName } = useParams();
@@ -110,11 +111,5 @@ export default function SymbolPage() {
     );
   }
 
-  // TODO: Make this a common component
-  return (
-    <div>
-      {isLoading && <div>Loading...</div>}
-      {error && <div>Failed to load: {error.message}</div>}
-    </div>
-  );
+  return Loading(projectName, isLoading, error);
 }

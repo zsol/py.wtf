@@ -8,6 +8,7 @@ import PageLayout from "../PageLayout";
 import ModuleList from "../Sidebar/ModuleList";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
+import Loading from "./Loading";
 
 export default function ProjectPage() {
   const { prj } = useParams();
@@ -42,15 +43,5 @@ export default function ProjectPage() {
     );
   }
 
-  // TODO: Make this a common component
-  return (
-    <div>
-      {isLoading && <div>Loading...</div>}
-      {error && (
-        <div>
-          Failed to load <code>{projectJsonUrl}</code>: {error.message}
-        </div>
-      )}
-    </div>
-  );
+  return Loading(projectJsonUrl, isLoading, error);
 }

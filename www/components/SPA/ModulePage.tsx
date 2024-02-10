@@ -8,6 +8,7 @@ import Header from "../Header";
 import PageLayout from "../PageLayout";
 import Sidebar from "../Sidebar/Sidebar";
 import ContentWithSidebar from "../core/layout/ContentWithSidebar";
+import Loading from "./Loading";
 
 export default function ModulePage() {
   const { prj: projectName, mod: moduleName } = useParams();
@@ -49,15 +50,5 @@ export default function ModulePage() {
     );
   }
 
-  // TODO: Make this a common component
-  return (
-    <div>
-      {isLoading && <div>Loading...</div>}
-      {error && (
-        <div>
-          Failed to load <code>{projectJsonUrl}</code>: {error.message}
-        </div>
-      )}
-    </div>
-  );
+  return Loading(projectJsonUrl, isLoading, error);
 }
