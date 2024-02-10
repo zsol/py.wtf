@@ -1,8 +1,12 @@
 import logging
 import re
 from inspect import cleandoc
+from typing import NoReturn
 
-import rst_to_myst
+from docutils.nodes import field_list, Node, SkipNode, table
+from rst_to_myst import markdownit, to_docutils_ast
+from rst_to_myst.mdformat_render import from_tokens
+from rst_to_myst.nodes import EvalRstNode
 
 from py_wtf.types import Documentation, ProjectDescription
 
@@ -25,7 +29,7 @@ def convert_to_myst(src: str | ProjectDescription) -> Documentation:
         text = cleandoc(src)
     if is_rst(text):
         try:
-            text = rst_to_myst.rst_to_myst(text).text
+            text = rst_to_myst(text)
         except Exception:
             logger.exception("Error while parsing RST")
     return Documentation(text)
@@ -33,3 +37,33 @@ def convert_to_myst(src: str | ProjectDescription) -> Documentation:
 
 def is_rst(src: str) -> bool:
     return bool(RST_ROLE.search(src))
+
+
+def rst_to_myst(src: str) -> str:
+    document, warning_stream = to_docutils_ast(
+        src, use_sphinx=True, default_domain="py"
+    )
+    renderer = MarkdownItRenderer(document, warning_stream=warning_stream)
+    output = renderer.to_tokens()
+    myst = from_tokens(output, warning_stream=warning_stream)  # this logs too
+    return myst
+
+
+class MarkdownItRenderer(markdownit.MarkdownItRenderer):
+    def _rst_as_text(self, node: Node) -> NoReturn:
+        text = node.astext()
+        if not text.endswith("\n"):
+            text += "\n"
+        self.add_token("fence", "code", 0, content=text)
+        raise SkipNode
+
+    def visit_field_list(self, node: field_list) -> NoReturn:
+        self._rst_as_text(node)
+
+    def visit_EvalRstNode(self, node: EvalRstNode) -> NoReturn:
+        self._rst_as_text(node)
+
+    def visit_table(self, node: table) -> None:
+        if not self.parse_gfm_table(node):
+            self._rst_as_text(node)
+        self.add_token("table_open", "table", 1)

@@ -49,3 +49,31 @@ def test_description_content_type_rst() -> None:
     assert "like `foo`.\n" == convert_to_myst(
         ProjectDescription(description="like ``foo``.", content_type="text/x-rst")
     )
+
+
+def test_params() -> None:
+    doc = """Initialize a Version object.
+        :param version:
+            The string representation of a version which will be parsed and normalized
+            before use.
+        :raises InvalidVersion:
+            If the ``version`` does not conform to PEP 440 in any way then this
+            exception will be raised."""
+    myst = convert_to_myst(doc)
+    assert "Initialize a Version object" in myst
+    assert "InvalidVersion" in myst
+    assert "The string representation of a version" in myst
+    assert "does not conform to PEP 440" in myst
+    assert "{eval-rst}" not in myst  # this is not supported by the js rendering
+
+
+def test_unknown_directive() -> None:
+    doc = """
+.. testsetup::
+
+    from packaging.specifiers import Specifier, SpecifierSet, InvalidSpecifier
+    from packaging.version import Version
+"""
+    myst = convert_to_myst(doc)
+    assert "from packaging.version import Version" in myst
+    assert "{eval-rst}" not in myst  # this is not supported by the js rendering
