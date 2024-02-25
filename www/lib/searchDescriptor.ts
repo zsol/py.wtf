@@ -14,6 +14,7 @@ export type SymbolType =
 
 export type SearchDescriptor = {
   name: string;
+  fqname: string;
   type: SymbolType;
   url: string;
 };
@@ -26,8 +27,10 @@ const generateSymbolDescriptors = (
   symbolType: SymbolType,
 ) => {
   symbols.forEach((symbol) => {
+    const parts = symbol.name.split(".");
     descriptors.push({
-      name: symbol.name,
+      name: parts[parts.length - 1],
+      fqname: symbol.name,
       type: symbolType,
       url: generateSymbolUrl(project, module, symbol),
     });
@@ -40,8 +43,10 @@ const generateModuleDescriptors = (
   const descriptors: Array<SearchDescriptor> = [];
 
   project.modules.forEach((module) => {
+    const parts = module.name.split(".");
     descriptors.push({
-      name: module.name,
+      name: parts[parts.length - 1],
+      fqname: module.name,
       type: "module",
       url: generateModuleUrl(project, module),
     });
