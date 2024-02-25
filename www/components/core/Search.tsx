@@ -57,7 +57,7 @@ function Match({ result }: MatchProps): ReactElement {
   const ret = fuzzysort.highlight(result, highlightCallback) ?? "";
   const parent = result.obj.fqname.slice(
     0,
-    result.obj.fqname.lastIndexOf(`.${result.obj.name}`)
+    result.obj.fqname.lastIndexOf(`.${result.obj.name}`),
   );
   return (
     <>
