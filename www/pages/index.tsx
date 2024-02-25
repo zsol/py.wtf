@@ -82,6 +82,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   const projectNames = metadata.all_project_names;
   const descriptors = projectNames.map((name) => ({
     name,
+    fqname: name,
     type: "project" as SymbolType,
     url: url.project({ name } as Project),
   }));
