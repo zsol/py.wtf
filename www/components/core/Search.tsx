@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
+import fuzzysort from "fuzzysort";
 import { ReactElement, useEffect, useState } from "react";
 
-import { Index, Result, search } from "@/lib/searchDescriptor";
+import { Index, Result, Results, search } from "@/lib/searchDescriptor";
 
 import { flexColumn } from "./layout/helpers";
 import { Link } from "./navigation/Link";
@@ -46,37 +47,26 @@ const ItemLink = styled(Link)`
 interface MatchProps {
   result: Result;
 }
-function Match({ result }: MatchProps): ReactElement {
-  if (!result.matches) {
-    return <span>{result.item.name}</span>;
-  }
 
-  const ret = [];
-  let nameInd = 0;
-  for (const ind of result.matches[0].indices) {
-    const [matchStart, matchEnd] = ind;
-    if (matchStart !== nameInd) {
-      ret.push(<span>{result.item.name.slice(nameInd, matchStart)}</span>);
-    }
-    ret.push(<b>{result.item.name.slice(matchStart, matchEnd + 1)}</b>);
-    nameInd = matchEnd + 1;
-  }
-  if (nameInd !== result.item.name.length) {
-    ret.push(<span>{result.item.name.slice(nameInd)}</span>);
-  }
+function highlightCallback(highlighted: string, _ind: number): ReactElement {
+  return <b>{highlighted}</b>;
+}
+
+function Match({ result }: MatchProps): ReactElement {
+  const ret = fuzzysort.highlight(result, highlightCallback) ?? "";
   return <>{ret}</>;
 }
 
 export const Search = ({ descriptors }: SearchParams) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [results, setResults] = useState<Array<Result>>([]);
+  const [results, setResults] = useState<Results | null>(null);
 
   useEffect(() => {
     // TODO: debounce this
     if (searchTerm) {
       setResults(search(descriptors, searchTerm));
     } else {
-      setResults([]);
+      setResults(null);
     }
   }, [searchTerm]);
 
@@ -87,13 +77,13 @@ export const Search = ({ descriptors }: SearchParams) => {
           setSearchTerm(event.target.value);
         }}
       />
-      {searchTerm && (
+      {searchTerm && results && (
         <SearchResultContainer>
-          {results.length === 0 && "No results found"}
-          {results.length > 0 &&
+          {results.total === 0 && "No results found"}
+          {results.total > 0 &&
             results.map((result: Result, ind: number) => (
-              <SearchResultItem key={`${result.item.name}_${ind}`}>
-                <ItemLink to={`${result.item.url}`}>
+              <SearchResultItem key={`${result.obj.name}_${ind}`}>
+                <ItemLink to={`${result.obj.url}`}>
                   <Match result={result} />
                 </ItemLink>
               </SearchResultItem>
