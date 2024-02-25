@@ -54,7 +54,18 @@ function highlightCallback(highlighted: string, ind: number): ReactElement {
 
 function Match({ result }: MatchProps): ReactElement {
   let ret = fuzzysort.highlight(result, highlightCallback) ?? "";
-  return <>{ret}</>;
+  let parent = result.obj.fqname.slice(
+    0,
+    result.obj.fqname.lastIndexOf(`.${result.obj.name}`)
+  );
+  return (
+    <>
+      {ret}{" "}
+      <small>
+        (in <em>{parent}</em>)
+      </small>
+    </>
+  );
 }
 
 export const Search = ({ descriptors }: SearchParams) => {
