@@ -40,6 +40,7 @@ const SearchResultItem = styled.div`
 const ItemLink = styled(Link)`
   display: block;
   padding: ${(props) => props.theme.spacing.xs};
+  text-decoration: none;
 
   width: 100%;
 `;
