@@ -15,6 +15,7 @@ const nextConfig = {
       destination: "/_spa",
     },
   ],
+  output: "export",
 };
 
 module.exports = nextConfig;
