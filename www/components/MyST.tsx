@@ -46,10 +46,10 @@ interface ContentMap
       md.PhrasingContentMap,
       "inlinecode" | "imagereference" | "footnotereference"
     > {
-  thematicBreak: md.BlockContentMap["thematicbreak"];
-  inlineCode: md.PhrasingContentMap["inlinecode"];
-  imageReference: md.PhrasingContentMap["imagereference"];
-  footnoteReference: md.PhrasingContentMap["footnotereference"];
+  thematicBreak: md.ThematicBreak;
+  inlineCode: md.InlineCode;
+  imageReference: md.ImageReference;
+  footnoteReference: md.FootnoteReference;
 }
 
 type Content = ContentMap[keyof ContentMap];

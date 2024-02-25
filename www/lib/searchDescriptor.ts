@@ -1,4 +1,4 @@
-import Fuse from "fuse.js";
+import Fuse, { FuseResult } from "fuse.js";
 import memoize from "nano-memoize";
 
 import { Class, Func, Module, Project, Variable } from "./docs";
@@ -92,7 +92,7 @@ export const makeIndex = (descriptors: SearchDescriptor[]): Index =>
   new Fuse(descriptors, { keys: ["name"], includeMatches: true });
 
 export type Index = Fuse<SearchDescriptor>;
-export type Result = Fuse.FuseResult<SearchDescriptor>;
+export type Result = FuseResult<SearchDescriptor>;
 
 export const search = (index: Index, term: string): Result[] =>
   index.search(term, { limit: 50 });
