@@ -1,4 +1,4 @@
-import Fuse, { FuseResult } from "fuse.js";
+import FuzzySort from "fuzzysort";
 import memoize from "nano-memoize";
 
 import { Class, Func, Module, Project, Variable } from "./docs";
@@ -23,7 +23,7 @@ const generateSymbolDescriptors = (
   project: Project,
   module: Module,
   symbols: Array<Class | Func | Variable>,
-  symbolType: SymbolType,
+  symbolType: SymbolType
 ) => {
   symbols.forEach((symbol) => {
     descriptors.push({
@@ -35,7 +35,7 @@ const generateSymbolDescriptors = (
 };
 
 const generateModuleDescriptors = (
-  project: Project,
+  project: Project
 ): Array<SearchDescriptor> => {
   const descriptors: Array<SearchDescriptor> = [];
 
@@ -52,7 +52,7 @@ const generateModuleDescriptors = (
         project,
         module,
         module.functions,
-        "function",
+        "function"
       );
     }
     if (module.variables.length > 0) {
@@ -61,7 +61,7 @@ const generateModuleDescriptors = (
         project,
         module,
         module.variables,
-        "variable",
+        "variable"
       );
     }
     if (module.classes.length > 0) {
@@ -70,7 +70,7 @@ const generateModuleDescriptors = (
         project,
         module,
         module.classes,
-        "class",
+        "class"
       );
     }
   });
@@ -89,10 +89,11 @@ export const generateProjectIndex = memoize((project: Project) => {
 });
 
 export const makeIndex = (descriptors: SearchDescriptor[]): Index =>
-  new Fuse(descriptors, { keys: ["name"], includeMatches: true });
+  descriptors; // TODO: call Fuzzysort.prepare on items
 
-export type Index = Fuse<SearchDescriptor>;
-export type Result = FuseResult<SearchDescriptor>;
+export type Index = Array<SearchDescriptor>;
+export type Results = Fuzzysort.KeyResults<SearchDescriptor>;
+export type Result = Fuzzysort.KeyResult<SearchDescriptor>;
 
-export const search = (index: Index, term: string): Result[] =>
-  index.search(term, { limit: 50 });
+export const search = (index: Index, term: string): Results =>
+  FuzzySort.go(term, index, { key: "name" });
