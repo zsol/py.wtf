@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@emotion/react";
 import { RenderResult, render, waitFor } from "@testing-library/react";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { MemoryRouter } from "react-router-dom";
 import "whatwg-fetch";
@@ -13,14 +13,11 @@ import { SPARoutes } from "@/pages/_spa";
 
 export function setupSPAServer() {
   const server = setupServer(
-    rest.get("/_index/:file", async (req, res, ctx) => {
-      return res(
-        ctx.json(
-          await getProject((req.params.file as string).replace(/\.json$/, "")),
+    http.get("/_index/:file", async ({ params }) =>
+        HttpResponse.json(
+          await getProject((params.file as string).replace(/\.json$/, "")),
         ),
-      );
-    }),
-  );
+    ));
   beforeAll(() => server.listen());
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
