@@ -7,20 +7,20 @@
  * Consider migrating to a more modern test runner if
  * you don't want to deal with this.
  */
- 
+
 const { TextDecoder, TextEncoder } = require('node:util')
 import { ReadableStream } from "node:stream/web"
 
 global.ReadableStream = ReadableStream
- 
+
 Object.defineProperties(globalThis, {
   TextDecoder: { value: TextDecoder },
   TextEncoder: { value: TextEncoder },
 })
- 
+
 const { Blob, File } = require('node:buffer')
 const { fetch, Headers, FormData, Request, Response } = require('undici')
- 
+
 Object.defineProperties(globalThis, {
   fetch: { value: fetch, writable: true },
   Blob: { value: Blob },
