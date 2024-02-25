@@ -1,3 +1,5 @@
+import { ReadableStream } from "node:stream/web";
+
 /**
  * @note The block below contains polyfills for Node.js globals
  * required for Jest to function when running JSDOM tests.
@@ -8,18 +10,17 @@
  * you don't want to deal with this.
  */
 
-const { TextDecoder, TextEncoder } = require('node:util')
-import { ReadableStream } from "node:stream/web"
+const { TextDecoder, TextEncoder } = require("node:util");
 
-global.ReadableStream = ReadableStream
+global.ReadableStream = ReadableStream;
 
 Object.defineProperties(globalThis, {
   TextDecoder: { value: TextDecoder },
   TextEncoder: { value: TextEncoder },
-})
+});
 
-const { Blob, File } = require('node:buffer')
-const { fetch, Headers, FormData, Request, Response } = require('undici')
+const { Blob, File } = require("node:buffer");
+const { fetch, Headers, FormData, Request, Response } = require("undici");
 
 Object.defineProperties(globalThis, {
   fetch: { value: fetch, writable: true },
@@ -29,4 +30,4 @@ Object.defineProperties(globalThis, {
   FormData: { value: FormData },
   Request: { value: Request },
   Response: { value: Response },
-})
+});
