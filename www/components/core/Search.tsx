@@ -49,8 +49,8 @@ interface MatchProps {
   result: Result;
 }
 
-function highlightCallback(highlighted: string, _ind: number): ReactElement {
-  return <b>{highlighted}</b>;
+function highlightCallback(highlighted: string, ind: number): ReactElement {
+  return <b key={ind}>{highlighted}</b>;
 }
 
 function Match({ result }: MatchProps): ReactElement {
@@ -99,6 +99,7 @@ export const Search = ({ descriptors }: SearchParams) => {
         onChange={(event) => {
           setSearchTerm(event.target.value);
         }}
+        value={searchTerm}
       />
       {searchTerm && results && (
         <SearchResultContainer>
@@ -106,7 +107,7 @@ export const Search = ({ descriptors }: SearchParams) => {
           {results.total > 0 &&
             results.map((result: Result, ind: number) => (
               <SearchResultItem key={`${result.obj.name}_${ind}`}>
-                <ItemLink to={`${result.obj.url}`}>
+                <ItemLink to={`${result.obj.url}`} onClick={(event) => setSearchTerm("")}>
                   <Match result={result} />
                 </ItemLink>
               </SearchResultItem>
