@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import fuzzysort from "fuzzysort";
 import { ReactElement, useEffect, useState } from "react";
-import { useHotkeys } from 'react-hotkeys-hook'
+import { useHotkeys } from "react-hotkeys-hook";
 
 import { Index, Result, Results, search } from "@/lib/searchDescriptor";
 
@@ -87,9 +87,9 @@ function Match({ result }: MatchProps): ReactElement {
 export const Search = ({ descriptors }: SearchParams) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<Results | null>(null);
-  useHotkeys('/', (event) => {
+  useHotkeys("/", (event) => {
     event.preventDefault();
-    document.getElementById('Search_Input')?.focus()
+    document.getElementById("Search_Input")?.focus();
   });
 
   useEffect(() => {
@@ -103,10 +103,12 @@ export const Search = ({ descriptors }: SearchParams) => {
 
   function keyPressHandler(event: React.KeyboardEvent, index: number) {
     if (event.key === "ArrowDown" && index + 1 < (results?.length ?? 0)) {
-      document.getElementById(`SearchResultItem_Link_${index+1}`)?.focus();
+      document.getElementById(`SearchResultItem_Link_${index + 1}`)?.focus();
       event.preventDefault();
     } else if (event.key === "ArrowUp" && index >= 0) {
-      const target = document.getElementById(index === 0 ? "Search_Input" : `SearchResultItem_Link_${index-1}`);
+      const target = document.getElementById(
+        index === 0 ? "Search_Input" : `SearchResultItem_Link_${index - 1}`,
+      );
       target?.focus();
       event.preventDefault();
     }
@@ -133,7 +135,7 @@ export const Search = ({ descriptors }: SearchParams) => {
                   to={`${result.obj.url}`}
                   onClick={() => setSearchTerm("")}
                   onKeyDown={(event) => keyPressHandler(event, ind)}
-                  >
+                >
                   <Match result={result} />
                 </ItemLink>
               </SearchResultItem>
