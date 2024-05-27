@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import fuzzysort from "fuzzysort";
 import { ReactElement, useEffect, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import { Index, Result, Results, search } from "@/lib/searchDescriptor";
 
@@ -86,6 +87,10 @@ function Match({ result }: MatchProps): ReactElement {
 export const Search = ({ descriptors }: SearchParams) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<Results | null>(null);
+  useHotkeys("/", (event) => {
+    event.preventDefault();
+    document.getElementById("Search_Input")?.focus();
+  });
 
   useEffect(() => {
     // TODO: debounce this
