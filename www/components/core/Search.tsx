@@ -107,7 +107,10 @@ export const Search = ({ descriptors }: SearchParams) => {
           {results.total > 0 &&
             results.map((result: Result, ind: number) => (
               <SearchResultItem key={`${result.obj.name}_${ind}`}>
-                <ItemLink to={`${result.obj.url}`} onClick={(event) => setSearchTerm("")}>
+                <ItemLink
+                  to={`${result.obj.url}`}
+                  onClick={(event) => setSearchTerm("")}
+                >
                   <Match result={result} />
                 </ItemLink>
               </SearchResultItem>
