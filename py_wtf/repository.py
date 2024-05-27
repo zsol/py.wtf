@@ -2,7 +2,7 @@ import asyncio
 import logging
 from asyncio import Future
 from collections import Counter, defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from time import time
 from typing import AsyncIterable, Callable, Tuple
@@ -120,3 +120,20 @@ class ProjectRepository:
     def write_index(self, timestamp: int | None = None) -> None:
         metadata = self.directory / METADATA_FILENAME
         metadata.write_text(converter.dumps(self.generate_index(timestamp)))
+
+    def update_index(self) -> None:
+        metadata = self.directory / METADATA_FILENAME
+        index = converter.loads(metadata.read_text(), Index)
+        new_index = self.generate_index(int(time()))
+        index = replace(
+            index,
+            generated_at=new_index.generated_at,
+            latest_projects=sorted(
+                index.latest_projects + new_index.latest_projects,
+                key=lambda m: -m.upload_time,
+            ),
+            all_project_names=sorted(
+                {*index.all_project_names, *new_index.all_project_names}
+            ),
+        )
+        metadata.write_text(converter.dumps(index))
