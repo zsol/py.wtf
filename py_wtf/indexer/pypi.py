@@ -7,7 +7,7 @@ from dataclasses import replace
 from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
-from tarfile import is_tarfile, TarFile
+from tarfile import data_filter, is_tarfile, TarFile
 from tempfile import TemporaryDirectory
 from typing import AsyncIterable, Iterable, Sequence, Tuple, TypedDict
 from zipfile import is_zipfile, ZipFile
@@ -160,19 +160,20 @@ async def index_project(
 Archive = TarFile | ZipFile
 
 
-def open_archive(src: str) -> Archive:
+def extract_archive(src: str, dir: Path) -> None:
     if is_tarfile(src):
-        return TarFile.open(src)
+        f = TarFile.open(src)
+        f.extraction_filter = data_filter
+        with f:
+            filtered = [mem for mem in f.getmembers() if mem.name.endswith(".py")]
+            f.extractall(dir, members=filtered)
+            return
     if is_zipfile(src):
-        return ZipFile(src)
+        with ZipFile(src) as f:
+            filtered = [name for name in f.namelist() if name.endswith(".py")]
+            f.extractall(dir, members=filtered)
+            return
     raise NotImplementedError()
-
-
-def archive_list(arc: Archive) -> list[str]:
-    if isinstance(arc, TarFile):
-        return arc.getnames()
-    else:
-        return arc.namelist()
 
 
 def pick_project_dir(directory: Path) -> Path:
@@ -284,9 +285,10 @@ async def download(
                 await src_archive.write(chunk)
 
         archive_name = str(src_archive.name)
-        with open_archive(archive_name) as opened:
-            opened.extractall(directory)
-        os.unlink(archive_name)
+        try:
+            extract_archive(archive_name, directory)
+        finally:
+            os.unlink(archive_name)
 
     return (
         (
