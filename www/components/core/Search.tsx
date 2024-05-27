@@ -98,10 +98,12 @@ export const Search = ({ descriptors }: SearchParams) => {
 
   function keyPressHandler(event: React.KeyboardEvent, index: number) {
     if (event.key === "ArrowDown" && index + 1 < (results?.length ?? 0)) {
-      document.getElementById(`SearchResultItem_Link_${index+1}`)?.focus();
+      document.getElementById(`SearchResultItem_Link_${index + 1}`)?.focus();
       event.preventDefault();
     } else if (event.key === "ArrowUp" && index >= 0) {
-      const target = document.getElementById(index === 0 ? "Search_Input" : `SearchResultItem_Link_${index-1}`);
+      const target = document.getElementById(
+        index === 0 ? "Search_Input" : `SearchResultItem_Link_${index - 1}`,
+      );
       target?.focus();
       event.preventDefault();
     }
@@ -128,7 +130,7 @@ export const Search = ({ descriptors }: SearchParams) => {
                   to={`${result.obj.url}`}
                   onClick={() => setSearchTerm("")}
                   onKeyDown={(event) => keyPressHandler(event, ind)}
-                  >
+                >
                   <Match result={result} />
                 </ItemLink>
               </SearchResultItem>
