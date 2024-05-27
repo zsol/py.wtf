@@ -54,6 +54,7 @@ requires = ["hatch-pip-compile"]
 type = "pip-compile"
 pip-compile-hashes = true
 pip-compile-args = ["--no-annotate", "--allow-unsafe"]
+pip-compile-resolver = "uv"
 dependencies = [
   "pytest",
   "pytest-cov",
