@@ -24,12 +24,12 @@ dependencies = [
   "google-cloud-bigquery>=3.23.1",
   "httpx==0.23.0",
   "keke>=0.1.4",
-  "networkx>=3.3",
-  "rich>=12.5.1",
   "libcst>=1.1.0",
-  "trailrunner>=1.2.1",
+  "networkx>=3.3",
   "packaging>=21",
+  "rich>=12.5.1",
   "rst-to-myst[sphinx]==0.4.0",
+  "trailrunner>=1.2.1",
 ]
 dynamic = ["version"]
 
@@ -59,14 +59,14 @@ pip-compile-hashes = true
 pip-compile-args = ["--no-annotate", "--allow-unsafe"]
 pip-compile-resolver = "uv"
 dependencies = [
-  "pytest",
-  "pytest-cov",
+  "pyright >= 1.1.348",
   "pytest-asyncio",
+  "pytest-cov",
   "pytest-httpx",
+  "pytest",
   "types-aiofiles>=23.2.0",
   "types-appdirs==1.4.3",
   "ufmt >= 2.0.0",
-  "pyright >= 1.1.348",
 ]
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=py_wtf --cov=tests"
