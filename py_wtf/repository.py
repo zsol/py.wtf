@@ -2,7 +2,7 @@ import asyncio
 import logging
 from asyncio import Future
 from collections import Counter, defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from time import time
 from typing import AsyncIterable, Callable, Tuple
@@ -71,33 +71,36 @@ class ProjectRepository:
             raise ValueError(f"{key} was never yielded by {factory}")
         return fut.result()
 
-    def generate_index(self, timestamp: int | None) -> Index:
+    def generate_index(
+        self, timestamp: int | None, skip_hydration: bool = False
+    ) -> Index:
         max_counts = 5
         latest_project_mtimes: list[Tuple[ProjectName, float]] = []
         all_project_names: list[ProjectName] = []
         dep_counts: Counter[str] = Counter()
 
-        for item in self.directory.iterdir():
-            if item.suffix != ".json" or not item.is_file():
-                continue
-            name = ProjectName(item.stem)
-            all_project_names.append(name)
-            if name not in self._cache:
-                self._load_from_disk(name)
-            project = self._cache[name].result()
+        if not skip_hydration:
+            for item in self.directory.iterdir():
+                if item.suffix != ".json" or not item.is_file():
+                    continue
+                name = ProjectName(item.stem)
+                all_project_names.append(name)
+                if name not in self._cache:
+                    self._load_from_disk(name)
+                project = self._cache[name].result()
 
-            for dep in project.metadata.dependencies:
-                dep_counts[dep] += 1
+                for dep in project.metadata.dependencies:
+                    dep_counts[dep] += 1
 
-            mtime = project.metadata.upload_time
-            if len(latest_project_mtimes) < max_counts:
-                latest_project_mtimes.append((name, mtime))
-                continue
-            for i in reversed(range(len(latest_project_mtimes))):
-                if mtime < latest_project_mtimes[i][1]:
-                    latest_project_mtimes.insert(i + 1, (name, mtime))
-            while len(latest_project_mtimes) > max_counts:
-                latest_project_mtimes.pop()
+                mtime = project.metadata.upload_time
+                if len(latest_project_mtimes) < max_counts:
+                    latest_project_mtimes.append((name, mtime))
+                    continue
+                for i in reversed(range(len(latest_project_mtimes))):
+                    if mtime < latest_project_mtimes[i][1]:
+                        latest_project_mtimes.insert(i + 1, (name, mtime))
+                while len(latest_project_mtimes) > max_counts:
+                    latest_project_mtimes.pop()
 
         latest_projects = [
             self._cache[name].result().metadata for name, _ in latest_project_mtimes
@@ -120,3 +123,20 @@ class ProjectRepository:
     def write_index(self, timestamp: int | None = None) -> None:
         metadata = self.directory / METADATA_FILENAME
         metadata.write_text(converter.dumps(self.generate_index(timestamp)))
+
+    def update_index(self) -> None:
+        metadata = self.directory / METADATA_FILENAME
+        index = converter.loads(metadata.read_text(), Index)
+        new_index = self.generate_index(int(time()), skip_hydration=True)
+        index = replace(
+            index,
+            generated_at=new_index.generated_at,
+            latest_projects=sorted(
+                index.latest_projects + new_index.latest_projects,
+                key=lambda m: -m.upload_time,
+            ),
+            all_project_names=sorted(
+                {*index.all_project_names, *new_index.all_project_names}
+            ),
+        )
+        metadata.write_text(converter.dumps(index))
