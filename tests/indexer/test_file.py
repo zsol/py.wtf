@@ -34,7 +34,9 @@ async def test_index_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Non
 
     some_file = tmp_path / "somefile.py"
     some_file.touch()
-    assert [mod async for mod in index_dir(tmp_path)] == [empty_module]
+    assert [mod async for mod in index_dir(ProjectName("UNUSED"), tmp_path)] == [
+        empty_module
+    ]
 
 
 def test_index_file_syntax_error(tmp_path: Path) -> None:

@@ -7,6 +7,8 @@ from typing import AsyncIterable, cast, Iterable, Protocol
 
 import libcst as cst
 import trailrunner
+
+from keke import ktrace
 from libcst import matchers as m
 from libcst.codemod import CodemodContext
 from libcst.codemod.visitors import GatherExportsVisitor
@@ -23,6 +25,7 @@ from py_wtf.types import (
     Function,
     Module,
     Parameter,
+    ProjectName,
     SymbolTable,
     Type,
     Variable,
@@ -34,7 +37,9 @@ from .annotation import index as extract_type
 logger = logging.getLogger(__name__)
 
 
+@ktrace("_project_name", "dir")
 async def index_dir(
+    _project_name: ProjectName,
     dir: Path,
     symbol_table: SymbolTable | None = None,
     executor: Executor | None = None,
