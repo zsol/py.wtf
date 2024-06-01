@@ -37,6 +37,13 @@ def test_is_rst() -> None:
     """
     )
     assert is_rst("hello\n.. foo:\nbar")
+    assert is_rst(">>> 1+1")
+    assert is_rst(
+        """foo bar
+>>> print(1)
+1
+"""
+    )
 
 
 def test_description_content_type_md() -> None:

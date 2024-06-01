@@ -16,6 +16,7 @@ RST_ROLE = re.compile(
     r"|(::\n)"  # literal blocks
     r"|((^|\n)\.\. )"  # definitions
     r"|([^`]``[^`]+``[^`])"  # inline literal
+    r"|((^|\n)>>> )"  # python console snippet
 )
 
 
