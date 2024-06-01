@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import logging
 import multiprocessing
@@ -16,6 +18,7 @@ import aiofiles.tempfile
 import httpx
 
 from keke import ktrace
+from networkx import DiGraph, find_cycle, NetworkXNoCycle
 from packaging.requirements import Requirement
 from rich.progress import Progress, TaskID
 
@@ -98,6 +101,20 @@ def blocklisted_project_factory(project_name: ProjectName) -> Project:
     )
 
 
+depgraph: DiGraph[ProjectName] = DiGraph()
+
+
+def _check_for_cycles(a: ProjectName, b: ProjectName) -> bool:
+    global depgraph
+    depgraph.add_edge(a, b)
+    try:
+        find_cycle(depgraph, source=a, orientation="original")
+    except NetworkXNoCycle:
+        return False
+    depgraph.remove_edge(a, b)
+    return True
+
+
 @ktrace("project_name")
 async def index_project(
     project_name: ProjectName, repo: ProjectRepository, progress: Progress | None = None
@@ -125,6 +142,13 @@ async def index_project(
         logger.debug(
             f"Found {project_name}'s dependencies ({len(dep_project_names)}): {dep_project_names}"
         )
+        for dep in list(dep_project_names):
+            if _check_for_cycles(project_name, dep):
+                if dep in repo:
+                    logger.warning(f"Dep cycle! Indexing {project_name} with old {dep}")
+                else:
+                    logger.warning(f"Dep cycle! Indexing {project_name} without {dep}")
+                    dep_project_names.remove(dep)
 
         dep_projects = await asyncio.gather(
             *[

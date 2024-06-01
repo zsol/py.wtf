@@ -24,6 +24,7 @@ dependencies = [
   "google-cloud-bigquery>=3.23.1",
   "httpx==0.23.0",
   "keke>=0.1.4",
+  "networkx>=3.3",
   "rich>=12.5.1",
   "libcst>=1.1.0",
   "trailrunner>=1.2.1",

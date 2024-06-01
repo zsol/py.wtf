@@ -48,6 +48,16 @@ class ProjectRepository:
         index_file = self._index_file(name)
         index_file.write_text(converter.dumps(project))
 
+    def __contains__(self, key: ProjectName) -> bool:
+        if key in self._cache:
+            return self._cache[key].done()
+
+        try:
+            self._load_from_disk(key)
+            return True
+        except OSError:
+            return False
+
     @ktrace("key")
     async def get(
         self,
