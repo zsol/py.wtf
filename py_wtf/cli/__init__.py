@@ -19,6 +19,7 @@ import click
 import httpx
 import rich
 import rich.progress
+import stamina
 from keke import kev, TraceOutput
 
 from py_wtf.__about__ import __version__
@@ -87,12 +88,15 @@ async def index_top_pypi(directory: str, top: int) -> None:
     out_dir = Path(directory)
     out_dir.mkdir(parents=True, exist_ok=True)
     repo = ProjectRepository(out_dir)
+    top_pkgs = {}
     async with httpx.AsyncClient() as client:
-        top_pkgs = (
-            await client.get(
-                "https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.json"
-            )
-        ).json()
+        async for attempt in stamina.retry_context(on=httpx.RequestError, attempts=3):
+            with attempt:
+                top_pkgs = (
+                    await client.get(
+                        "https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.json"
+                    )
+                ).json()
         projects: Iterable[str] = (row["project"] for row in top_pkgs["rows"][:top])
 
     with rich.progress.Progress(
@@ -168,9 +172,15 @@ async def index_since(directory: str, since: datetime, trace: IO[str] | None) ->
         out_dir.mkdir(parents=True, exist_ok=True)
         with kev("fetch prod index"):
             async with httpx.AsyncClient() as client:
-                resp = await client.get(f"https://py.wtf/_index/{METADATA_FILENAME}")
-                resp.raise_for_status()
-                (out_dir / METADATA_FILENAME).write_bytes(resp.content)
+                async for attempt in stamina.retry_context(
+                    on=httpx.RequestError, attempts=3
+                ):
+                    with attempt:
+                        resp = await client.get(
+                            f"https://py.wtf/_index/{METADATA_FILENAME}"
+                        )
+                        resp.raise_for_status()
+                        (out_dir / METADATA_FILENAME).write_bytes(resp.content)
 
         logger.info("Fetched prod index")
         repo = ProjectRepository(out_dir)

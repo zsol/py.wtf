@@ -16,6 +16,7 @@ from zipfile import is_zipfile, ZipFile
 
 import aiofiles.tempfile
 import httpx
+import stamina
 
 from keke import ktrace
 from networkx import DiGraph, find_cycle, NetworkXNoCycle
@@ -280,13 +281,18 @@ async def download(
     project_name: str, directory: Path
 ) -> Tuple[Path, ProjectMetadata, ProjectDescription]:
     async with sem, httpx.AsyncClient(timeout=httpx.Timeout(None)) as client:
-        try:
-            resp = await client.get(f"https://pypi.org/pypi/{project_name}/json")
-            resp.raise_for_status()
-        except httpx.HTTPStatusError as e:
-            error = f"Unable to find project {project_name} on pypi, got HTTP {e.response.status_code}"
-            raise ValueError(error) from e
-        proj_data = resp.json()
+        proj_data = {}
+        async for attempt in stamina.retry_context(on=httpx.RequestError, attempts=3):
+            with attempt:
+                try:
+                    resp = await client.get(
+                        f"https://pypi.org/pypi/{project_name}/json"
+                    )
+                    resp.raise_for_status()
+                    proj_data = resp.json()
+                except httpx.HTTPStatusError as e:
+                    error = f"Unable to find project {project_name} on pypi, got HTTP {e.response.status_code}"
+                    raise ValueError(error) from e
         pypi_info = proj_data["info"]
         latest_version = pypi_info["version"]
         project_urls = pypi_info.get("project_urls") or {}

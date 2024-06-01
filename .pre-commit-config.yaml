@@ -33,6 +33,7 @@ repos:
           - pytest
           - rich>=12.5.1
           - rst-to-myst[sphinx]==0.4.0
+          - stamina>=24.2.0
           - trailrunner>=1.2.1
           - types-aiofiles==0.8.0
           - types-appdirs==1.4.3
