@@ -17,6 +17,9 @@ RST_ROLE = re.compile(
     r"|((^|\n)\.\. )"  # definitions
     r"|([^`]``[^`]+``[^`])"  # inline literal
     r"|((^|\n)>>> )"  # python console snippet
+    r"|(:(param|type|raises) \S+:)"  # Sphinx docstring format
+    r"|(:(return|rtype): \S+)"  # Sphinx docstring format
+    r"|(^\s*:Example:\s*$)"  # Sphinx docstring format
 )
 
 

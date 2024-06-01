@@ -44,6 +44,13 @@ def test_is_rst() -> None:
 1
 """
     )
+    assert is_rst("foo\n:param blah:")
+    assert is_rst("foo\n:param blah: blahblah")
+    assert is_rst("foo\n:type blah: blahblah")
+    assert is_rst("foo\n  :raises blah: blahblah")
+    assert is_rst("   :Example:")
+    assert is_rst("foo\n :return: something")
+    assert is_rst("foo\n :rtype: something")
 
 
 def test_description_content_type_md() -> None:
