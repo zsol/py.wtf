@@ -74,12 +74,7 @@ executor = ProcessPoolExecutor(
     ),
     mp_context=multiprocessing.get_context("spawn"),
 )
-PROJECT_BLOCKLIST = frozenset(
-    {
-        "poetry-plugin-export",  # circular dependency on poetry
-        "apache-airflow",  # circular dependencies between airflow and some providers
-    }
-)
+PROJECT_BLOCKLIST = frozenset({})
 
 
 def blocklisted_project_factory(project_name: ProjectName) -> Project:
