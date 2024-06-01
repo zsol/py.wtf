@@ -15,6 +15,7 @@ from zipfile import is_zipfile, ZipFile
 import aiofiles.tempfile
 import httpx
 
+from keke import ktrace
 from packaging.requirements import Requirement
 from rich.progress import Progress, TaskID
 
@@ -97,6 +98,7 @@ def blocklisted_project_factory(project_name: ProjectName) -> Project:
     )
 
 
+@ktrace("project_name")
 async def index_project(
     project_name: ProjectName, repo: ProjectRepository, progress: Progress | None = None
 ) -> AsyncIterable[Project]:
@@ -108,12 +110,21 @@ async def index_project(
         task_id = progress.add_task(project_name, action="Fetching", total=3)
     deps: list[Project] = []
     with TemporaryDirectory() as tmpdir:
-        src_dir, info, description = await download(project_name, Path(tmpdir))
+        try:
+            src_dir, info, description = await download(project_name, Path(tmpdir))
+        except Exception as err:
+            logger.error(
+                f"Unable to download project {project_name}, skipping", exc_info=err
+            )
+            return
         if progress:
             progress.update(
                 task_id, action="Gathering deps for", visible=True, advance=1
             )
         dep_project_names = [ProjectName(dep) for dep in info.dependencies]
+        logger.debug(
+            f"Found {project_name}'s dependencies ({len(dep_project_names)}): {dep_project_names}"
+        )
 
         dep_projects = await asyncio.gather(
             *[
@@ -134,7 +145,10 @@ async def index_project(
         if progress:
             progress.update(task_id, action="Indexing", visible=True, advance=1)
 
-        modules = [mod async for mod in index_dir(src_dir, symbols, executor)]
+        logger.info(f"Starting indexing of {project_name}")
+        modules = [
+            mod async for mod in index_dir(project_name, src_dir, symbols, executor)
+        ]
 
         if progress:
             progress.advance(task_id)
@@ -154,12 +168,14 @@ async def index_project(
     )
     if progress:
         progress.update(task_id, visible=False)
+    logger.info(f"Done indexing of {project_name}")
     yield proj
 
 
 Archive = TarFile | ZipFile
 
 
+@ktrace("src")
 def extract_archive(src: str, dir: Path) -> None:
     if is_tarfile(src):
         f = TarFile.open(src)
@@ -240,13 +256,18 @@ def pick_artifact(artifacts: list[Artifact]) -> Artifact | None:
 sem = asyncio.BoundedSemaphore(value=20)
 
 
+@ktrace("project_name")
 async def download(
     project_name: str, directory: Path
 ) -> Tuple[Path, ProjectMetadata, ProjectDescription]:
     async with sem, httpx.AsyncClient(timeout=httpx.Timeout(None)) as client:
-        proj_data = (
-            await client.get(f"https://pypi.org/pypi/{project_name}/json")
-        ).json()
+        try:
+            resp = await client.get(f"https://pypi.org/pypi/{project_name}/json")
+            resp.raise_for_status()
+        except httpx.HTTPStatusError as e:
+            error = f"Unable to find project {project_name} on pypi, got HTTP {e.response.status_code}"
+            raise ValueError(error) from e
+        proj_data = resp.json()
         pypi_info = proj_data["info"]
         latest_version = pypi_info["version"]
         project_urls = pypi_info.get("project_urls") or {}
@@ -276,6 +297,7 @@ async def download(
             upload_time=parse_upload_time(artifact["upload_time"]),
         )
 
+        logger.debug(f"Fetching {project_name} sources from {artifact['url']}")
         # this is a bit unnecessary 🙃
         async with (
             client.stream("GET", artifact["url"]) as response,
@@ -286,6 +308,7 @@ async def download(
 
         archive_name = str(src_archive.name)
         try:
+            logger.debug(f"Extracting sources for {project_name} from {archive_name}")
             extract_archive(archive_name, directory)
         finally:
             os.unlink(archive_name)

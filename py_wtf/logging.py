@@ -15,4 +15,11 @@ def setup_logging(level: int | None = None, to_file: bool = False) -> None:
         dir.mkdir(exist_ok=True, parents=True)
         handler = logging.FileHandler(dir / "indexer.log")
 
-    logging.basicConfig(level=level, handlers=[handler], force=True)
+    logging.basicConfig(
+        level=level,
+        handlers=[handler],
+        force=True,
+        format="[{name}] {message}",
+        style="{",
+    )
+    logging.captureWarnings(True)

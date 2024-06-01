@@ -8,6 +8,7 @@ from time import time
 from typing import AsyncIterable, Callable, Tuple
 
 from cattrs.preconf.json import make_converter
+from keke import ktrace
 
 from py_wtf.types import Index, Project, ProjectMetadata, ProjectName
 
@@ -37,6 +38,7 @@ class ProjectRepository:
         proj = converter.loads(index_contents, Project)
         self._cache[key].set_result(proj)
 
+    @ktrace("project.name")
     def _save(self, project: Project) -> None:
         name = ProjectName(project.name)
         if self._cache[name].done():
@@ -46,6 +48,7 @@ class ProjectRepository:
         index_file = self._index_file(name)
         index_file.write_text(converter.dumps(project))
 
+    @ktrace("key")
     async def get(
         self,
         key: ProjectName,
@@ -68,7 +71,7 @@ class ProjectRepository:
             self._save(project)
 
         if not fut.done():
-            raise ValueError(f"{key} was never yielded by {factory}")
+            raise ValueError(f"{key} was never yielded by factory")
         return fut.result()
 
     def generate_index(

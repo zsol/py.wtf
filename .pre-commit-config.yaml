@@ -26,6 +26,7 @@ repos:
           - cattrs==22.1.0
           - click>=8.1.3
           - httpx==0.23.0
+          - keke>=0.1.0
           - rich>=12.5.1
           - libcst>=1.1.0
           - trailrunner>=1.2.1
