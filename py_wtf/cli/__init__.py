@@ -8,6 +8,8 @@ import asyncio
 import json
 import logging
 import shutil
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from functools import partial, wraps
 from pathlib import Path
 
@@ -22,7 +24,7 @@ from py_wtf.__about__ import __version__
 from py_wtf.indexer import index_dir, index_file, index_project
 from py_wtf.indexer.pypi import parse_deps, parse_upload_time
 from py_wtf.logging import setup_logging
-from py_wtf.repository import converter, ProjectRepository
+from py_wtf.repository import converter, METADATA_FILENAME, ProjectRepository
 from py_wtf.types import (
     Documentation,
     FQName,
@@ -133,6 +135,53 @@ async def index_dir_cmd(dir: str) -> None:
         cnt += 1
         rich.print(mod)
     rich.print(f"Found {cnt} modules in total.")
+
+
+@py_wtf.command(name="index-since")
+@click.option("--since", type=click.DateTime(), required=True)
+@click.argument("directory")
+@coroutine
+async def index_since(directory: str, since: datetime) -> None:
+    from google.cloud import bigquery
+
+    client = bigquery.Client()
+    time_format = "%Y-%m-%d %H:%M:%S"
+    threadpool = ThreadPoolExecutor()
+    rows = await asyncio.get_running_loop().run_in_executor(
+        threadpool,
+        client.query_and_wait,
+        f"""
+        SELECT distinct name
+        FROM
+            `bigquery-public-data.pypi.distribution_metadata`
+        WHERE
+            TIMESTAMP(upload_time) >= TIMESTAMP("{since.strftime(time_format)}")
+        """,
+    )
+    rows = list(rows)
+    logger.info(f"Found {len(rows)} new projects to index")
+    out_dir = Path(directory)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(f"https://py.wtf/_index/{METADATA_FILENAME}")
+        resp.raise_for_status()
+        (out_dir / METADATA_FILENAME).write_bytes(resp.content)
+
+    logger.info("Fetched prod index")
+    repo = ProjectRepository(out_dir)
+    rets = await asyncio.gather(
+        *[
+            repo.get(ProjectName(row.name), partial(index_project, repo=repo))
+            for row in rows
+        ],
+        return_exceptions=True,
+    )
+    for ret in rets:
+        if isinstance(ret, Exception):
+            logger.exception(ret)
+    logger.info("Done indexing")
+    repo.update_index()
+    logger.info("Wrote new index")
 
 
 @py_wtf.command()
