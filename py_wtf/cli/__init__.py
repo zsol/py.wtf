@@ -8,11 +8,12 @@ import asyncio
 import json
 import logging
 import shutil
+
+import signal
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from functools import partial, wraps
 from pathlib import Path
-
 from typing import Callable, Coroutine, IO, Iterable
 
 import click
@@ -88,6 +89,9 @@ async def index_top_pypi(directory: str, top: int) -> None:
     out_dir = Path(directory)
     out_dir.mkdir(parents=True, exist_ok=True)
     repo = ProjectRepository(out_dir)
+    signal.signal(signal.SIGUSR1, lambda *_: repo.pending_items())
+    loop = asyncio.get_running_loop()
+    loop.call_later(60 * 10, schedule_pending_item_printer, repo)
     top_pkgs = {}
     async with httpx.AsyncClient() as client:
         async for attempt in stamina.retry_context(on=httpx.RequestError, attempts=3):
@@ -142,6 +146,12 @@ async def index_dir_cmd(dir: str) -> None:
     rich.print(f"Found {cnt} modules in total.")
 
 
+def schedule_pending_item_printer(repo: ProjectRepository) -> None:
+    loop = asyncio.get_running_loop()
+    loop.call_later(60 * 10, schedule_pending_item_printer, repo)
+    repo.pending_items()
+
+
 @py_wtf.command(name="index-since")
 @click.option("--since", type=click.DateTime(), required=True)
 @click.option("--trace", type=click.File(mode="w"))
@@ -184,6 +194,9 @@ async def index_since(directory: str, since: datetime, trace: IO[str] | None) ->
 
         logger.info("Fetched prod index")
         repo = ProjectRepository(out_dir)
+        signal.signal(signal.SIGUSR1, lambda *_: repo.pending_items())
+        loop = asyncio.get_running_loop()
+        loop.call_later(60 * 10, schedule_pending_item_printer, repo)
         with kev("index projects"):
             rets = await asyncio.gather(
                 *[

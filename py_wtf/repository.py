@@ -81,7 +81,7 @@ class ProjectRepository:
             self._save(project)
 
         if not fut.done():
-            raise ValueError(f"{key} was never yielded by factory")
+            fut.set_exception(ValueError(f"{key} was never yielded by factory"))
         return fut.result()
 
     def generate_index(
@@ -153,3 +153,13 @@ class ProjectRepository:
             ),
         )
         metadata.write_text(converter.dumps(index))
+
+    def pending_items(self) -> None:
+        pending = []
+        for name, fut in self._cache.items():
+            if not fut.done():
+                pending.append(name)
+        if pending:
+            logger.warning(f"{len(pending)} projects are pending: {pending}")
+        else:
+            logger.info("No projects pending")
