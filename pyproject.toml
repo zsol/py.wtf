@@ -59,6 +59,7 @@ type = "pip-compile"
 pip-compile-hashes = true
 pip-compile-args = ["--no-annotate", "--allow-unsafe"]
 pip-compile-resolver = "uv"
+python = "3.12"
 dependencies = [
   "pyright >= 1.1.348",
   "pytest-asyncio",
