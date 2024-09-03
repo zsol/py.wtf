@@ -89,7 +89,8 @@ async def index_top_pypi(directory: str, top: int) -> None:
     out_dir = Path(directory)
     out_dir.mkdir(parents=True, exist_ok=True)
     repo = ProjectRepository(out_dir)
-    signal.signal(signal.SIGUSR1, lambda *_: repo.pending_items())
+    if hasattr(signal, "SIGUSR1"):
+        signal.signal(signal.SIGUSR1, lambda *_: repo.pending_items())
     loop = asyncio.get_running_loop()
     loop.call_later(60 * 10, schedule_pending_item_printer, repo)
     top_pkgs = {}
