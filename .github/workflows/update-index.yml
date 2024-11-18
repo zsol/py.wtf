@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: "31 * * * *"
+    - cron: "34 * * * *"
 jobs:
   update_index:
     runs-on: ubuntu-latest
