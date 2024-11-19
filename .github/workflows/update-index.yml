@@ -5,6 +5,9 @@ on:
     - cron: "34 * * * *"
 jobs:
   update_index:
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: fetch pages
@@ -22,6 +25,12 @@ jobs:
           python-version: 3.12
       - name: Install hatch
         run: python -m pip install hatch
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/65154078780/locations/global/workloadIdentityPools/github/providers/py-wtf
+          service_account: foo
+          export_environment_variables: true
       - name: Index
         run: cd main; set -x; python -m hatch run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" ../pages
       - name: commit

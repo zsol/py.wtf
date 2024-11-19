@@ -4,3 +4,6 @@ __pycache__/
 
 # This is an auto-generated file and should not be committed
 next-env.d.ts
+
+# Ignore generated credentials from google-github-actions/auth
+gha-creds-*.json
