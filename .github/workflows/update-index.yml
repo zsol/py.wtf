@@ -36,6 +36,7 @@ jobs:
         run: cd main; set -x; python -m hatch run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" ../pages
       - name: commit
         run: |
+          cd pages
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -am 'Auto-generated index'
