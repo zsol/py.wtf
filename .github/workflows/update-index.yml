@@ -6,8 +6,9 @@ on:
 jobs:
   update_index:
     permissions:
-      contents: read
+      contents: write
       id-token: write
+      pages: write
     runs-on: ubuntu-latest
     steps:
       - name: fetch pages
@@ -33,7 +34,8 @@ jobs:
           project_id: pypinfo-214114
           export_environment_variables: true
       - name: Index
-        run: cd main; set -x; python -m hatch run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" ../pages
+        #run: cd main; set -x; python -m hatch run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" ../pages
+        run: cd pages; date > generated.txt
       - name: commit
         run: |
           cd pages
