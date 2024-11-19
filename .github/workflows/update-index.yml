@@ -2,7 +2,7 @@ name: Update Index
 on:
   workflow_dispatch:
   schedule:
-    - cron: "34 * * * *"
+    - cron: "34 */2 * * *"
 jobs:
   update_index:
     permissions:
@@ -39,5 +39,6 @@ jobs:
           cd pages
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
           git commit -am 'Auto-generated index'
           git push
