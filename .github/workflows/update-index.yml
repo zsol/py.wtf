@@ -34,8 +34,7 @@ jobs:
           project_id: pypinfo-214114
           export_environment_variables: true
       - name: Index
-        #run: cd main; set -x; python -m hatch run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" ../pages
-        run: cd pages; date > generated.txt
+        run: cd main; set -x; python -m hatch run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" ../pages
       - name: commit
         run: |
           cd pages
