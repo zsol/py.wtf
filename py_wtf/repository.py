@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from asyncio import Future
+from asyncio import CancelledError, Future, InvalidStateError
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field, replace
 from pathlib import Path
@@ -88,7 +88,7 @@ class ProjectRepository:
         self, timestamp: int | None, skip_hydration: bool = False
     ) -> Index:
         max_counts = 5
-        latest_project_mtimes: list[Tuple[ProjectName, float]] = []
+        project_mtimes: list[Tuple[ProjectName, float]] = []
         all_project_names: list[ProjectName] = []
         dep_counts: Counter[str] = Counter()
 
@@ -97,26 +97,24 @@ class ProjectRepository:
                 if item.suffix != ".json" or not item.is_file():
                     continue
                 name = ProjectName(item.stem)
-                all_project_names.append(name)
                 if name not in self._cache:
                     self._load_from_disk(name)
-                project = self._cache[name].result()
 
+        for name, proj_fut in self._cache.items():
+            all_project_names.append(name)
+            try:
+                project = proj_fut.result()
                 for dep in project.metadata.dependencies:
                     dep_counts[dep] += 1
-
-                mtime = project.metadata.upload_time
-                if len(latest_project_mtimes) < max_counts:
-                    latest_project_mtimes.append((name, mtime))
-                    continue
-                for i in reversed(range(len(latest_project_mtimes))):
-                    if mtime < latest_project_mtimes[i][1]:
-                        latest_project_mtimes.insert(i + 1, (name, mtime))
-                while len(latest_project_mtimes) > max_counts:
-                    latest_project_mtimes.pop()
+                project_mtimes.append((name, project.metadata.upload_time))
+            except (CancelledError, InvalidStateError):
+                logger.error(f"Project {name} hasn't finished indexing")
 
         latest_projects = [
-            self._cache[name].result().metadata for name, _ in latest_project_mtimes
+            self._cache[name].result().metadata
+            for name, _ in sorted(
+                project_mtimes, key=lambda item: item[1], reverse=True
+            )[:max_counts]
         ]
         top_projects: list[ProjectMetadata] = []
         for rawname, _ in dep_counts.most_common(max_counts):
@@ -128,7 +126,7 @@ class ProjectRepository:
 
         return Index(
             generated_at=int(time()) if timestamp is None else timestamp,
-            latest_projects=sorted(latest_projects, key=lambda m: -m.upload_time),
+            latest_projects=latest_projects,
             top_projects=top_projects,
             all_project_names=sorted(all_project_names),
         )
@@ -146,8 +144,9 @@ class ProjectRepository:
             generated_at=new_index.generated_at,
             latest_projects=sorted(
                 index.latest_projects + new_index.latest_projects,
-                key=lambda m: -m.upload_time,
-            ),
+                key=lambda m: m.upload_time,
+                reverse=True,
+            )[:5],
             all_project_names=sorted(
                 {*index.all_project_names, *new_index.all_project_names}
             ),

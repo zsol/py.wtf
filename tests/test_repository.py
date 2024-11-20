@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import AsyncIterable
 
 import pytest
-from py_wtf.repository import converter, ProjectRepository
-from py_wtf.types import Project, ProjectMetadata, ProjectName
+from py_wtf.repository import METADATA_FILENAME, converter, ProjectRepository
+from py_wtf.types import Index, Project, ProjectMetadata, ProjectName
 
 
 @pytest.fixture
@@ -94,3 +94,27 @@ async def test_get_with_bad_factory(repo: ProjectRepository, project: Project) -
 
     with pytest.raises(ValueError):
         await repo.get(ProjectName("DefinitelyNotproject.name"), _factory)
+
+
+def test_update_index(repo: ProjectRepository, project: Project) -> None:
+    metadata_file = repo.directory / METADATA_FILENAME
+    repo._save(project)
+    repo.write_index(timestamp=1)
+    metadata_before = converter.loads(metadata_file.read_text(), Index)
+    assert metadata_before.generated_at == 1
+    repo._save(
+        replace(
+            project,
+            name=ProjectName("other"),
+            metadata=replace(
+                project.metadata,
+                name=ProjectName("other"),
+                upload_time=project.metadata.upload_time + 1,
+            ),
+        )
+    )
+    repo.update_index()
+    metadata_after = converter.loads(metadata_file.read_text(), Index)
+    assert metadata_after.generated_at > metadata_before.generated_at
+    assert metadata_after.latest_projects[0].name == "other"
+    assert metadata_after.latest_projects[1].name == project.name
