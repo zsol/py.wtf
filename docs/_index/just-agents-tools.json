@@ -1,0 +1,1 @@
+{"name": "just-agents-tools", "metadata": {"name": "just-agents-tools", "version": "0.3.1", "classifiers": [], "home_page": null, "license": "MIT", "documentation_url": null, "dependencies": ["just-agents", "semanticscholar", "typer"], "summary": "Just Agents - Tools Components", "upload_time": 1732126452}, "documentation": [""], "modules": []}

@@ -1,0 +1,1 @@
+{"name": "just-agents-web", "metadata": {"name": "just-agents-web", "version": "0.3.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["just-agents"], "summary": "Just Agents - Web. It allows runing openai API for the agent in the browser.", "upload_time": 1732126446}, "documentation": [""], "modules": []}
