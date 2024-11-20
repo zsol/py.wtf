@@ -195,7 +195,8 @@ async def index_since(directory: str, since: datetime, trace: IO[str] | None) ->
 
         logger.info("Fetched prod index")
         repo = ProjectRepository(out_dir)
-        signal.signal(signal.SIGUSR1, lambda *_: repo.pending_items())
+        if hasattr(signal, "SIGUSR1"):
+            signal.signal(signal.SIGUSR1, lambda *_: repo.pending_items())
         loop = asyncio.get_running_loop()
         loop.call_later(60 * 10, schedule_pending_item_printer, repo)
         with kev("index projects"):

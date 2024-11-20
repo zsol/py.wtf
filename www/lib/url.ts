@@ -13,6 +13,10 @@ export function withoutPrefix(prefix: string, s: string) {
   return s;
 }
 
+export function indexMetadata(): string {
+  return "/_index/.metadata";
+}
+
 export function projectJson(name: string): string {
   return `/_index/${normalizeProjectName(name)}.json`;
 }

@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { GetStaticProps } from "next";
+import useSWR from "swr";
 
 import SymbolLinkTable, {
   Sym,
@@ -14,7 +15,12 @@ import {
   flexRow,
 } from "@/components/core/layout/helpers";
 
-import { Project, ProjectMetadata, getIndexMetadata } from "@/lib/docs";
+import {
+  IndexMetadata,
+  Project,
+  ProjectMetadata,
+  getIndexMetadata,
+} from "@/lib/docs";
 import {
   SearchDescriptor,
   SymbolType,
@@ -96,6 +102,35 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   };
 };
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+function useHomeData() {
+  const { data, error } = useSWR<IndexMetadata, Error>(
+    url.indexMetadata(),
+    fetcher,
+  );
+
+  const props: Props | undefined = data
+    ? {
+        topProjects: data.top_projects.map(metadataToSymbol),
+        recentProjects: data.latest_projects.map(metadataToSymbol),
+        descriptors: data.all_project_names.map((name: string) => ({
+          name,
+          fqname: name,
+          type: "project" as SymbolType,
+          url: url.project({ name } as Project),
+        })),
+        generatedAt: data.generated_at,
+      }
+    : undefined;
+
+  return {
+    data: props,
+    isLoading: !error && !data,
+    error,
+  };
+}
+
 function humanizeTime(timestamp: number) {
   const dt = new Intl.DateTimeFormat(undefined, {
     timeStyle: "long",
@@ -110,6 +145,19 @@ export default function Home({
   descriptors,
   generatedAt,
 }: Props) {
+  const { data, isLoading, error } = useHomeData();
+  if (!isLoading) {
+    if (error) {
+      console.error(error);
+    } else if (data) {
+      topProjects = data.topProjects;
+      recentProjects = data.recentProjects;
+      descriptors = data.descriptors;
+      generatedAt = data.generatedAt;
+    } else {
+      console.error("No data");
+    }
+  }
   return (
     <PageLayout title="py.wtf" header={<Header showSearch={false} />}>
       <ProjectContainer>
