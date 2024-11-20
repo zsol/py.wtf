@@ -165,20 +165,29 @@ async def index_project(
         if progress:
             progress.update(task_id, action="Indexing", visible=True, advance=1)
 
-        logger.info(f"Starting indexing of {project_name}")
-        modules = [
-            mod async for mod in index_dir(project_name, src_dir, symbols, executor)
-        ]
+        documentation: list[Documentation] = []
+        total_size = sum(f.stat().st_size for f in src_dir.rglob("*") if f.is_file())
+        if total_size > 50_000_000:  # 50 MB
+            msg = f"Project {project_name} is too large (>50MB), contents not indexed"
+            logger.warning(msg)
+            modules = []
+            documentation.append(Documentation(msg))
+        else:
+
+            logger.info(f"Starting indexing of {project_name}")
+            modules = [
+                mod async for mod in index_dir(project_name, src_dir, symbols, executor)
+            ]
 
         if progress:
             progress.advance(task_id)
 
     try:
-        documentation = [convert_to_myst(description)]
+        documentation.append(convert_to_myst(description))
     except Exception as e:
         msg = f"Error while parsing description for {project_name}"
         logger.exception(msg)
-        documentation = [Documentation(msg), Documentation(str(e))]
+        documentation.extend([Documentation(msg), Documentation(str(e))])
 
     proj = Project(
         project_name,
