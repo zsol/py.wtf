@@ -107,7 +107,7 @@ class ProjectRepository:
                 for dep in project.metadata.dependencies:
                     dep_counts[dep] += 1
                 project_mtimes.append((name, project.metadata.upload_time))
-            except (CancelledError, InvalidStateError):
+            except Exception:
                 logger.error(f"Project {name} hasn't finished indexing")
 
         latest_projects = [
