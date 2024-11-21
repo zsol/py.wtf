@@ -1,0 +1,1 @@
+{"name": "openmm-cuda", "metadata": {"name": "openmm-cuda", "version": "8.1.1.12", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["openmm"], "summary": "Couldn't find suitable artifact for openmm-cuda==8.1.1.12", "upload_time": 0}, "documentation": [""], "modules": []}
