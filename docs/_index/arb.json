@@ -1,0 +1,1 @@
+{"name": "arb", "metadata": {"name": "arb", "version": "0.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["ccxt", "colorama", "requests", "pytz"], "summary": null, "upload_time": 1732300670}, "documentation": [""], "modules": []}
