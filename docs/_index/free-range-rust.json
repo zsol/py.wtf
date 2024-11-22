@@ -1,0 +1,1 @@
+{"name": "free-range-rust", "metadata": {"name": "free-range-rust", "version": "0.1.4", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": [], "summary": "Python bindings in Rust for singificantly faster computation for the free-range-zoo library", "upload_time": 1732234698}, "documentation": [""], "modules": []}
