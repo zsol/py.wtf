@@ -2,7 +2,7 @@ name: Update Index
 on:
   workflow_dispatch:
   schedule:
-    - cron: "34 */2 * * *"
+    - cron: "34 * * * *"
 jobs:
   update_index:
     permissions:
