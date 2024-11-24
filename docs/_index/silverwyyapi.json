@@ -1,0 +1,1 @@
+{"name": "silverwyyapi", "metadata": {"name": "silverwyyapi", "version": "0.2", "classifiers": [], "home_page": "https://github.com/SilverW0o0W", "license": "MIT", "documentation_url": null, "dependencies": ["requests", "urllib3", "pycryptodomex"], "summary": null, "upload_time": 1732465595}, "documentation": ["# Netease-music-api\n"], "modules": []}
