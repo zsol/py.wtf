@@ -1,0 +1,1 @@
+{"name": "plz-dataset", "metadata": {"name": "plz-dataset", "version": "0.1.0", "classifiers": [], "home_page": "https://github.com/AbakusNantis/dataset_plz", "license": null, "documentation_url": null, "dependencies": ["pandas"], "summary": "Package for generating PLZ lists for german cities.", "upload_time": 1732439079}, "documentation": [""], "modules": []}
