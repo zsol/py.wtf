@@ -1,0 +1,1 @@
+{"name": "ufactory-sila2-server", "metadata": {"name": "ufactory-sila2-server", "version": "0.1.4", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["sila2", "typer", "xarm"], "summary": null, "upload_time": 1732531351}, "documentation": [""], "modules": []}
