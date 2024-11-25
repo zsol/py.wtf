@@ -1,0 +1,1 @@
+{"name": "numerous", "metadata": {"name": "numerous", "version": "0.33.1", "classifiers": ["Programming Language :: Python :: 3"], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["typing-extensions", "plotly", "requests"], "summary": "Couldn't find suitable artifact for numerous==0.33.1", "upload_time": 0}, "documentation": [""], "modules": []}
