@@ -1,0 +1,1 @@
+{"name": "ngsolve", "metadata": {"name": "ngsolve", "version": "6.2.2406", "classifiers": [], "home_page": null, "license": "LGPL2.1", "documentation_url": null, "dependencies": ["netgen-mesher", "mkl"], "summary": "Couldn't find suitable artifact for ngsolve==6.2.2406", "upload_time": 0}, "documentation": [""], "modules": []}

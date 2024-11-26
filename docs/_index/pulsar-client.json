@@ -1,0 +1,1 @@
+{"name": "pulsar-client", "metadata": {"name": "pulsar-client", "version": "3.5.0", "classifiers": [], "home_page": "https://pulsar.apache.org/", "license": "Apache License v2.0", "documentation_url": null, "dependencies": ["certifi"], "summary": "Couldn't find suitable artifact for pulsar-client==3.5.0", "upload_time": 0}, "documentation": [""], "modules": []}
