@@ -49,15 +49,21 @@ type HeaderProps = {
 };
 
 const Header = ({ project, showSearch = true }: HeaderProps) => {
+  const placeholder = project
+    ? `👉Search for a name in ${project.name}👈`
+    : "👉Search👈";
   return (
     <HeaderContainer>
       <HeaderContent>
         <HeaderItem width={showSearch ? "60%" : "100%"}>
-          <HeaderText>Python. Wabbajack Theatrical Fantasy</HeaderText>
+          <HeaderText>py.wtf: Docs for Python projects on PyPI</HeaderText>
         </HeaderItem>
         {showSearch && project && (
           <HeaderItem width="40%">
-            <Search descriptors={generateProjectIndex(project)} />
+            <Search
+              descriptors={generateProjectIndex(project)}
+              placeholder={placeholder}
+            />
           </HeaderItem>
         )}
       </HeaderContent>

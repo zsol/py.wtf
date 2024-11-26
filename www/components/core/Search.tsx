@@ -10,6 +10,7 @@ import { Link } from "./navigation/Link";
 
 type SearchParams = {
   descriptors: Index;
+  placeholder: string;
 };
 
 const SearchContainer = styled.div`
@@ -49,6 +50,12 @@ const ItemLink = styled(Link)`
   width: 100%;
 `;
 
+const SearchInput = styled.input`
+  ::placeholder {
+    text-align: center;
+  }
+`;
+
 interface MatchProps {
   result: Result;
 }
@@ -84,7 +91,7 @@ function Match({ result }: MatchProps): ReactElement {
   );
 }
 
-export const Search = ({ descriptors }: SearchParams) => {
+export const Search = ({ descriptors, placeholder }: SearchParams) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<Results | null>(null);
   useHotkeys("/", (event) => {
@@ -116,12 +123,13 @@ export const Search = ({ descriptors }: SearchParams) => {
 
   return (
     <SearchContainer>
-      <input
+      <SearchInput
         id="Search_Input"
         onChange={(event) => {
           setSearchTerm(event.target.value);
         }}
         value={searchTerm}
+        placeholder={`${placeholder} (press / to focus)`}
         onKeyDown={(event) => keyPressHandler(event, -1)}
       />
       {searchTerm && results && (

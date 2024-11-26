@@ -133,7 +133,7 @@ function useHomeData() {
 
 function humanizeTime(timestamp: number) {
   const dt = new Intl.DateTimeFormat(undefined, {
-    timeStyle: "long",
+    timeStyle: "short",
     dateStyle: "long",
   });
   return dt.format(timestamp * 1000);
@@ -162,7 +162,10 @@ export default function Home({
     <PageLayout title="py.wtf" header={<Header showSearch={false} />}>
       <ProjectContainer>
         <SearchContainer>
-          <Search descriptors={makeIndex(descriptors)} />
+          <Search
+            descriptors={makeIndex(descriptors)}
+            placeholder="👉Search for a Python package👈"
+          />
         </SearchContainer>
         <ProjectTables>
           <ProjectTable
@@ -177,7 +180,8 @@ export default function Home({
           />
         </ProjectTables>
         <TimestampFooter>
-          Generated on {humanizeTime(generatedAt)}
+          Generated on {humanizeTime(generatedAt)} for {descriptors.length}{" "}
+          projects
         </TimestampFooter>
       </ProjectContainer>
     </PageLayout>
