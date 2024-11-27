@@ -1,0 +1,1 @@
+{"name": "sidebend-detection", "metadata": {"name": "Sidebend-detection", "version": "0.1", "classifiers": [], "home_page": "http://github.com/1104934392/Sidebend_detection", "license": "MIT", "documentation_url": null, "dependencies": ["math", "numpy"], "summary": "Sidebend detection", "upload_time": 1732678138}, "documentation": [""], "modules": []}
