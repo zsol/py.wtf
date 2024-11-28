@@ -1,0 +1,1 @@
+{"name": "fusionsc", "metadata": {"name": "fusionsc", "version": "2.5.3", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["typing-extensions", "importlib_resources", "nest-asyncio", "netCDF4", "scipy"], "summary": "Couldn't find suitable artifact for fusionsc==2.5.3", "upload_time": 0}, "documentation": [""], "modules": []}
