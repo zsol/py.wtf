@@ -1,0 +1,1 @@
+{"name": "nexfort", "metadata": {"name": "nexfort", "version": "0.1.dev299", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["packaging", "torch", "loguru"], "summary": "Couldn't find suitable artifact for nexfort==0.1.dev299", "upload_time": 0}, "documentation": [""], "modules": []}
