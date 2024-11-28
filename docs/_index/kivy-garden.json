@@ -1,0 +1,1 @@
+{"name": "kivy-garden", "metadata": {"name": "Kivy-Garden", "version": "0.1.5", "classifiers": [], "home_page": "", "license": "MIT", "documentation_url": null, "dependencies": ["requests"], "summary": "", "upload_time": 1648077933}, "documentation": [""], "modules": [{"name": "garden", "documentation": [], "functions": [], "variables": [], "classes": [], "exports": []}]}
