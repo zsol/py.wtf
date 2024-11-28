@@ -1,0 +1,1 @@
+{"name": "csv-converter-piscescup", "metadata": {"name": "csv-converter-piscescup", "version": "1.1.0", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["pandas"], "summary": "The tool is used to convert a CSV FILE with separator into a CSV FILE without separator", "upload_time": 1732777898}, "documentation": [""], "modules": []}
