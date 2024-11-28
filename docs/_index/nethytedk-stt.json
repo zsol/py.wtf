@@ -1,0 +1,1 @@
+{"name": "nethytedk-stt", "metadata": {"name": "NetHyTedk-STT", "version": "0.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["selenium", "webdriver_manager"], "summary": "This is a speech-to-text package created by Dipu Sardar", "upload_time": 1732754841}, "documentation": [""], "modules": []}
