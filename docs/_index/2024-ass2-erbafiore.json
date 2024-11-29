@@ -1,0 +1,1 @@
+{"name": "2024-ass2-erbafiore", "metadata": {"name": "2024-ass2-ErbaFiore", "version": "1.0.1", "classifiers": [], "home_page": null, "license": "MIT", "documentation_url": null, "dependencies": ["pymongo", "pytest", "prospector", "bandit", "mkdocs", "twine"], "summary": "Assignment2 DevOps", "upload_time": 1732887466}, "documentation": [""], "modules": []}
