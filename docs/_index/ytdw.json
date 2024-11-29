@@ -1,0 +1,1 @@
+{"name": "ytdw", "metadata": {"name": "ytdw", "version": "1.0.0", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["yt-dlp", "rich", "tqdm"], "summary": null, "upload_time": 1732905757}, "documentation": [""], "modules": []}
