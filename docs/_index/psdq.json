@@ -1,0 +1,1 @@
+{"name": "psdq", "metadata": {"name": "psdq", "version": "0.1.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["pyspark"], "summary": "Ad Hoc Data Quality Tool for PySpark", "upload_time": 1732970567}, "documentation": [""], "modules": []}
