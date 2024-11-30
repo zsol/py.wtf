@@ -1,0 +1,1 @@
+{"name": "dj-polyglot", "metadata": {"name": "dj-polyglot", "version": "0.2", "classifiers": ["Framework :: Django", "Programming Language :: Python"], "home_page": "https://github.com/Yeoki-ERP/dj_polyglot", "license": null, "documentation_url": null, "dependencies": ["Django", "polib"], "summary": null, "upload_time": 1732973091}, "documentation": [""], "modules": []}
