@@ -1,0 +1,1 @@
+{"name": "2024-assignment2-apirestpy", "metadata": {"name": "2024-assignment2-apiRestPy", "version": "0.0.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["flask"], "summary": "a basic restful api", "upload_time": 1733308539}, "documentation": [""], "modules": []}
