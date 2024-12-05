@@ -1,0 +1,1 @@
+{"name": "auto-parcheggi-backup", "metadata": {"name": "auto-parcheggi-backup", "version": "1.0", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["Django", "django_resized", "setuptools"], "summary": "Progetto Python per la gestione dei parcheggi", "upload_time": 1733397416}, "documentation": [""], "modules": []}
