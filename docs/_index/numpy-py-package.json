@@ -1,0 +1,1 @@
+{"name": "numpy-py-package", "metadata": {"name": "numpy-py-package", "version": "0.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["numpy"], "summary": "A package for numerical operations using NumPy", "upload_time": 1733387172}, "documentation": [""], "modules": []}
