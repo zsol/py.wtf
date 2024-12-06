@@ -1,0 +1,1 @@
+{"name": "ppifold", "metadata": {"name": "PPIFold", "version": "0.0.2", "classifiers": [], "home_page": "https://github.com/Qrouger/PPIFold", "license": "GPL-3.0 license", "documentation_url": null, "dependencies": ["alphapulldown"], "summary": "Pipeline that automates AlphaPulldown", "upload_time": 1733498583}, "documentation": [""], "modules": []}
