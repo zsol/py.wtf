@@ -1,0 +1,1 @@
+{"name": "server-report", "metadata": {"name": "server-report", "version": "0.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["psutil", "requests"], "summary": "A simple Python agent for monitoring system and server status.", "upload_time": 1733463609}, "documentation": [""], "modules": []}
