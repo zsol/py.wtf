@@ -1,0 +1,1 @@
+{"name": "daimojo", "metadata": {"name": "daimojo", "version": "2.8.7.1", "classifiers": [], "home_page": null, "license": "Driverless AI Evaluation Agreement", "documentation_url": null, "dependencies": ["datatable", "pandas", "protobuf"], "summary": "Couldn't find suitable artifact for daimojo==2.8.7.1", "upload_time": 0}, "documentation": [""], "modules": []}
