@@ -1,0 +1,1 @@
+{"name": "cubinlinker-cu11", "metadata": {"name": "cubinlinker-cu11", "version": "0.3.0.post2", "classifiers": [], "home_page": null, "license": "NVIDIA Proprietary Software", "documentation_url": null, "dependencies": ["ptxcompiler-cu11"], "summary": "Cubin Linker to support Minor Version Compatibility", "upload_time": 1713458812}, "documentation": [""], "modules": []}
