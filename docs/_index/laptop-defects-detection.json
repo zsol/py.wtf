@@ -1,0 +1,1 @@
+{"name": "laptop-defects-detection", "metadata": {"name": "laptop-defects-detection", "version": "1.0.0", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["opencv-python", "streamlit", "ultralytics", "pandas", "Pillow"], "summary": null, "upload_time": 1734005784}, "documentation": [""], "modules": []}
