@@ -1,0 +1,1 @@
+{"name": "cmd-llm-chat", "metadata": {"name": "cmd-llm-chat", "version": "0.1.2", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["colorama", "matplotlib", "openai", "prompt-toolkit", "rich", "qianfan", "pyyaml", "numpy", "pillow"], "summary": null, "upload_time": 1734085428}, "documentation": [""], "modules": []}
