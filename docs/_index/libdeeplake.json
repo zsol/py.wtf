@@ -1,0 +1,1 @@
+{"name": "libdeeplake", "metadata": {"name": "libdeeplake", "version": "0.0.151", "classifiers": [], "home_page": null, "license": null, "documentation_url": "https://docs.activeloop.ai/", "dependencies": ["numpy", "dill"], "summary": "Couldn't find suitable artifact for libdeeplake==0.0.151", "upload_time": 0}, "documentation": [""], "modules": []}
