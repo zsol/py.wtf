@@ -1,0 +1,1 @@
+{"name": "mod-downloader", "metadata": {"name": "mod-downloader", "version": "0.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["requests", "Pillow", "customtkinter"], "summary": null, "upload_time": 1734284692}, "documentation": [""], "modules": []}
