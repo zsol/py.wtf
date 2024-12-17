@@ -1,0 +1,1 @@
+{"name": "deepinfo-python-client", "metadata": {"name": "deepinfo-python-client", "version": "1.1.2", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["requests"], "summary": "Deepinfo Test", "upload_time": 1734427147}, "documentation": ["\n<h1 align=\"center\">This Python package for Deepinfo.</h1>\n"], "modules": []}
