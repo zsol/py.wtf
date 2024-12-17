@@ -1,0 +1,1 @@
+{"name": "cherminal", "metadata": {"name": "cherminal", "version": "0.1.0", "classifiers": [], "home_page": null, "license": "MIT", "documentation_url": null, "dependencies": ["flask", "flask-httpauth", "passlib"], "summary": "A web-based interface for interacting with a shell process.", "upload_time": 1734439479}, "documentation": [""], "modules": []}
