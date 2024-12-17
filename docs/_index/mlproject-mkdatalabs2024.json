@@ -1,0 +1,1 @@
+{"name": "mlproject-mkdatalabs2024", "metadata": {"name": "mlproject-mkdatalabs2024", "version": "0.0.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["pandas", "numpy", "seaborn", "matplotlib", "scikit-learn", "catboost", "xgboost", "Flask"], "summary": null, "upload_time": 1734473656}, "documentation": [""], "modules": []}
