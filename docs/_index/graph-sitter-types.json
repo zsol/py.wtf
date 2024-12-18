@@ -1,0 +1,1 @@
+{"name": "graph-sitter-types", "metadata": {"name": "graph-sitter-types", "version": "6.2.0", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["rustworkx", "types-networkx"], "summary": "Types for the graph-sitter SDK", "upload_time": 1734486327}, "documentation": [""], "modules": []}
