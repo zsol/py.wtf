@@ -1,0 +1,1 @@
+{"name": "codegen-types", "metadata": {"name": "codegen-types", "version": "0.263.0", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["graph-sitter-types"], "summary": "Types for the codegen SDK", "upload_time": 1734555880}, "documentation": [""], "modules": []}
