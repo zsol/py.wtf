@@ -1,0 +1,1 @@
+{"name": "cxdataframeloader", "metadata": {"name": "cxdataframeloader", "version": "0.1.0", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["pandas", "plotly"], "summary": null, "upload_time": 1734596140}, "documentation": [""], "modules": []}
