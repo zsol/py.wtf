@@ -1,0 +1,1 @@
+{"name": "mcp-python", "metadata": {"name": "mcp-python", "version": "0.1.0", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["mcp"], "summary": "MCP server providing a Python REPL with persistent session", "upload_time": 1734669622}, "documentation": [""], "modules": []}
