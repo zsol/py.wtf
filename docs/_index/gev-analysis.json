@@ -1,0 +1,1 @@
+{"name": "gev-analysis", "metadata": {"name": "gev-analysis", "version": "0.1.0", "classifiers": [], "home_page": null, "license": "MIT", "documentation_url": null, "dependencies": ["numpy", "pandas", "matplotlib", "scipy", "yfinance"], "summary": "A financial library for VaR and extreme value analysis", "upload_time": 1734961047}, "documentation": [""], "modules": []}

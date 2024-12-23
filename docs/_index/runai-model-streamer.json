@@ -1,0 +1,1 @@
+{"name": "runai-model-streamer", "metadata": {"name": "runai-model-streamer", "version": "0.11.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["humanize", "numpy", "torch"], "summary": "Couldn't find suitable artifact for runai-model-streamer==0.11.1", "upload_time": 0}, "documentation": [""], "modules": []}
