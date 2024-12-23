@@ -1,0 +1,1 @@
+{"name": "analistadeimagem", "metadata": {"name": "AnalistaDeImagem", "version": "0.1.0", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["openai"], "summary": "Biblioteca para an\u00e1lise de imagens usando OpenAI Vision", "upload_time": 1734980324}, "documentation": [""], "modules": []}
