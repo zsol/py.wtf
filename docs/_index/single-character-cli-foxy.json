@@ -1,0 +1,1 @@
+{"name": "single-character-cli-foxy", "metadata": {"name": "single-character-cli-foxy", "version": "1.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["opencv-python", "pyautogui", "pyaudio"], "summary": "single character CLI foxy", "upload_time": 1735044423}, "documentation": [""], "modules": []}
