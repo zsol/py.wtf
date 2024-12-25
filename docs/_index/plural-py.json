@@ -1,0 +1,1 @@
+{"name": "plural-py", "metadata": {"name": "plural.py", "version": "0.1.0", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["bson", "hatch", "pydantic"], "summary": "Python wrapper for the /plu/ral API", "upload_time": 1735127522}, "documentation": [""], "modules": []}
