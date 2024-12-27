@@ -1,0 +1,1 @@
+{"name": "testing-pants-distribution", "metadata": {"name": "testing-pants-distribution", "version": "2.21.0", "classifiers": ["Programming Language :: Python :: 3.7"], "home_page": null, "license": null, "documentation_url": null, "dependencies": [], "summary": "An example distribution built with Pants.", "upload_time": 1735295047}, "documentation": [""], "modules": []}
