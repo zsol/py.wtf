@@ -1,0 +1,1 @@
+{"name": "foldertrack", "metadata": {"name": "foldertrack", "version": "0.0.1", "classifiers": [], "home_page": null, "license": null, "documentation_url": null, "dependencies": ["pandas"], "summary": "Package to maneger pacient records from a ESF, strategy of brasilian health.", "upload_time": 1735600249}, "documentation": ["foldertrack_project/README.md\n"], "modules": []}
