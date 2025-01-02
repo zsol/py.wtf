@@ -1,0 +1,1 @@
+{"name": "libtorrent", "metadata": {"name": "libtorrent", "version": "2.0.9", "classifiers": [], "home_page": "http://libtorrent.org", "license": "BSD", "documentation_url": null, "dependencies": [], "summary": "Couldn't find suitable artifact for libtorrent==2.0.9", "upload_time": 0}, "documentation": ["Python bindings for libtorrent-rasterbar\n"], "modules": []}
