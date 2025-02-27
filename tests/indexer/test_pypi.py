@@ -3,9 +3,16 @@ from pathlib import Path
 from tarfile import TarFile
 from zipfile import ZipFile
 
+import httpx
 import pytest
 
-from py_wtf.indexer.pypi import _build_symbol_table, Artifact, download, pick_artifact
+from py_wtf.indexer.pypi import (
+    _build_symbol_table,
+    Artifact,
+    download,
+    fetch_pypi_metadata,
+    pick_artifact,
+)
 from py_wtf.types import FQName, Project
 
 from pytest_httpx import HTTPXMock
@@ -79,29 +86,31 @@ def pypi_artifact(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
 
 @pytest.mark.asyncio
 async def test_download(
-    tmp_path: Path, httpx_mock: HTTPXMock, pypi_json: bytes, pypi_artifact: Path
+    tmp_path: Path, httpx_mock: HTTPXMock, pypi_artifact: Path
 ) -> None:
-    httpx_mock.add_response(url="https://pypi.org/pypi/foo/json", content=pypi_json)
+    art_url = "https://files.pythonhosted.org/packages/lol.tar.gz"
     httpx_mock.add_response(
-        url=f"https://files.pythonhosted.org/packages/lol.tar.gz",
+        url=art_url,
         content=pypi_artifact.read_bytes(),
     )
-    path, metadata, _ = await download("foo", tmp_path)
-    assert metadata.license == "BSD"
+    async with httpx.AsyncClient() as client:
+        artifact: Artifact = {
+            "filename": "lol.tar.gz",
+            "url": art_url,
+            "yanked": False,
+            "packagetype": "foo",
+            "upload_time": "now",
+        }
+        path = await download(client, "foo", tmp_path, artifact)
     assert path.is_relative_to(tmp_path)
     assert (path / "foo_mod.py").exists()
 
 
 @pytest.mark.asyncio
-async def test_no_extras_in_deps(
-    tmp_path: Path, httpx_mock: HTTPXMock, pypi_json: bytes, pypi_artifact: Path
-) -> None:
+async def test_no_extras_in_deps(httpx_mock: HTTPXMock, pypi_json: bytes) -> None:
     httpx_mock.add_response(url="https://pypi.org/pypi/foo/json", content=pypi_json)
-    httpx_mock.add_response(
-        url=f"https://files.pythonhosted.org/packages/lol.tar.gz",
-        content=pypi_artifact.read_bytes(),
-    )
-    _, metadata, _ = await download("foo", tmp_path)
+    async with httpx.AsyncClient() as client:
+        metadata, _, _ = await fetch_pypi_metadata(client, "foo")
     assert "aiohttp" not in metadata.dependencies
 
 

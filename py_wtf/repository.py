@@ -8,7 +8,9 @@ from time import time
 from typing import AsyncIterable, Callable, Tuple
 
 from cattrs.preconf.json import make_converter
+import httpx
 from keke import ktrace
+import stamina
 
 from py_wtf.types import Index, Project, ProjectMetadata, ProjectName
 
@@ -57,6 +59,30 @@ class ProjectRepository:
             return True
         except OSError:
             return False
+
+    @staticmethod
+    async def fetch_from_remote(
+        client: httpx.AsyncClient, key: ProjectName
+    ) -> Project | None:
+        async for attempt in stamina.retry_context(on=httpx.RequestError, attempts=3):
+            with attempt:
+                try:
+                    resp = await client.get(
+                        f"https://py.wtf/_index/{key}.json", follow_redirects=True
+                    )
+                    resp.raise_for_status()
+                    project = converter.loads(resp.content, Project)
+                    return project
+                except httpx.HTTPStatusError as e:
+                    if e.response.status_code != 404:
+                        logger.debug(
+                            f"Unexpected error fetching {key} from py.wtf: {e}"
+                        )
+                except Exception:
+                    logger.debug(
+                        f"Exception while fetching {key} from py.wtf", exc_info=True
+                    )
+        return None
 
     @ktrace("key")
     async def get(
