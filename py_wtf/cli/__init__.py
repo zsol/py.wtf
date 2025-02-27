@@ -73,7 +73,10 @@ async def index(project_name: str, directory: str, pretty: bool, force: bool) ->
     out_dir.mkdir(parents=True, exist_ok=True)
     repo = ProjectRepository(out_dir)
 
-    proj = await repo.get(ProjectName(project_name), partial(index_project, repo=repo))
+    proj = await repo.get(
+        ProjectName(project_name),
+        partial(index_project, repo=repo, skip_existing=force),
+    )
 
     if pretty:
         rich.print(proj)

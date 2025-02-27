@@ -113,7 +113,10 @@ def _check_for_cycles(a: ProjectName, b: ProjectName) -> bool:
 
 @ktrace("project_name")
 async def index_project(
-    project_name: ProjectName, repo: ProjectRepository, progress: Progress | None = None
+    project_name: ProjectName,
+    repo: ProjectRepository,
+    progress: Progress | None = None,
+    skip_existing: bool = False,
 ) -> AsyncIterable[Project]:
     if project_name in PROJECT_BLOCKLIST:
         yield blocklisted_project_factory(project_name)
@@ -124,13 +127,23 @@ async def index_project(
     deps: list[Project] = []
 
     with TemporaryDirectory() as tmpdir:
-        # First try to fetch from py.wtf
         async with sem, httpx.AsyncClient() as client:
-            existing_project = await repo.fetch_from_remote(client, project_name)
-            # Get latest PyPI metadata to compare versions
-            pypi_metadata, doc, artifact = await fetch_pypi_metadata(
-                client, project_name
-            )
+            # Fetch both existing project and PyPI metadata concurrently
+            async with asyncio.TaskGroup() as tasks:
+                if skip_existing:
+                    existing_project_fut = asyncio.Future()
+                    existing_project_fut.set_result(None)
+                else:
+                    existing_project_fut = tasks.create_task(
+                        repo.fetch_from_remote(client, project_name)
+                    )
+                pypi_metadata_fut = tasks.create_task(
+                    fetch_pypi_metadata(client, project_name)
+                )
+
+            # Wait for both to complete
+            existing_project = await existing_project_fut
+            pypi_metadata, doc, artifact = await pypi_metadata_fut
 
             if existing_project:
                 if (
