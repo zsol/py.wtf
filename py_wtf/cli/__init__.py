@@ -191,7 +191,8 @@ async def index_since(directory: str, since: datetime, trace: IO[str] | None) ->
                 ):
                     with attempt:
                         resp = await client.get(
-                            f"https://py.wtf/_index/{METADATA_FILENAME}"
+                            f"https://py.wtf/_index/{METADATA_FILENAME}",
+                            follow_redirects=True,
                         )
                         resp.raise_for_status()
                         (out_dir / METADATA_FILENAME).write_bytes(resp.content)
