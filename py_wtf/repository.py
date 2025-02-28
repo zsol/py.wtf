@@ -7,10 +7,11 @@ from pathlib import Path
 from time import time
 from typing import AsyncIterable, Callable, Tuple
 
-from cattrs.preconf.json import make_converter
 import httpx
-from keke import ktrace
 import stamina
+
+from cattrs.preconf.json import make_converter
+from keke import ktrace
 
 from py_wtf.types import Index, Project, ProjectMetadata, ProjectName
 
