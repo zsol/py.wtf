@@ -28,21 +28,19 @@ jobs:
           export_environment_variables: true
       - name: Index
         run: set -x; python -m hatch run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" _index
-      - uses: aws-actions/configure-aws-credentials@v4.1.0
-        with:
-          aws-region: us-east-1
-          aws-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       - name: Compress index
         run: gzip -9 _index/*.json
       - name: Upload
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_ENDPOINT_URL: ${{ secrets.R2_ENDPOINT }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: |
-          set -e
-          aws s3 sync --endpoint-url ${{ secrets.R2_ENDPOINT }} \
+          aws s3 sync \
             _index s3://${{secrets.R2_BUCKET}}/_index \
             --exclude '*' --include '*.json.gz' \
             --no-guess-mime-type --content-encoding gzip \
-            --content-type application/json
-          aws s3 cp --endpoint-url ${{ secrets.R2_ENDPOINT }} \
+            --content-type application/json --checksum-algorithm CRC32
+          aws s3 cp \
             _index/.metadata s3://${{secrets.R2_BUCKET}}/_index/.metadata \
-            --content-type application/json
+            --content-type application/json --checksum-algorithm CRC32
