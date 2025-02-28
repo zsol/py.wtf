@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import AsyncIterable
 
 import pytest
-from py_wtf.repository import METADATA_FILENAME, converter, ProjectRepository
+from py_wtf.repository import converter, METADATA_FILENAME, ProjectRepository
 from py_wtf.types import Index, Project, ProjectMetadata, ProjectName
 
 

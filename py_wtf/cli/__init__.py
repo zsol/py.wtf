@@ -73,7 +73,10 @@ async def index(project_name: str, directory: str, pretty: bool, force: bool) ->
     out_dir.mkdir(parents=True, exist_ok=True)
     repo = ProjectRepository(out_dir)
 
-    proj = await repo.get(ProjectName(project_name), partial(index_project, repo=repo))
+    proj = await repo.get(
+        ProjectName(project_name),
+        partial(index_project, repo=repo, skip_existing=force),
+    )
 
     if pretty:
         rich.print(proj)
@@ -188,7 +191,8 @@ async def index_since(directory: str, since: datetime, trace: IO[str] | None) ->
                 ):
                     with attempt:
                         resp = await client.get(
-                            f"https://py.wtf/_index/{METADATA_FILENAME}"
+                            f"https://py.wtf/_index/{METADATA_FILENAME}",
+                            follow_redirects=True,
                         )
                         resp.raise_for_status()
                         (out_dir / METADATA_FILENAME).write_bytes(resp.content)

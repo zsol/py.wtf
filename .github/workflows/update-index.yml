@@ -5,21 +5,14 @@ on:
     - cron: "34 * * * *"
 jobs:
   update_index:
+    environment: r2-prod
     permissions:
-      contents: write
+      contents: read
       id-token: write
-      pages: write
     runs-on: ubuntu-latest
     steps:
-      - name: fetch pages
-        uses: actions/checkout@v4
-        with:
-          ref: pages
-          path: pages
       - name: checkout main
         uses: actions/checkout@v4
-        with:
-          path: main
       - name: setup python
         uses: actions/setup-python@v5
         with:
@@ -34,12 +27,20 @@ jobs:
           project_id: pypinfo-214114
           export_environment_variables: true
       - name: Index
-        run: cd main; set -x; python -m hatch run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" ../pages/docs/_index
-      - name: commit
+        run: set -x; python -m hatch run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" _index
+      - name: Compress index
+        run: gzip -9 _index/*.json
+      - name: Upload
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_ENDPOINT_URL: ${{ secrets.R2_ENDPOINT }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: |
-          cd pages
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -am 'Auto-generated index'
-          git push
+          aws s3 sync \
+            _index s3://${{secrets.R2_BUCKET}}/_index \
+            --exclude '*' --include '*.json.gz' \
+            --no-guess-mime-type --content-encoding gzip \
+            --content-type application/json --checksum-algorithm CRC32
+          aws s3 cp \
+            _index/.metadata s3://${{secrets.R2_BUCKET}}/_index/.metadata \
+            --content-type application/json --checksum-algorithm CRC32

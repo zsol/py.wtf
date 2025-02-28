@@ -113,7 +113,10 @@ def _check_for_cycles(a: ProjectName, b: ProjectName) -> bool:
 
 @ktrace("project_name")
 async def index_project(
-    project_name: ProjectName, repo: ProjectRepository, progress: Progress | None = None
+    project_name: ProjectName,
+    repo: ProjectRepository,
+    progress: Progress | None = None,
+    skip_existing: bool = False,
 ) -> AsyncIterable[Project]:
     if project_name in PROJECT_BLOCKLIST:
         yield blocklisted_project_factory(project_name)
@@ -122,19 +125,71 @@ async def index_project(
     if progress:
         task_id = progress.add_task(project_name, action="Fetching", total=3)
     deps: list[Project] = []
+
     with TemporaryDirectory() as tmpdir:
-        try:
-            src_dir, info, description = await download(project_name, Path(tmpdir))
-        except Exception as err:
-            logger.error(
-                f"Unable to download project {project_name}, skipping", exc_info=err
-            )
-            return
+        async with sem, httpx.AsyncClient() as client:
+            # Fetch both existing project and PyPI metadata concurrently
+            async with asyncio.TaskGroup() as tasks:
+                if skip_existing:
+                    existing_project_fut = asyncio.Future()
+                    existing_project_fut.set_result(None)
+                else:
+                    existing_project_fut = tasks.create_task(
+                        repo.fetch_from_remote(client, project_name)
+                    )
+                pypi_metadata_fut = tasks.create_task(
+                    fetch_pypi_metadata(client, project_name)
+                )
+
+            # Wait for both to complete
+            existing_project = await existing_project_fut
+            pypi_metadata, doc, artifact = await pypi_metadata_fut
+
+            if existing_project:
+                if (
+                    not artifact
+                    or existing_project.metadata.version == pypi_metadata.version
+                ):
+                    logger.debug(f"Using cached version of {project_name} from py.wtf")
+                    if progress:
+                        progress.update(task_id, visible=False)
+                    yield existing_project
+                    return
+
+                logger.debug(
+                    f"Version mismatch for {project_name}: py.wtf has {existing_project.metadata.version}, pypi has {pypi_metadata.version}"
+                )
+
+            try:
+                description = convert_to_myst(doc)
+            except Exception as e:
+                msg = f"Error while parsing description for {project_name}"
+                logger.exception(msg)
+                description = Documentation("\n".join([msg, str(e)]))
+
+            if not artifact:
+                error = f"Couldn't find suitable artifact for {project_name}=={pypi_metadata.version}"
+                logger.warning(error)
+                yield Project(
+                    project_name,
+                    replace(pypi_metadata, summary=error),
+                    [description],
+                    [],
+                )
+                return
+
+            try:
+                src_dir = await download(client, project_name, Path(tmpdir), artifact)
+            except Exception as err:
+                logger.error(
+                    f"Unable to download project {project_name}, skipping", exc_info=err
+                )
+                return
         if progress:
             progress.update(
                 task_id, action="Gathering deps for", visible=True, advance=1
             )
-        dep_project_names = [ProjectName(dep) for dep in info.dependencies]
+        dep_project_names = [ProjectName(dep) for dep in pypi_metadata.dependencies]
         logger.debug(
             f"Found {project_name}'s dependencies ({len(dep_project_names)}): {dep_project_names}"
         )
@@ -173,7 +228,6 @@ async def index_project(
             modules = []
             documentation.append(Documentation(msg))
         else:
-
             logger.info(f"Starting indexing of {project_name}")
             modules = [
                 mod async for mod in index_dir(project_name, src_dir, symbols, executor)
@@ -182,16 +236,11 @@ async def index_project(
         if progress:
             progress.advance(task_id)
 
-    try:
-        documentation.append(convert_to_myst(description))
-    except Exception as e:
-        msg = f"Error while parsing description for {project_name}"
-        logger.exception(msg)
-        documentation.extend([Documentation(msg), Documentation(str(e))])
+    documentation.append(description)
 
     proj = Project(
         project_name,
-        metadata=info,
+        metadata=pypi_metadata,
         modules=modules,
         documentation=documentation,
     )
@@ -285,74 +334,70 @@ def pick_artifact(artifacts: list[Artifact]) -> Artifact | None:
 sem = asyncio.BoundedSemaphore(value=20)
 
 
-@ktrace("project_name")
-async def download(
-    project_name: str, directory: Path
-) -> Tuple[Path, ProjectMetadata, ProjectDescription]:
-    async with sem, httpx.AsyncClient(timeout=httpx.Timeout(None)) as client:
-        proj_data = {}
-        async for attempt in stamina.retry_context(on=httpx.RequestError, attempts=3):
-            with attempt:
-                try:
-                    resp = await client.get(
-                        f"https://pypi.org/pypi/{project_name}/json"
-                    )
-                    resp.raise_for_status()
-                    proj_data = resp.json()
-                except httpx.HTTPStatusError as e:
-                    error = f"Unable to find project {project_name} on pypi, got HTTP {e.response.status_code}"
-                    raise ValueError(error) from e
-        pypi_info = proj_data["info"]
-        latest_version = pypi_info["version"]
-        project_urls = pypi_info.get("project_urls") or {}
-        doc = ProjectDescription(
-            pypi_info.get("description", ""), pypi_info.get("description_content_type")
-        )
-        proj_metadata = ProjectMetadata(
-            pypi_info.get("name", project_name),
-            latest_version,
-            summary=pypi_info.get("summary"),
-            home_page=pypi_info.get("home_page"),
-            license=pypi_info.get("license"),
-            documentation_url=project_urls.get("Documentation"),
-            classifiers=pypi_info.get("classifiers"),
-            dependencies=parse_deps(pypi_info.get("requires_dist")),
-        )
-        artifact = pick_artifact(proj_data["releases"][latest_version])
-        if not artifact:
-            error = (
-                f"Couldn't find suitable artifact for {project_name}=={latest_version}"
-            )
-            logger.warning(error)
-            return (directory, replace(proj_metadata, summary=error), doc)
+async def fetch_pypi_metadata(
+    client: httpx.AsyncClient,
+    project_name: str,
+) -> Tuple[ProjectMetadata, ProjectDescription, Artifact | None]:
+    proj_data = {}
+    async for attempt in stamina.retry_context(on=httpx.RequestError, attempts=3):
+        with attempt:
+            try:
+                resp = await client.get(f"https://pypi.org/pypi/{project_name}/json")
+                resp.raise_for_status()
+                proj_data = resp.json()
+            except httpx.HTTPStatusError as e:
+                error = f"Unable to find project {project_name} on pypi, got HTTP {e.response.status_code}"
+                raise ValueError(error) from e
 
+    pypi_info = proj_data["info"]
+    latest_version = pypi_info["version"]
+    project_urls = pypi_info.get("project_urls") or {}
+    doc = ProjectDescription(
+        pypi_info.get("description", ""), pypi_info.get("description_content_type")
+    )
+    proj_metadata = ProjectMetadata(
+        pypi_info.get("name", project_name),
+        latest_version,
+        summary=pypi_info.get("summary"),
+        home_page=pypi_info.get("home_page"),
+        license=pypi_info.get("license"),
+        documentation_url=project_urls.get("Documentation"),
+        classifiers=pypi_info.get("classifiers"),
+        dependencies=parse_deps(pypi_info.get("requires_dist")),
+    )
+
+    artifact = pick_artifact(proj_data["releases"][proj_metadata.version])
+    if artifact:
         proj_metadata = replace(
             proj_metadata,
             upload_time=parse_upload_time(artifact["upload_time"]),
         )
 
-        logger.debug(f"Fetching {project_name} sources from {artifact['url']}")
-        # this is a bit unnecessary 🙃
-        async with (
-            client.stream("GET", artifact["url"]) as response,
-            aiofiles.tempfile.NamedTemporaryFile("wb+", delete=False) as src_archive,
-        ):
-            async for chunk in response.aiter_bytes():
-                await src_archive.write(chunk)
+    return proj_metadata, doc, artifact
 
-        archive_name = str(src_archive.name)
-        try:
-            logger.debug(f"Extracting sources for {project_name} from {archive_name}")
-            extract_archive(archive_name, directory)
-        finally:
-            os.unlink(archive_name)
+
+@ktrace("project_name")
+async def download(
+    client: httpx.AsyncClient,
+    project_name: str,
+    directory: Path,
+    artifact: Artifact,
+) -> Path:
+    logger.debug(f"Fetching {project_name} sources from {artifact['url']}")
+    async with (
+        client.stream("GET", artifact["url"]) as response,
+        aiofiles.tempfile.NamedTemporaryFile("wb+", delete=False) as src_archive,
+    ):
+        async for chunk in response.aiter_bytes():
+            await src_archive.write(chunk)
+
+    archive_name = str(src_archive.name)
+    try:
+        logger.debug(f"Extracting sources for {project_name} from {archive_name}")
+        extract_archive(archive_name, directory)
+    finally:
+        os.unlink(archive_name)
 
     return (
-        (
-            pick_project_dir(directory)
-            if artifact["packagetype"] == "sdist"
-            else directory
-        ),
-        proj_metadata,
-        doc,
+        pick_project_dir(directory) if artifact["packagetype"] == "sdist" else directory
     )
