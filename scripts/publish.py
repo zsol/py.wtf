@@ -62,7 +62,7 @@ async def main() -> None:
         item.unlink()
 
     subprocess.run(
-        ["hatch", "run", "py-wtf", "index-top-pypi", str(index_dir), "--top=500"]
+        ["hatch", "run", "py-wtf", "index-top-pypi", str(index_dir), "--top=10"]
     ).check_returncode()
 
     os.chdir(toplevel / "www")
