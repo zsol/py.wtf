@@ -91,6 +91,8 @@ function Match({ result }: MatchProps): ReactElement {
   );
 }
 
+const MAX_DISPLAYED_RESULTS = 50;
+
 export const Search = ({ descriptors, placeholder }: SearchParams) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<Results | null>(null);
@@ -136,18 +138,20 @@ export const Search = ({ descriptors, placeholder }: SearchParams) => {
         <SearchResultContainer>
           {results.total === 0 && "No results found"}
           {results.total > 0 &&
-            results.map((result: Result, ind: number) => (
-              <SearchResultItem key={`${result.obj.name}_${ind}`}>
-                <ItemLink
-                  id={`SearchResultItem_Link_${ind}`}
-                  to={`${result.obj.url}`}
-                  onClick={() => setSearchTerm("")}
-                  onKeyDown={(event) => keyPressHandler(event, ind)}
-                >
-                  <Match result={result} />
-                </ItemLink>
-              </SearchResultItem>
-            ))}
+            results
+              .slice(0, MAX_DISPLAYED_RESULTS)
+              .map((result: Result, ind: number) => (
+                <SearchResultItem key={`${result.obj.name}_${ind}`}>
+                  <ItemLink
+                    id={`SearchResultItem_Link_${ind}`}
+                    to={`${result.obj.url}`}
+                    onClick={() => setSearchTerm("")}
+                    onKeyDown={(event) => keyPressHandler(event, ind)}
+                  >
+                    <Match result={result} />
+                  </ItemLink>
+                </SearchResultItem>
+              ))}
         </SearchResultContainer>
       )}
     </SearchContainer>
