@@ -102,7 +102,7 @@ async def index_top_pypi(directory: str, top: int) -> None:
             with attempt:
                 top_pkgs = (
                     await client.get(
-                        "https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.json"
+                        "https://hugovk.github.io/top-pypi-packages/top-pypi-packages.json"
                     )
                 ).json()
         projects: Iterable[str] = (row["project"] for row in top_pkgs["rows"][:top])
