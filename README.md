@@ -50,13 +50,12 @@ Just don't.
 
 ## Hacking
 
-Please do. Python 3.12, Node 18.
+Please do. Python 3.13, Node 18.
 
 ```shell
 cd py.wtf
-pipx run hatch shell
 YOUR_FAVORITE_PROJECT=click
-py-wtf index --project-name $YOUR_FAVORITE_PROJECT www/public/_index/
+uv run py-wtf index --project-name $YOUR_FAVORITE_PROJECT www/public/_index/
 cd www
 npm install
 npm run dev

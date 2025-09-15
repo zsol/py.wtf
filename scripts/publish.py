@@ -55,14 +55,14 @@ async def shell(
 async def main() -> None:
     toplevel = Path(__file__).parent.parent
     os.chdir(toplevel)
-    await shell("hatch", "--version")
+    await shell("uv", "--version")
     await shell(NPM, "--version")
     index_dir = toplevel / "www" / "public" / "_index"
     for item in index_dir.glob("*.json"):
         item.unlink()
 
     subprocess.run(
-        ["hatch", "run", "py-wtf", "index-top-pypi", str(index_dir), "--top=10"]
+        ["uv", "run", "py-wtf", "index-top-pypi", str(index_dir), "--top=10"]
     ).check_returncode()
 
     os.chdir(toplevel / "www")

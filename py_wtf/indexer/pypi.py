@@ -104,7 +104,7 @@ def _check_for_cycles(a: ProjectName, b: ProjectName) -> bool:
     global depgraph
     depgraph.add_edge(a, b)
     try:
-        find_cycle(depgraph, source=a, orientation="original")
+        find_cycle(depgraph, source=a, orientation="original")  # type: ignore
     except NetworkXNoCycle:
         return False
     depgraph.remove_edge(a, b)
