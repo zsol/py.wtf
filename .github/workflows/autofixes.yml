@@ -19,7 +19,7 @@ jobs:
       - name: Run Python formatter
         run: uv run ufmt format
       - name: Set up nodejs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           cache: "npm"
           cache-dependency-path: "www/package-lock.json"
