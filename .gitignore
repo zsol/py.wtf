@@ -9,3 +9,5 @@ next-env.d.ts
 gha-creds-*.json
 
 .jj/
+
+.venv/

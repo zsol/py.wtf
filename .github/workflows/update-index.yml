@@ -13,10 +13,6 @@ jobs:
     steps:
       - name: checkout main
         uses: actions/checkout@v4
-      - name: setup python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.12
       - name: Install uv
         uses: astral-sh/setup-uv@v6
       - id: auth
