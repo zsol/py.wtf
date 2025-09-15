@@ -23,7 +23,7 @@ jobs:
           project_id: pypinfo-214114
           export_environment_variables: true
       - name: Index
-        run: set -x; uv run run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" _index
+        run: set -x; uv run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" _index
       - name: Compress index
         run: gzip -9 _index/*.json
       - name: Upload
