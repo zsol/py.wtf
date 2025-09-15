@@ -32,7 +32,7 @@ dependencies = [
   "stamina>=24.2.0",
   "trailrunner>=1.2.1",
 ]
-dynamic = ["version"]
+version = "0.0.1"
 
 [project.urls]
 Documentation = "https://github.com/zsol/py.wtf#readme"
@@ -42,41 +42,10 @@ Source = "https://github.com/zsol/py.wtf"
 [project.scripts]
 py-wtf = "py_wtf.cli:py_wtf"
 
-[tool.hatch.version]
-path = "py_wtf/__about__.py"
-
-[tool.hatch.metadata]
-allow-direct-references = true
-
-[tool.hatch.build.targets.sdist]
-[tool.hatch.build.targets.wheel]
-
-[tool.hatch.env]
-requires = ["hatch-pip-compile"]
-
-[tool.hatch.envs.default]
-type = "pip-compile"
-pip-compile-hashes = true
-pip-compile-args = ["--no-annotate", "--allow-unsafe"]
-pip-compile-resolver = "uv"
-python = "3.13"
-dependencies = [
-  "pyright >= 1.1.348",
-  "pytest-asyncio",
-  "pytest-cov",
-  "pytest-httpx",
-  "pytest",
-  "types-aiofiles>=24.1.0.20240626",
-  "types-appdirs==1.4.3",
-  "ufmt >= 2.0.0",
-]
-[tool.hatch.envs.default.scripts]
+[tool.poe.tasks]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=py_wtf --cov=tests"
-no-cov = "cov --no-cov"
+no-cov = "pytest"
 check-types = "pyright"
-
-[[tool.hatch.envs.test.matrix]]
-python = ["313"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -98,3 +67,16 @@ reportUnknownMemberType = "none"
 reportUnknownParameterType = "none"
 reportUnknownVariableType = "none"
 reportMissingTypeStubs = "none"
+
+[dependency-groups]
+dev = [
+  "poethepoet>=0.37.0",
+  "pyright>=1.1.348",
+  "pytest>=8.4.2",
+  "pytest-asyncio>=1.2.0",
+  "pytest-cov>=7.0.0",
+  "pytest-httpx>=0.34.0",
+  "types-aiofiles>=24.1.0.20240626",
+  "types-appdirs==1.4.3",
+  "ufmt>=2.0.0",
+]
