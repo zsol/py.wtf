@@ -14,10 +14,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install hatch
-        run: python -m pip install hatch
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
       - name: Run Python formatter
-        run: python -m hatch run ufmt format
+        run: uv run ufmt format
       - name: Set up nodejs
         uses: actions/setup-node@v4
         with:
