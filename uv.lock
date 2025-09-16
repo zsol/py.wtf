@@ -870,7 +870,7 @@ dev = [
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-httpx", specifier = ">=0.34.0" },
     { name = "types-aiofiles", specifier = ">=24.1.0.20240626" },
-    { name = "types-appdirs", specifier = "==1.4.3" },
+    { name = "types-appdirs", specifier = "==1.4.3.5" },
     { name = "types-networkx", specifier = ">=3.5.0.20250914" },
     { name = "ufmt", specifier = ">=2.0.0" },
 ]
@@ -1297,11 +1297,11 @@ wheels = [
 
 [[package]]
 name = "types-appdirs"
-version = "1.4.3"
+version = "1.4.3.5"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/8e/de/fd6a3bc42df7ce42247ac7da849b9575ff96d66094e090aed80569e5e1fa/types-appdirs-1.4.3.tar.gz", hash = "sha256:387bb4048b43c26ffdb9497f4629145c71fc309b12f040edd0bb95b603d95792", size = 2209, upload-time = "2022-06-25T09:16:59.158Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fe/dc/600964f9ee98f4afdb69be74cd8e1ca566635a76ada9af0046e44a778fbb/types-appdirs-1.4.3.5.tar.gz", hash = "sha256:83268da64585361bfa291f8f506a209276212a0497bd37f0512a939b3d69ff14", size = 2866, upload-time = "2023-03-14T15:21:34.849Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/67/b7/4b807a0c9c1460b943cf2102bc18b17507b9e07a684bd486af2498d4e141/types_appdirs-1.4.3-py3-none-any.whl", hash = "sha256:5668e717e2278cce002139fa008d6f17ec4754b1430005185d1d7f30139bee39", size = 2292, upload-time = "2022-06-25T09:16:57.313Z" },
+    { url = "https://files.pythonhosted.org/packages/cf/07/41f5b9b11f11855eb67760ed680330e0ce9136a44b51c24dd52edb1c4eb1/types_appdirs-1.4.3.5-py3-none-any.whl", hash = "sha256:337c750e423c40911d389359b4edabe5bbc2cdd5cd0bd0518b71d2839646273b", size = 2667, upload-time = "2023-03-14T15:21:32.431Z" },
 ]
 
 [[package]]
