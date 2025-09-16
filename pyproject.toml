@@ -77,7 +77,7 @@ dev = [
   "pytest-cov>=7.0.0",
   "pytest-httpx>=0.34.0",
   "types-aiofiles>=24.1.0.20240626",
-  "types-appdirs==1.4.3",
+  "types-appdirs==1.4.3.5",
   "types-networkx>=3.5.0.20250914",
   "ufmt>=2.0.0",
 ]
