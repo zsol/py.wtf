@@ -31,7 +31,7 @@
     "@next/eslint-plugin-next": "^12.3.4",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.0.0",
     "@types/node": "^18.19.18",
     "@types/react": "^18.2.58",
     "@types/react-syntax-highlighter": "^15.5.11",
