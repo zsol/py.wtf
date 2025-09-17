@@ -19,14 +19,14 @@
     "paths": {
       "@/components/*": ["components/*"],
       "@/lib/*": ["lib/*"],
-      "@/pages/*": ["pages/*"],
-    },
+      "@/pages/*": ["pages/*"]
+    }
   },
   "include": [
     "types/next-env.d.ts",
     "types/emotion.d.ts",
     "**/*.ts",
-    "**/*.tsx",
+    "**/*.tsx"
   ],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }
