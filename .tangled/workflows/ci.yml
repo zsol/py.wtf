@@ -1,0 +1,35 @@
+when:
+  - event: ["push", "pull_request"]
+    branch: main
+
+engine: nixery
+
+dependencies:
+  nixpkgs:
+    - npm
+    - nodejs
+    - uv
+
+steps:
+  - name: run indexer tests
+    command: |
+      uv run poe cov
+  - name: indexer type check
+    command: |
+      uv run poe check-types
+  - name: frontend install
+    command: |
+      cd www
+      npm install
+  - name: frontend type check
+    command: |
+      cd www
+      npm run check-types
+  - name: frontend lint
+    command: |
+      cd www
+      npm run lint
+  - name: frontend tests
+    command: |
+      cd www
+      npm run test-ci
