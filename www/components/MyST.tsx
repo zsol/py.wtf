@@ -35,7 +35,8 @@ interface MySTRoleContentMap {
 }
 
 interface ContentMap
-  extends md.FrontmatterContentMap,
+  extends
+    md.FrontmatterContentMap,
     md.DefinitionContentMap,
     md.ListContentMap,
     md.TableContentMap,
