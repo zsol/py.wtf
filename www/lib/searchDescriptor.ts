@@ -1,4 +1,4 @@
-import FuzzySort from "fuzzysort";
+import { KeyResult, KeyResults, go } from "fuzzysort";
 import memoize from "nano-memoize";
 
 import { Class, Func, Module, Project, Variable } from "./docs";
@@ -97,8 +97,8 @@ export const makeIndex = (descriptors: SearchDescriptor[]): Index =>
   descriptors; // TODO: call Fuzzysort.prepare on items
 
 export type Index = Array<SearchDescriptor>;
-export type Results = Fuzzysort.KeyResults<SearchDescriptor>;
-export type Result = Fuzzysort.KeyResult<SearchDescriptor>;
+export type Results = KeyResults<SearchDescriptor>;
+export type Result = KeyResult<SearchDescriptor>;
 
 export const search = (index: Index, term: string): Results =>
-  FuzzySort.go(term, index, { key: "name" });
+  go(term, index, { key: "name", limit: 0, threshold: 0 });

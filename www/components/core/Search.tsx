@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
-import fuzzysort from "fuzzysort";
-import { ReactElement, useEffect, useState } from "react";
+import { highlight } from "fuzzysort";
+import { ReactElement, useMemo, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { Index, Result, Results, search } from "@/lib/searchDescriptor";
+import { Index, Result, search } from "@/lib/searchDescriptor";
 
 import { flexColumn } from "./layout/helpers";
 import { Link } from "./navigation/Link";
@@ -65,7 +65,7 @@ function highlightCallback(highlighted: string, ind: number): ReactElement {
 }
 
 function Match({ result }: MatchProps): ReactElement {
-  const ret = fuzzysort.highlight(result, highlightCallback) ?? "";
+  const ret = highlight(result, highlightCallback);
   const localNameIndex = result.obj.fqname.lastIndexOf(`.${result.obj.name}`);
   let suffix = null;
   if (localNameIndex > -1) {
@@ -95,23 +95,24 @@ const MAX_DISPLAYED_RESULTS = 50;
 
 export const Search = ({ descriptors, placeholder }: SearchParams) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [results, setResults] = useState<Results | null>(null);
-  useHotkeys("/", (event) => {
-    event.preventDefault();
-    document.getElementById("Search_Input")?.focus();
-  });
-
-  useEffect(() => {
-    // TODO: debounce this
-    if (searchTerm) {
-      setResults(search(descriptors, searchTerm));
-    } else {
-      setResults(null);
-    }
-  }, [searchTerm]);
+  const results = useMemo(
+    () => (searchTerm ? search(descriptors, searchTerm) : null),
+    [descriptors, searchTerm],
+  );
+  useHotkeys(
+    "/",
+    (event) => {
+      event.preventDefault();
+      document.getElementById("Search_Input")?.focus();
+    },
+    { useKey: true },
+  );
 
   function keyPressHandler(event: React.KeyboardEvent, index: number) {
-    if (event.key === "ArrowDown" && index + 1 < (results?.length ?? 0)) {
+    if (
+      event.key === "ArrowDown" &&
+      index + 1 < Math.min(results?.length ?? 0, MAX_DISPLAYED_RESULTS)
+    ) {
       document.getElementById(`SearchResultItem_Link_${index + 1}`)?.focus();
       event.preventDefault();
     } else if (event.key === "ArrowUp" && index >= 0) {

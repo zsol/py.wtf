@@ -1,6 +1,9 @@
 import useFetchProject from "./fetchProject";
 
-const useFetchModule = (projectName: string, moduleName: string) => {
+const useFetchModule = (
+  projectName: string | undefined,
+  moduleName: string | undefined,
+) => {
   const { project, projectJsonUrl, error, isLoading } =
     useFetchProject(projectName);
 

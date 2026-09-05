@@ -9,10 +9,10 @@ describe("Export page", () => {
   it("redirects to symbol if resolved", async () => {
     const { getByText } = await renderSPA("/project-alpha/alpha/Helper");
 
-    waitFor(() =>
+    await waitFor(() =>
       getByText(
         (_, element) =>
-          element?.nodeName === "PRE" &&
+          element?.nodeName === "CODE" &&
           element?.textContent === "class alpha.core.Helper()",
       ),
     );

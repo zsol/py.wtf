@@ -1,5 +1,5 @@
 import * as docs from "@/lib/docs";
-import { withoutPrefix, xref } from "@/lib/url";
+import { withoutPrefix } from "@/lib/url";
 
 import useFetchModule from "./fetchModule";
 
@@ -80,9 +80,9 @@ const findSymbol = (
 };
 
 const useFetchSymbol = (
-  projectName: string,
-  moduleName: string,
-  symbolName: string,
+  projectName: string | undefined,
+  moduleName: string | undefined,
+  symbolName: string | undefined,
 ) => {
   const { project, module, projectJsonUrl, error, isLoading } = useFetchModule(
     projectName,

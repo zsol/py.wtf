@@ -12,6 +12,10 @@ import Loading from "./Loading";
 
 export default function ModulePage() {
   const { prj: projectName, mod: moduleName } = useParams();
+  const { project, module, projectJsonUrl, isLoading, error } = useFetchModule(
+    projectName,
+    moduleName,
+  );
 
   if (projectName == null || moduleName == null) {
     return (
@@ -21,11 +25,6 @@ export default function ModulePage() {
       </div>
     );
   }
-
-  const { project, module, projectJsonUrl, isLoading, error } = useFetchModule(
-    projectName,
-    moduleName,
-  );
 
   if (project && module) {
     return (

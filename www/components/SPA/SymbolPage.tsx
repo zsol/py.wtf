@@ -19,6 +19,8 @@ import Loading from "./Loading";
 
 export default function SymbolPage() {
   const { prj: projectName, mod: moduleName, sym: symbolName } = useParams();
+  const { project, module, symbol, symbolType, isLoading, error } =
+    useFetchSymbol(projectName, moduleName, symbolName);
 
   if (projectName == null || symbolName == null || moduleName == null) {
     return (
@@ -28,9 +30,6 @@ export default function SymbolPage() {
       </div>
     );
   }
-
-  const { project, module, symbol, symbolType, isLoading, error } =
-    useFetchSymbol(projectName, moduleName, symbolName);
 
   const getSidebarContent = () => {
     // TODO: think about this scenario

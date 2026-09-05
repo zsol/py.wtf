@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useSyncExternalStore } from "react";
+import { useInRouterContext, useLocation } from "react-router-dom";
 
 import { flexRow } from "@/components/core/layout/helpers";
 
@@ -37,19 +38,37 @@ interface Props {
   children: ReactNode;
 }
 
-export const Code = ({ anchor, children }: Props) => {
-  // Scroll to this code block if the URL hash matches its id, whenever either
-  // - the URL hash changes (e.g. when the user clicks on a link)
-  // - when the component mounts (e.g. when the user directly navigates to the page containing the code block)
-  // This is a prime candidate for extracting into a higher-level component if it's ever needed in multiple places.
-  const [highlighted, setHighlighted] = useState(false);
+export const Code = (props: Props) => {
+  const isReactRouter = useInRouterContext();
+  return isReactRouter ? <RouterCode {...props} /> : <BrowserCode {...props} />;
+};
+
+function RouterCode(props: Props) {
+  // Router navigation can update the fragment without a native hashchange event.
+  const { hash } = useLocation();
+  return <CodeBlock {...props} hash={hash} />;
+}
+
+const subscribeToHash = (onChange: () => void) => {
+  window.addEventListener("hashchange", onChange);
+  return () => window.removeEventListener("hashchange", onChange);
+};
+const getBrowserHash = () => window.location.hash;
+const getServerHash = () => "";
+
+function BrowserCode(props: Props) {
+  const hash = useSyncExternalStore(
+    subscribeToHash,
+    getBrowserHash,
+    getServerHash,
+  );
+  return <CodeBlock {...props} hash={hash} />;
+}
+
+function CodeBlock({ anchor, children, hash }: Props & { hash: string }) {
+  // Scroll when this declaration becomes the target, including on initial load.
+  const highlighted = !!anchor && hash === `#${anchor}`;
   const ref = useRef<HTMLPreElement>(null);
-  useEffect(() => {
-    if (!anchor || !ref.current) {
-      return;
-    }
-    setHighlighted(window.location.hash === `#${anchor}`);
-  }, [ref, window.location.hash]);
   useEffect(() => {
     if (ref.current && highlighted) {
       ref.current.scrollIntoView({ behavior: "smooth" });
@@ -66,7 +85,7 @@ export const Code = ({ anchor, children }: Props) => {
       <CodeContent>{children}</CodeContent>
     </CodeContainer>
   );
-};
+}
 
 export const dedupAnchors = () => {
   const seen = new Set<string>();

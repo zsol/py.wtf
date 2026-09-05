@@ -13,30 +13,51 @@ interface Props {
 }
 
 export default function ModuleContents({ prj, mod, currentSymbol }: Props) {
-  function LinkList({
-    title,
-    items,
-  }: {
-    title: string;
-    items: (Class | Func | Variable)[];
-  }) {
-    return (
-      <SidebarLinkList
-        title={title}
-        items={items}
-        active={currentSymbol}
-        stripPrefix={mod.name}
-        url={(sym) => url.symbol(prj, mod, sym)}
-      />
-    );
-  }
-
   return (
     <>
       <H4>In {mod.name}</H4>
-      <LinkList title="Classes" items={mod.classes} />
-      <LinkList title="Functions" items={mod.functions} />
-      <LinkList title="Variables" items={mod.variables} />
+      <LinkList
+        prj={prj}
+        mod={mod}
+        currentSymbol={currentSymbol}
+        title="Classes"
+        items={mod.classes}
+      />
+      <LinkList
+        prj={prj}
+        mod={mod}
+        currentSymbol={currentSymbol}
+        title="Functions"
+        items={mod.functions}
+      />
+      <LinkList
+        prj={prj}
+        mod={mod}
+        currentSymbol={currentSymbol}
+        title="Variables"
+        items={mod.variables}
+      />
     </>
+  );
+}
+
+function LinkList({
+  prj,
+  mod,
+  currentSymbol,
+  title,
+  items,
+}: Props & {
+  title: string;
+  items: (Class | Func | Variable)[];
+}) {
+  return (
+    <SidebarLinkList
+      title={title}
+      items={items}
+      active={currentSymbol}
+      stripPrefix={mod.name}
+      url={(sym) => url.symbol(prj, mod, sym)}
+    />
   );
 }

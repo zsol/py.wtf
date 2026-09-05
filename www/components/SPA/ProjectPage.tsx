@@ -12,6 +12,7 @@ import Loading from "./Loading";
 
 export default function ProjectPage() {
   const { prj } = useParams();
+  const { project, error, isLoading, projectJsonUrl } = useFetchProject(prj);
 
   if (prj === undefined) {
     return (
@@ -21,8 +22,6 @@ export default function ProjectPage() {
       </div>
     );
   }
-
-  const { project, error, isLoading, projectJsonUrl } = useFetchProject(prj);
 
   if (project) {
     return (
