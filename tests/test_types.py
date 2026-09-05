@@ -1,7 +1,5 @@
 import pytest
-
 from py_wtf.repository import converter
-
 from py_wtf.types import Export, FQName, ProjectName, Type, XRef
 
 

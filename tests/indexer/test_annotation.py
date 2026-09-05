@@ -2,7 +2,6 @@ from functools import partial
 from typing import Callable
 
 import pytest
-
 from py_wtf.indexer.annotation import index
 from py_wtf.types import FQName, ProjectName, stdlib_project, SymbolTable, Type, XRef
 

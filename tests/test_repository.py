@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import replace
 from pathlib import Path
 from typing import AsyncIterable
@@ -118,3 +119,70 @@ def test_update_index(repo: ProjectRepository, project: Project) -> None:
     assert metadata_after.generated_at > metadata_before.generated_at
     assert metadata_after.latest_projects[0].name == "other"
     assert metadata_after.latest_projects[1].name == project.name
+
+
+@pytest.mark.asyncio
+async def test_concurrent_get_shares_pending_project(
+    repo: ProjectRepository, project: Project
+) -> None:
+    started = asyncio.Event()
+    release = asyncio.Event()
+    calls = 0
+
+    async def factory(key: ProjectName) -> AsyncIterable[Project]:
+        nonlocal calls
+        calls += 1
+        started.set()
+        await release.wait()
+        yield project
+
+    async with asyncio.timeout(5):
+        first = asyncio.create_task(repo.get(project.name, factory))
+        await started.wait()
+        second = asyncio.create_task(repo.get(project.name, factory))
+        await asyncio.sleep(0)
+        assert not second.done()
+        release.set()
+        assert await asyncio.gather(first, second) == [project, project]
+    assert calls == 1
+
+
+def test_disk_index_without_event_loop(
+    repo: ProjectRepository, project: Project
+) -> None:
+    (repo.directory / f"{project.name}.json").write_text(converter.dumps(project))
+    index = repo.generate_index(timestamp=123)
+    assert index.all_project_names == [project.name]
+    assert index.latest_projects == [project.metadata]
+
+
+@pytest.mark.asyncio
+async def test_index_with_pending_dependency(
+    repo: ProjectRepository, project: Project, caplog: pytest.LogCaptureFixture
+) -> None:
+    pending = ProjectName("pending")
+    started = asyncio.Event()
+    release = asyncio.Event()
+
+    async def factory(key: ProjectName) -> AsyncIterable[Project]:
+        started.set()
+        await release.wait()
+        yield replace(project, name=key, metadata=replace(project.metadata, name=key))
+
+    repo._save(
+        replace(project, metadata=replace(project.metadata, dependencies=[pending]))
+    )
+    async with asyncio.timeout(5):
+        task = asyncio.create_task(repo.get(pending, factory))
+        await started.wait()
+        try:
+            # Run outside the event loop so a blocking regression can time out.
+            index = await asyncio.to_thread(repo.generate_index, timestamp=123)
+            assert index.all_project_names == [pending, project.name]
+            assert [item.name for item in index.latest_projects] == [project.name]
+            assert index.top_projects == []
+            assert "hasn't finished indexing" in caplog.text
+            assert not task.done()
+        finally:
+            release.set()
+            await task

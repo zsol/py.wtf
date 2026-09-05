@@ -17,18 +17,14 @@ from zipfile import is_zipfile, ZipFile
 import aiofiles.tempfile
 import httpx
 import stamina
-
 from keke import ktrace
 from networkx import DiGraph, find_cycle, NetworkXNoCycle
 from packaging.requirements import Requirement
 from rich.progress import Progress, TaskID
 
 from py_wtf.indexer.documentation import convert_to_myst
-
 from py_wtf.logging import setup_logging
-
 from py_wtf.repository import ProjectRepository
-
 from py_wtf.types import (
     Documentation,
     FQName,

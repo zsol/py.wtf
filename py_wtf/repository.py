@@ -1,7 +1,7 @@
 import asyncio
 import logging
-from asyncio import Future
 from collections import Counter, defaultdict
+from concurrent.futures import Future
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from time import time
@@ -9,7 +9,6 @@ from typing import AsyncIterable, Callable, Tuple
 
 import httpx
 import stamina
-
 from cattrs.preconf.json import make_converter
 from keke import ktrace
 
@@ -28,9 +27,9 @@ class ProjectRepository:
     _cache: dict[ProjectName, Future[Project]] = field(init=False)
 
     def __post_init__(self) -> None:
-        self._cache = defaultdict(
-            lambda: Future(loop=asyncio.get_event_loop_policy().get_event_loop())
-        )
+        # Completed projects are also cached by synchronous index commands.
+        # Only bind pending reads to an event loop when they are awaited.
+        self._cache = defaultdict(Future)
 
     def _index_file(self, key: ProjectName) -> Path:
         return self.directory / f"{key}.json"
@@ -92,11 +91,11 @@ class ProjectRepository:
         factory: Callable[[ProjectName], AsyncIterable[Project]],
     ) -> Project:
         if key in self._cache:
-            return await self._cache[key]
+            return await asyncio.wrap_future(self._cache[key])
 
         try:
             self._load_from_disk(key)
-            return await self._cache[key]
+            return await asyncio.wrap_future(self._cache[key])
         except OSError:
             pass  # continued below
 
@@ -130,7 +129,8 @@ class ProjectRepository:
         for name, proj_fut in self._cache.items():
             all_project_names.append(name)
             try:
-                project = proj_fut.result()
+                # Report unfinished projects without blocking index generation.
+                project = proj_fut.result(timeout=0)
                 for dep in project.metadata.dependencies:
                     dep_counts[dep] += 1
                 project_mtimes.append((name, project.metadata.upload_time))
@@ -148,6 +148,9 @@ class ProjectRepository:
             prjname = ProjectName(rawname)
             if prjname not in self._cache:
                 logger.error(f"Top-{max_counts} project '{rawname}' not indexed.")
+                continue
+            if not self._cache[prjname].done():
+                logger.error(f"Top-{max_counts} project '{rawname}' still pending.")
                 continue
             top_projects.append(self._cache[prjname].result().metadata)
 

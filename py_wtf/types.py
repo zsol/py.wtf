@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 from collections import UserDict
-
 from dataclasses import dataclass
 from typing import NewType, TYPE_CHECKING
 
