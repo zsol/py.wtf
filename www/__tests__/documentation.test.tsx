@@ -24,7 +24,7 @@ function markup(
 
 function leaves(nodes: DocumentationNode[]): DocumentationNode[] {
   return nodes.flatMap((node) =>
-    "children" in node ? leaves(node.children) : [node],
+    "children" in node ? leaves(node.children ?? []) : [node],
   );
 }
 
@@ -131,7 +131,9 @@ describe("documentation parser and renderer", () => {
   it("keeps unresolved roles visible and uses the current resolver after rerender", () => {
     const source = "{func}`bar`";
     const { container, rerender, getByRole } = render(markup(source));
-    expect(container.querySelector("code")).toHaveTextContent("bar");
+    expect(container.querySelector(".role code:last-child")).toHaveTextContent(
+      "bar",
+    );
     rerender(markup(source, (role) => <a href="/new-target">{role.value}</a>));
     expect(getByRole("link", { name: "bar" })).toHaveAttribute(
       "href",
@@ -189,7 +191,7 @@ describe("documentation parser and renderer", () => {
     expect(container).toHaveTextContent("unsafe");
   });
 
-  it("displays YAML front matter as code and keeps unsupported extensions readable", () => {
+  it("displays legacy YAML front matter and renders enabled MyST extensions", () => {
     const { container } = render(
       markup(
         "---\ntitle: example\n---\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\ntext[^n]\n\n[^n]: footnote\n\n```{note}\ndirective body\n```\n\n:::{warning}\ncolon body\n:::\n\n$x^2$",
@@ -198,15 +200,12 @@ describe("documentation parser and renderer", () => {
     expect(container.querySelector("pre code")).toHaveTextContent(
       "title: example",
     );
-    expect(container.querySelector("table, a")).toBeNull();
-    for (const text of [
-      "| 1 | 2 |",
-      "text[^n]",
-      "[^n]: footnote",
-      "directive body",
-      "colon body",
-      "$x^2$",
-    ]) {
+    expect(container.querySelectorAll("table th")).toHaveLength(2);
+    expect(container.querySelectorAll("table td")).toHaveLength(2);
+    expect(container.querySelector(".footnotes")).toHaveTextContent("footnote");
+    expect(container.querySelectorAll("aside")).toHaveLength(2);
+    expect(container.querySelector("math annotation")).toHaveTextContent("x^2");
+    for (const text of ["directive body", "colon body"]) {
       expect(container).toHaveTextContent(text);
     }
   });

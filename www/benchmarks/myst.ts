@@ -1,6 +1,6 @@
 import { deepStrictEqual } from "node:assert";
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { createRequire } from "node:module";
+import { createRequire, registerHooks } from "node:module";
 import { cpus } from "node:os";
 import { resolve } from "node:path";
 import { performance } from "node:perf_hooks";
@@ -9,6 +9,18 @@ import { fileURLToPath } from "node:url";
 // Node 24 can execute this erasable TypeScript without a benchmark dependency.
 // Node's loader keeps the app's TypeScript module-resolution settings unchanged.
 const require = createRequire(import.meta.url);
+// Node's public loader hook resolves the app's extensionless local TypeScript
+// imports. It changes neither production imports nor dependency resolution.
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (
+      context.parentURL?.startsWith(new URL("../lib/", import.meta.url).href) &&
+      specifier.startsWith("./")
+    )
+      return nextResolve(`${specifier}.ts`, context);
+    return nextResolve(specifier, context);
+  },
+});
 const modern = require("../lib/myst.ts") as typeof import("../lib/myst");
 const legacyDirectory = process.argv[2];
 if (!legacyDirectory)
@@ -158,7 +170,7 @@ function measure(run: () => number) {
 
 const results = workloads.map(({ name, docs }) => {
   const oldTokens = docs.map((doc) => legacy.tokenizer.parse(doc, {}));
-  const newTokens = docs.map(modern.tokenizeDocumentation);
+  const newTokens = docs.map((doc) => modern.tokenizeDocumentation(doc));
   return {
     name,
     documents: docs.length,

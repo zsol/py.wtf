@@ -1,8 +1,8 @@
 # Focused MyST documentation renderer
 
-`lib/myst.ts` uses markdown-it 14's public plugin/token APIs, a local MyST role
-rule, and one pass into a small typed render tree. `components/MyST.tsx` renders
-that tree as React elements. No HTML is injected. The tokenizer is configured
+`lib/myst.ts` uses markdown-it 14's public plugin/token APIs, local MyST extension
+rules, and one pass into a small typed render tree. `components/MyST.tsx` renders
+that tree as React elements. Raw HTML is never injected; math uses KaTeX-generated MathML. The tokenizer is configured
 once; each parse has independent document state. `useMemo` retains only the
 currently mounted source's tree and does not capture its role resolver.
 
@@ -10,30 +10,11 @@ This replaces mystjs 0.0.13, its general token-to-MDAST conversion and tree walk
 and the bundled but unused unified/HTML conversion pipeline. There are no
 markdown-it private-path imports, aliases, subclasses, or compatibility overrides.
 
-## Supported behavior and deliberate limits
+## Compatibility and conformance
 
-| Input                                                                         | Current behavior                                                                                                                                                                                                                                                                                                                                      |
-| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CommonMark paragraphs, ATX/setext headings, emphasis, strong, thematic breaks | Rendered as semantic elements. Text spans no longer add a wrapper to every text fragment. Strong uses `strong` instead of `b`.                                                                                                                                                                                                                        |
-| Nested ordered/unordered lists, starting numbers, blockquotes                 | Preserved, with the previous nesting limit of 20. List paragraphs remain explicit, including tight lists, matching the old renderer.                                                                                                                                                                                                                  |
-| Backtick/tilde fences, indented code, inline code                             | Preserved as literal text; one final block newline is removed as before. Fence language/options do not add highlighting.                                                                                                                                                                                                                              |
-| `{func}` / `{py:class}` and other roles followed by backtick content          | Name and content reach the existing resolver unchanged. Matching runs of backticks allow embedded backticks. Escaped braces and roles in code are not interpreted. Multiline/unterminated roles fall back to ordinary Markdown.                                                                                                                       |
-| Qualified Python names, `project/fqname`, `--std--/fqname`                    | Existing app links are preserved. Unqualified names and Sphinx explicit-title/tilde syntax still depend on the existing resolver; this parser does not infer a module or implement new resolution semantics.                                                                                                                                          |
-| Role with no resolver                                                         | Code text remains visible; the old generic component omitted it.                                                                                                                                                                                                                                                                                      |
-| Links, reference links/images, angle-bracket autolinks                        | Preserved. Link/image titles are now retained. Bare URLs remain text. markdown-it validates URLs, including rejecting javascript/vbscript and non-image data URLs.                                                                                                                                                                                    |
-| Images                                                                        | Normal image elements with plain text alt content, including entities and code. No arbitrary token attributes are copied to the DOM.                                                                                                                                                                                                                  |
-| HTML                                                                          | Raw blocks and inline tags are discarded, as before. Text between inline tags remains text; fenced/escaped HTML stays literal.                                                                                                                                                                                                                        |
-| Initial YAML front matter                                                     | Displayed as code, as observed in the old parser. No YAML evaluation. Unclosed front matter falls back to Markdown.                                                                                                                                                                                                                                   |
-| Strikethrough                                                                 | Now parsed and rendered; the old renderer had a handler but its tokenizer did not enable this syntax.                                                                                                                                                                                                                                                 |
-| Tables and footnotes                                                          | Readable Markdown text, with no table/footnote UI. Previously their renderer stubs discarded them. Footnote definitions are prevented from becoming ordinary reference links.                                                                                                                                                                         |
-| Directives, colon fences, math, definition/task lists, MyST targets           | No extension semantics, admonitions, checkboxes, numbering, or math rendering. Backtick directives display their body as code; other forms fall back to ordinary Markdown. These were mostly unsupported/discarded nodes in the previous renderer. In particular plain colon fences previously became code blocks; they now remain ordinary Markdown. |
-
-This is the subset needed to display the indexer's emitted documentation, not a
-complete MyST/Sphinx implementation. Tests cover nested formatting, Python roles
-and real resolver links, escaping, executable URLs, unsupported HTML/extensions,
-malformed delimiters, large/deep input, source changes, and resolver changes.
-The existing app suite is retained. Its old MyST test's sidebar-link false positive
-is now documented and the docstring's unresolved-role fallback checked explicitly.
+See [the compatibility audit](compatibility.md) for the legacy comparison,
+explicit extension profile, normative sources, 652 CommonMark examples,
+51 pinned MyST fixtures, renderer-policy exceptions, and registry limits.
 
 ## Reproducing the benchmark
 
@@ -93,26 +74,26 @@ microbenchmark results and will vary across runs and hardware.
 
 Before timing, the benchmark asserts that text, role payloads, code values and
 link targets match the legacy parser on every workload. These checks pass.
-Formatting and the intentional unsupported-extension differences are covered
-separately by the renderer tests; this is not full MyST specification conformance.
+Semantic structure and extension behavior have separate legacy and upstream
+fixture tests. These corpus assertions are not a claim of full MyST conformance.
 
 | Workload                 | UTF-8 bytes | Legacy construct + parse | Legacy reused parse | New parse | Speedup vs old component |
 | ------------------------ | ----------: | -----------------------: | ------------------: | --------: | -----------------------: |
-| fixture corpus           |       1,100 |                    4.101 |               0.845 |     0.039 |                   105.4x |
-| more-itertools unzip     |         651 |                    0.493 |               0.218 |     0.018 |                    26.8x |
-| requests Session.request |       1,979 |                    0.370 |               0.108 |     0.021 |                    18.0x |
-| repeated mixed 256 KiB   |     263,815 |                   33.139 |              31.857 |     5.326 |                     6.2x |
-| role-heavy 64 KiB        |      65,588 |                   45.679 |              43.616 |     3.672 |                    12.4x |
+| fixture corpus           |       1,100 |                    4.158 |               0.865 |     0.048 |                    85.9x |
+| more-itertools unzip     |         651 |                    0.513 |               0.219 |     0.026 |                    19.9x |
+| requests Session.request |       1,979 |                    0.385 |               0.118 |     0.024 |                    16.0x |
+| repeated mixed 256 KiB   |     263,815 |                   33.071 |              33.207 |     7.790 |                     4.2x |
+| role-heavy 64 KiB        |      65,588 |                   53.874 |              53.545 |     4.219 |                    12.8x |
 
 | Workload                 | Legacy tokenize | New tokenize | Legacy tree | New tree |
 | ------------------------ | --------------: | -----------: | ----------: | -------: |
-| fixture corpus           |           0.043 |        0.045 |       0.886 |   0.0044 |
-| more-itertools unzip     |           0.021 |        0.016 |       0.162 |   0.0012 |
-| requests Session.request |           0.023 |        0.022 |       0.080 |   0.0004 |
-| repeated mixed 256 KiB   |           5.535 |        4.735 |      26.746 |   0.3387 |
-| role-heavy 64 KiB        |           4.185 |        3.448 |      38.155 |   0.3513 |
+| fixture corpus           |           0.055 |        0.055 |       0.955 |   0.0051 |
+| more-itertools unzip     |           0.022 |        0.027 |       0.178 |   0.0023 |
+| requests Session.request |           0.023 |        0.024 |       0.077 |   0.0005 |
+| repeated mixed 256 KiB   |           7.257 |        7.642 |      31.355 |   0.5007 |
+| role-heavy 64 KiB        |           3.887 |        3.743 |      40.489 |   0.4552 |
 
-Tokenization is roughly comparable; tree conversion is 79–222x faster on these
-workloads. Stage medians do not necessarily add to the separately measured parse
-median because JIT/GC and system noise vary. A reused legacy parser is still much
-slower on repeated large docs, so the result is not only constructor reuse.
+Tokenization is roughly comparable. Stage medians do not necessarily add to the
+separately measured parse median because JIT/GC and system noise vary. A reused
+legacy parser is still slower on repeated large docs, so the result is not
+only constructor reuse. The recorded run includes the restored extensions.
