@@ -24,7 +24,7 @@ jobs:
           cache-dependency-path: "www/package-lock.json"
       - run: npm ci
       - run: npm run check-types
-      - run: npm run lint
+      - run: npm run lint -- --max-warnings=0
       - run: npm run test-ci
       - name: Build static site with test fixtures
         run: npm run build

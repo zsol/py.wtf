@@ -80,7 +80,7 @@ Run the frontend checks from `www` after `npm ci`:
 
 ```shell
 npm run check-types
-npm run lint
+npm run lint -- --max-warnings=0
 npm run test-ci
 INDEX_PATH=./__tests__/index npm run build
 npm run check:export
@@ -105,12 +105,16 @@ verifies generated fixtures on both Python versions.
 
 The frontend uses Next.js 16, React 19, TypeScript 6.0.3, and ESLint 9. Docstrings
 use a focused parser built on markdown-it's public plugin and token APIs, followed
-by a typed render tree and React rendering. See the
-[MyST renderer and benchmark notes](www/benchmarks/README.md) for supported syntax,
-compatibility details, and reproducible parser measurements. Those local
-microbenchmarks measure parsing rather than end-user page latency. Keep the
-parser and rendering regression tests in `www/__tests__/documentation.test.tsx`
-and `www/__tests__/myst.test.tsx` when changing MyST support.
+by a typed render tree and React rendering. The
+[compatibility audit](www/benchmarks/compatibility.md) documents the legacy
+comparison, CommonMark profile, selected MyST conformance fixtures, rendering
+policies, and supported role/directive registry. Coverage is bounded to this
+docstring renderer; remaining Sphinx and document-building features are listed
+in the audit. The [benchmark notes](www/benchmarks/README.md) provide reproducible
+local measurements of tokenization and tree conversion. Those measurements
+exclude MathML generation, React rendering, network access, and layout, so they
+do not establish end-user page latency. Keep the parser, compatibility, and
+rendering regression suites in `www/__tests__` when changing MyST support.
 
 ## Acknowledgements
 
