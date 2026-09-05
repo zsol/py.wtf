@@ -5,10 +5,10 @@
     "build": "next build",
     "export": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "check-types": "tsc --noEmit",
-    "test-ci": "jest --ci",
-    "test": "jest --watch"
+    "test-ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --ci",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -28,28 +28,26 @@
     "node": ">=24.9.0 <25"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^12.3.4",
+    "@eslint/js": "^9.39.5",
     "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
-    "@trivago/prettier-plugin-sort-imports": "^5.0.0",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "12.3.7",
-    "eslint-config-prettier": "^10.0.0",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
-    "jest": "^30.0.0",
-    "jest-environment-jsdom": "^30.0.0",
-    "msw": "^2.2.1",
-    "prettier": "3.6.2",
-    "typescript": "^5.0.0",
-    "undici": "^6.21.1",
-    "whatwg-fetch": "^3.6.20"
+    "@typescript-eslint/parser": "^8.69.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "jest": "^30.5.1",
+    "jest-environment-jsdom": "^30.5.1",
+    "msw": "^2.15.0",
+    "prettier": "^3.9.6",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.69.0"
   }
 }

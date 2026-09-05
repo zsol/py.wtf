@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -15,11 +15,11 @@
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
     "module": "esnext",
-    "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/lib/*": ["lib/*"],
-      "@/pages/*": ["pages/*"]
+      "hooks/*": ["./hooks/*"],
+      "@/components/*": ["./components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/pages/*": ["./pages/*"]
     }
   },
   "include": [
