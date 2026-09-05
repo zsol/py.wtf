@@ -5,6 +5,11 @@ on:
 
 jobs:
   fix:
+    # Independent bot commits break a stack's linear history.
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !github.event.pull_request.stack &&
+      github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -25,7 +30,44 @@ jobs:
       - name: Run prettier
         run: npx prettier -w .
         working-directory: www
+      - name: Recheck pull request before committing
+        id: can-commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node <<'JS'
+          const { appendFileSync } = require("node:fs");
+          const { GH_TOKEN, GITHUB_API_URL, GITHUB_REPOSITORY, GITHUB_OUTPUT,
+            PR_NUMBER, EXPECTED_HEAD } = process.env;
+          (async () => {
+            let allowed = false;
+            try {
+              const response = await fetch(
+                `${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}`,
+                {
+                  headers: {
+                    Accept: "application/vnd.github+json",
+                    Authorization: `Bearer ${GH_TOKEN}`,
+                    "X-GitHub-Api-Version": "2026-03-10",
+                  },
+                  signal: AbortSignal.timeout(10000),
+                },
+              );
+              if (!response.ok) throw new Error(`HTTP ${response.status}`);
+              const pr = await response.json();
+              allowed = pr.state === "open" && pr.stack == null &&
+                pr.head?.repo?.full_name === GITHUB_REPOSITORY &&
+                pr.head?.sha === EXPECTED_HEAD;
+            } catch {
+              console.warn("::warning::Unable to verify the live PR; skipping autofix commit.");
+            }
+            appendFileSync(GITHUB_OUTPUT, `allowed=${allowed}\n`);
+          })();
+          JS
       - name: Commit changes
+        if: steps.can-commit.outputs.allowed == 'true'
         uses: EndBug/add-and-commit@v9
         with:
           default_author: github_actions
