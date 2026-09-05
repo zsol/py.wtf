@@ -1,5 +1,6 @@
-/** @type {import('next').NextConfig} */
+const { PHASE_DEVELOPMENT_SERVER } = require("next/constants");
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   compiler: {
@@ -9,13 +10,20 @@ const nextConfig = {
   experimental: {
     largePageDataBytes: 1024 * 1024,
   },
-  rewrites: async () => [
-    {
-      source: "/:any*",
-      destination: "/_spa",
-    },
-  ],
   output: "export",
 };
 
-module.exports = nextConfig;
+module.exports = (phase) => ({
+  ...nextConfig,
+  // Production routing is handled by public/404.html on the static host.
+  ...(phase === PHASE_DEVELOPMENT_SERVER
+    ? {
+        rewrites: async () => [
+          {
+            source: "/:any*",
+            destination: "/_spa",
+          },
+        ],
+      }
+    : {}),
+});

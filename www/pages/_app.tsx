@@ -1,16 +1,19 @@
 import { AppProps } from "next/app";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import "../styles/global.css";
 
+const subscribe = () => () => {};
+
 function App({ Component, pageProps }: AppProps) {
-  const [secondPass, setSecondPass] = useState(false);
+  // Keep browser-only routes out of server rendering and initial hydration.
+  const isClient = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
 
-  useEffect(() => {
-    setSecondPass(true);
-  }, [secondPass]);
-
-  if (!secondPass) {
+  if (!isClient) {
     return null;
   }
 
