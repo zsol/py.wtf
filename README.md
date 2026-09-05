@@ -83,6 +83,7 @@ npm run check-types
 npm run lint
 npm run test-ci
 INDEX_PATH=./__tests__/index npm run build
+npm run check:export
 ```
 
 The build exports the static site to `www/out`. It uses `www/public/_index` by
@@ -90,15 +91,26 @@ default; `INDEX_PATH=./__tests__/index` selects the checked-in test data instead
 The commands above use a POSIX shell. In PowerShell, set the build environment
 variable with `$env:INDEX_PATH = './__tests__/index'`, then run `npm run build`.
 
+Use `npm run build` (or `npm run export`) to produce the complete static site:
+it preserves `public/404.html` after Next generates its own 404 page. The static
+host serves that fallback for missing routes; it redirects to `/_spa.html`,
+where the original path, query, and hash are restored before hydration.
+`npm run check:export` verifies both scripts in the generated artifacts.
+
 To install the local hooks, run `uv tool run pre-commit install`. Check all files
 with `uv tool run pre-commit run --all-files`. The fixture hook installs uv and
 uses the project lockfile, including after Python dependency changes. It needs
 network access on its first run, so pre-commit.ci skips that hook; GitHub Actions
 verifies generated fixtures on both Python versions.
 
-The frontend uses Next.js 16 and React 19, with TypeScript 5 and ESLint 9 within
-the supported ranges of its lint plugins. Keep the docstring rendering regression
-tests in `www/__tests__/markdown.test.tsx` when changing MyST support.
+The frontend uses Next.js 16, React 19, TypeScript 6.0.3, and ESLint 9. Docstrings
+use a focused parser built on markdown-it's public plugin and token APIs, followed
+by a typed render tree and React rendering. See the
+[MyST renderer and benchmark notes](www/benchmarks/README.md) for supported syntax,
+compatibility details, and reproducible parser measurements. Those local
+microbenchmarks measure parsing rather than end-user page latency. Keep the
+parser and rendering regression tests in `www/__tests__/documentation.test.tsx`
+and `www/__tests__/myst.test.tsx` when changing MyST support.
 
 ## Acknowledgements
 
