@@ -1,0 +1,1781 @@
+[
+  {
+    "title": "long front matter delimiter",
+    "source": "----\ntitle: Hello\n----\n\nbody",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "code",
+          "lang": "yaml",
+          "value": "title: Hello"
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "body"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "registered roles",
+    "source": "{raw}`<b>raw</b>` {sub}`2` {superscript}`n` {abbr}`CSS (Cascading Style Sheets)` {math}`x^2` {ref}`title <label>`",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "mystRole",
+              "name": "raw",
+              "value": "<b>raw</b>",
+              "children": [
+                {
+                  "type": "inlineCode",
+                  "value": "<b>raw</b>"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "mystRole",
+              "name": "sub",
+              "value": "2",
+              "children": [
+                {
+                  "type": "subscript",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "2"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "mystRole",
+              "name": "superscript",
+              "value": "n",
+              "children": [
+                {
+                  "type": "superscript",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "n"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "mystRole",
+              "name": "abbr",
+              "value": "CSS (Cascading Style Sheets)",
+              "children": [
+                {
+                  "type": "abbreviation",
+                  "title": "Cascading Style Sheets",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "CSS"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "mystRole",
+              "name": "math",
+              "value": "x^2",
+              "children": [
+                {
+                  "type": "inlineMath",
+                  "value": "x^2"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "mystRole",
+              "name": "ref",
+              "value": "title <label>",
+              "children": [
+                {
+                  "type": "crossReference",
+                  "kind": "ref",
+                  "identifier": "label",
+                  "label": "label",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "title"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "unknown directive",
+    "source": "```{custom} args\n:option: untouched\n\n**body**\n```",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "mystDirective",
+          "name": "custom",
+          "args": "args",
+          "value": ":option: untouched\n\n**body**"
+        }
+      ]
+    }
+  },
+  {
+    "title": "admonition directive",
+    "source": "```{admonition} Title\n:class: tip\n\n**body**\n```",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "mystDirective",
+          "name": "admonition",
+          "args": "Title",
+          "options": {
+            "class": "tip"
+          },
+          "value": "**body**",
+          "children": [
+            {
+              "type": "admonition",
+              "class": "tip",
+              "children": [
+                {
+                  "type": "admonitionTitle",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Title"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "strong",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "body"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "note directive",
+    "source": ":::{note}\nbody\n:::",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "mystDirective",
+          "name": "note",
+          "value": "body",
+          "children": [
+            {
+              "type": "admonition",
+              "kind": "note",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "body"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "code directive",
+    "source": "```{code-block} python\n:linenos:\n:lineno-start: 2\n\na = 1\n```",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "mystDirective",
+          "name": "code-block",
+          "args": "python",
+          "options": {
+            "linenos": true,
+            "lineno-start": 2
+          },
+          "value": "a = 1",
+          "children": [
+            {
+              "type": "code",
+              "lang": "python",
+              "showLineNumbers": true,
+              "startingLineNumber": 2,
+              "value": "a = 1"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "image directive",
+    "source": "```{image} /image.png\n:alt: example\n:width: 200px\n:align: center\n```",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "mystDirective",
+          "name": "image",
+          "args": "/image.png",
+          "options": {
+            "alt": "example",
+            "width": "200px",
+            "align": "center"
+          },
+          "children": [
+            {
+              "type": "image",
+              "url": "/image.png",
+              "alt": "example",
+              "width": "200px",
+              "align": "center"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "figure directive",
+    "source": "```{figure} /image.png\n:name: figure\n\nCaption\n\nLegend\n```",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "mystDirective",
+          "name": "figure",
+          "args": "/image.png",
+          "options": {
+            "name": "figure"
+          },
+          "value": "Caption\n\nLegend",
+          "children": [
+            {
+              "type": "container",
+              "kind": "figure",
+              "identifier": "figure",
+              "label": "figure",
+              "children": [
+                {
+                  "type": "image",
+                  "url": "/image.png"
+                },
+                {
+                  "type": "caption",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Caption"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "legend",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Legend"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "list-table directive",
+    "source": "```{list-table} Title\n:header-rows: 1\n\n* - A\n  - B\n* - x\n  - y\n```",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "mystDirective",
+          "name": "list-table",
+          "args": "Title",
+          "options": {
+            "header-rows": 1
+          },
+          "value": "* - A\n  - B\n* - x\n  - y",
+          "children": [
+            {
+              "type": "container",
+              "kind": "table",
+              "children": [
+                {
+                  "type": "caption",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "Title"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "table",
+                  "children": [
+                    {
+                      "type": "tableRow",
+                      "children": [
+                        {
+                          "type": "tableCell",
+                          "header": true,
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "A"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "tableCell",
+                          "header": true,
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "B"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tableRow",
+                      "children": [
+                        {
+                          "type": "tableCell",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "x"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "tableCell",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "y"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "math directive",
+    "source": "```{math}\n:label: equation\n\nx^2\n```",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "mystDirective",
+          "name": "math",
+          "options": {
+            "label": "equation"
+          },
+          "value": "x^2",
+          "children": [
+            {
+              "type": "math",
+              "identifier": "equation",
+              "label": "equation",
+              "value": "x^2"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "paragraphs and breaks",
+    "source": "First  \nsecond\nsoft\\\nbreak\n\nNext",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "First"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "text",
+              "value": "second\nsoft"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "text",
+              "value": "break"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Next"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "headings",
+    "source": "# Title\n\nSubtitle\n========\n\n---",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "Title"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "Subtitle"
+            }
+          ]
+        },
+        {
+          "type": "thematicBreak"
+        }
+      ]
+    }
+  },
+  {
+    "title": "nested formatting",
+    "source": "**strong and *emphasis*** with ~~literal~~ &amp; &#65;",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "strong",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "strong and "
+                },
+                {
+                  "type": "emphasis",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "emphasis"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " with ~~literal~~ & A"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "tight list",
+    "source": "- a\n- b\n  - nested **strong**\n  - other\n- c",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "list",
+          "ordered": false,
+          "spread": false,
+          "children": [
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "text",
+                  "value": "a"
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "text",
+                  "value": "b"
+                },
+                {
+                  "type": "list",
+                  "ordered": false,
+                  "spread": false,
+                  "children": [
+                    {
+                      "type": "listItem",
+                      "spread": true,
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "nested "
+                        },
+                        {
+                          "type": "strong",
+                          "children": [
+                            {
+                              "type": "text",
+                              "value": "strong"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "listItem",
+                      "spread": true,
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "other"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "text",
+                  "value": "c"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "loose list",
+    "source": "- a\n\n- b\n\n  paragraph\n\n  > quote",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "list",
+          "ordered": false,
+          "spread": false,
+          "children": [
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "a"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "b"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "paragraph"
+                    }
+                  ]
+                },
+                {
+                  "type": "blockquote",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "quote"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "ordered lists",
+    "source": "3. three\n4. four\n\n* one\n* two",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "list",
+          "ordered": true,
+          "start": 3,
+          "spread": false,
+          "children": [
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "text",
+                  "value": "three"
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "text",
+                  "value": "four"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "ordered": false,
+          "spread": false,
+          "children": [
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "text",
+                  "value": "one"
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "text",
+                  "value": "two"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "nested quotes",
+    "source": "> first\n>\n> > nested\n>\n> - item\n> - second",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "blockquote",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "first"
+                }
+              ]
+            },
+            {
+              "type": "blockquote",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "nested"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "spread": false,
+              "children": [
+                {
+                  "type": "listItem",
+                  "spread": true,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "item"
+                    }
+                  ]
+                },
+                {
+                  "type": "listItem",
+                  "spread": true,
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "second"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "code whitespace",
+    "source": "`  inline   space  `\n\n    a  b\n    c\n\n```py\n\na  b\n\n```",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "inlineCode",
+              "value": " inline   space "
+            }
+          ]
+        },
+        {
+          "type": "code",
+          "lang": "",
+          "value": "a  b\nc"
+        },
+        {
+          "type": "code",
+          "lang": "py",
+          "value": "\na  b\n"
+        }
+      ]
+    }
+  },
+  {
+    "title": "roles",
+    "source": "{func}`alpha.foo` *{py:class}`proj/Class`* {+:_-}`opaque`",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "mystRole",
+              "name": "func",
+              "value": "alpha.foo"
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "emphasis",
+              "children": [
+                {
+                  "type": "mystRole",
+                  "name": "py:class",
+                  "value": "proj/Class"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "mystRole",
+              "name": "+:_-",
+              "value": "opaque"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "role payload whitespace",
+    "source": "{func}`  alpha.foo  ` {func}`` a`b ``",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "mystRole",
+              "name": "func",
+              "value": "  alpha.foo  "
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "mystRole",
+              "name": "func",
+              "value": " a`b "
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "role escapes and code",
+    "source": "\\{func}`x` `{func}` and `{func}x`",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "{func}"
+            },
+            {
+              "type": "inlineCode",
+              "value": "x"
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "inlineCode",
+              "value": "{func}"
+            },
+            {
+              "type": "text",
+              "value": " and "
+            },
+            {
+              "type": "inlineCode",
+              "value": "{func}x"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "role malformed",
+    "source": "{func}`open\n\n{func}`multi\nline` {func}``bad` {f1}`digit`",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "{func}`open"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "{func}"
+            },
+            {
+              "type": "inlineCode",
+              "value": "multi line"
+            },
+            {
+              "type": "text",
+              "value": " {func}``bad"
+            },
+            {
+              "type": "inlineCode",
+              "value": " {f1}"
+            },
+            {
+              "type": "text",
+              "value": "digit`"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "role name bounds",
+    "source": "{xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx}`yes` {xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx}`no`",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "mystRole",
+              "name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+              "value": "yes"
+            },
+            {
+              "type": "text",
+              "value": " {xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx}"
+            },
+            {
+              "type": "inlineCode",
+              "value": "no"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "inline and reference links",
+    "source": "[**link**](https://example.org/a?x=1&y=2 \"Title\") [ref][id]\n\n[id]: /path 'More'",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "url": "https://example.org/a?x=1&y=2",
+              "title": "Title",
+              "children": [
+                {
+                  "type": "strong",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "link"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "link",
+              "url": "/path",
+              "title": "More",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "ref"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "images",
+    "source": "![*alt* `code` &amp;](a.png \"title\") ![ref][pic]\n\n[pic]: /pic.png",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "image",
+              "url": "a.png",
+              "alt": "alt code &",
+              "title": "title"
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "image",
+              "url": "/pic.png",
+              "alt": "ref"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "autolinks",
+    "source": "<https://example.org> <hello@example.org> https://example.org",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "link",
+              "url": "https://example.org",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "https://example.org"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "link",
+              "url": "mailto:hello@example.org",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "hello@example.org"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " https://example.org"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "unsafe links",
+    "source": "[bad](javascript:alert(1)) ![bad](data:text/html;base64,AA) [ok](#target)",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "[bad](javascript:alert(1)) ![bad](data:text/html;base64,AA) "
+            },
+            {
+              "type": "link",
+              "url": "#target",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "ok"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "HTML recognition",
+    "source": "<b>text</b>\n\n<script>bad()</script>\n\n```html\n<b>literal</b>\n```",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "html",
+              "value": "<b>"
+            },
+            {
+              "type": "text",
+              "value": "text"
+            },
+            {
+              "type": "html",
+              "value": "</b>"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "<script>bad()</script>"
+        },
+        {
+          "type": "code",
+          "lang": "html",
+          "value": "<b>literal</b>"
+        }
+      ]
+    }
+  },
+  {
+    "title": "front matter",
+    "source": "---\ntitle: Hello\n---\n\nbody",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "code",
+          "lang": "yaml",
+          "value": "title: Hello"
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "body"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "unclosed front matter",
+    "source": "---\ntitle: Hello\n\nbody",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "code",
+          "lang": "yaml",
+          "value": "title: Hello"
+        }
+      ]
+    }
+  },
+  {
+    "title": "colon fence",
+    "source": ":::python\na\n:::suffix\nb\n::::\n\nafter",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "code",
+          "lang": "python",
+          "value": "a\n:::suffix\nb"
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "after"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "unclosed colon fence",
+    "source": ":::python\na\nb",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "code",
+          "lang": "python",
+          "value": "a\nb"
+        }
+      ]
+    }
+  },
+  {
+    "title": "colon fence in quote",
+    "source": "> :::text\n> a\n> :::\n\nafter",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "blockquote",
+          "children": [
+            {
+              "type": "code",
+              "lang": "text",
+              "value": "a"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "after"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "colon fence indentation",
+    "source": "  :::text\n  a\n   b\n  :::",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "code",
+          "lang": "text",
+          "value": "a\n b"
+        }
+      ]
+    }
+  },
+  {
+    "title": "definition list",
+    "source": "Term\n: Def\n\nTerm 2\n: First\n: Second",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "definitionList",
+          "children": [
+            {
+              "type": "definitionTerm",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Term"
+                }
+              ]
+            },
+            {
+              "type": "definitionDescription",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Def"
+                }
+              ]
+            },
+            {
+              "type": "definitionTerm",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Term 2"
+                }
+              ]
+            },
+            {
+              "type": "definitionDescription",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "First"
+                }
+              ]
+            },
+            {
+              "type": "definitionDescription",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Second"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "tasks",
+    "source": "- [x] done\n- [ ] todo\n- [X] done\n- [x]no marker",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "list",
+          "ordered": false,
+          "spread": false,
+          "children": [
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "html",
+                  "value": "<input class=\"task-list-item-checkbox\" checked=\"\" disabled=\"\" type=\"checkbox\">"
+                },
+                {
+                  "type": "text",
+                  "value": " done"
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "html",
+                  "value": "<input class=\"task-list-item-checkbox\" disabled=\"\" type=\"checkbox\">"
+                },
+                {
+                  "type": "text",
+                  "value": " todo"
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "html",
+                  "value": "<input class=\"task-list-item-checkbox\" checked=\"\" disabled=\"\" type=\"checkbox\">"
+                },
+                {
+                  "type": "text",
+                  "value": " done"
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "spread": true,
+              "children": [
+                {
+                  "type": "text",
+                  "value": "[x]no marker"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "tables",
+    "source": "| A | B |\n| :- | -: |\n| *x* | `y` |",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "table",
+          "children": [
+            {
+              "type": "tableRow",
+              "children": [
+                {
+                  "type": "tableCell",
+                  "header": true,
+                  "align": "left",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "A"
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "header": true,
+                  "align": "right",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "B"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableRow",
+              "children": [
+                {
+                  "type": "tableCell",
+                  "align": "left",
+                  "children": [
+                    {
+                      "type": "emphasis",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "x"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "tableCell",
+                  "align": "right",
+                  "children": [
+                    {
+                      "type": "inlineCode",
+                      "value": "y"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "footnotes",
+    "source": "a[^x] again[^x] and[^y]\n\n[^x]: first\n\n    second paragraph\n\n[^y]: other",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "a"
+            },
+            {
+              "type": "footnoteReference",
+              "identifier": "x",
+              "label": "x"
+            },
+            {
+              "type": "text",
+              "value": " again"
+            },
+            {
+              "type": "footnoteReference",
+              "identifier": "x",
+              "label": "x"
+            },
+            {
+              "type": "text",
+              "value": " and"
+            },
+            {
+              "type": "footnoteReference",
+              "identifier": "y",
+              "label": "y"
+            }
+          ]
+        },
+        {
+          "type": "footnoteDefinition",
+          "identifier": "x",
+          "label": "x",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "first"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "second paragraph"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "footnoteDefinition",
+          "identifier": "y",
+          "label": "y",
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "other"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "unresolved footnote",
+    "source": "text[^missing]",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "text[^missing]"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "comments and target",
+    "source": "% first\n% next\n(label)=\n## Header\nbody",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "mystComment",
+          "value": "first\n next"
+        },
+        {
+          "type": "mystTarget",
+          "label": "label"
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Header"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "body"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "inline math",
+    "source": "$ x $ and 2$x$3 and $a\\$b$",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "inlineMath",
+              "value": " x "
+            },
+            {
+              "type": "text",
+              "value": " and 2"
+            },
+            {
+              "type": "inlineMath",
+              "value": "x"
+            },
+            {
+              "type": "text",
+              "value": "3 and "
+            },
+            {
+              "type": "inlineMath",
+              "value": "a\\$b"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "display math",
+    "source": "$$\nx^2\n$$ (eq)\n\nafter",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "math",
+          "identifier": "eq",
+          "label": "eq",
+          "value": "x^2"
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "after"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "amsmath",
+    "source": "\\begin{align}\na &= b\n\\end{align}\n\nafter",
+    "ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "math",
+          "value": "\\begin{align}\na &= b\n\\end{align}"
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "after"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]
