@@ -12,30 +12,24 @@ interface Props {
 }
 
 export default function Module({ prj, mod }: Props) {
-  function LinkTable({
-    title,
-    symbols,
-  }: {
-    title: string;
-    symbols: (docs.Class | docs.Func | docs.Variable)[];
-  }) {
-    return (
-      <SymbolLinkTable
-        title={title}
-        url={(sym) => url.symbol(prj, mod, sym)}
-        symbols={symbols}
-        stripPrefix={mod.name}
-      />
-    );
-  }
   return (
     <div>
       <H3>Module {mod.name}</H3>
       <Documentation project={prj}>{mod.documentation}</Documentation>
       <Exports prj={prj} exps={mod.exports} />
-      <LinkTable title="Classes" symbols={mod.classes} />
-      <LinkTable title="Functions" symbols={mod.functions} />
-      <LinkTable title="Variables" symbols={mod.variables} />
+      <LinkTable prj={prj} mod={mod} title="Classes" symbols={mod.classes} />
+      <LinkTable
+        prj={prj}
+        mod={mod}
+        title="Functions"
+        symbols={mod.functions}
+      />
+      <LinkTable
+        prj={prj}
+        mod={mod}
+        title="Variables"
+        symbols={mod.variables}
+      />
     </div>
   );
 }
@@ -69,4 +63,23 @@ interface ExportProps {
 function Export({ prj, exp }: ExportProps) {
   const to = url.xref(prj, exp.xref);
   return to == null ? <span>{exp.name}</span> : <Link to={to}>{exp.name}</Link>;
+}
+
+function LinkTable({
+  prj,
+  mod,
+  title,
+  symbols,
+}: Props & {
+  title: string;
+  symbols: (docs.Class | docs.Func | docs.Variable)[];
+}) {
+  return (
+    <SymbolLinkTable
+      title={title}
+      url={(sym) => url.symbol(prj, mod, sym)}
+      symbols={symbols}
+      stripPrefix={mod.name}
+    />
+  );
 }

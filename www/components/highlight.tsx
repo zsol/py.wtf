@@ -40,7 +40,10 @@ export const LibraryConstant = styled.span`
 `;
 
 export const Literal = (props: { children: React.ReactNode }) => {
-  const value = props.children?.toString();
+  const value =
+    typeof props.children === "string" || typeof props.children === "number"
+      ? String(props.children)
+      : undefined;
   if (value?.startsWith('"') || value?.startsWith("'")) {
     return <StringLiteral>{props.children}</StringLiteral>;
   } else if (value?.match(/[0-9]/)) {

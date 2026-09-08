@@ -17,45 +17,49 @@ export default function ClassContents({ prj, mod, cls }: Props) {
   const symbolUrl = url.symbol.bind(null, prj, mod);
   const anchorUrl = url.classItem.bind(null, prj, mod, cls);
 
-  function LinkList<T extends { name: string }>({
-    title,
-    items,
-    url,
-  }: {
-    title: string;
-    items: T[];
-    url: (sym: T) => string;
-  }) {
-    return (
-      <SidebarLinkList<T>
-        title={title}
-        items={items}
-        active=""
-        stripPrefix={cls.name}
-        url={url}
-      />
-    );
-  }
-
   return (
     <>
       <H4>{withoutPrefix(mod.name, cls.name)}</H4>
-      <LinkList title="Methods" items={cls.methods} url={anchorUrl} />
+      <LinkList cls={cls} title="Methods" items={cls.methods} url={anchorUrl} />
       <LinkList
+        cls={cls}
         title="Class Variables"
         items={cls.class_variables}
         url={anchorUrl}
       />
       <LinkList
+        cls={cls}
         title="Instance Variables"
         items={cls.instance_variables}
         url={anchorUrl}
       />
       <LinkList
+        cls={cls}
         title="Inner Classes"
         items={cls.inner_classes}
         url={symbolUrl}
       />
     </>
+  );
+}
+
+function LinkList<T extends { name: string }>({
+  cls,
+  title,
+  items,
+  url,
+}: Pick<Props, "cls"> & {
+  title: string;
+  items: T[];
+  url: (sym: T) => string;
+}) {
+  return (
+    <SidebarLinkList<T>
+      title={title}
+      items={items}
+      active=""
+      stripPrefix={cls.name}
+      url={url}
+    />
   );
 }

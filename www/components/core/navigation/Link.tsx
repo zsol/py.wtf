@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import {
   LinkProps,
   Link as ReactRouterLink,
+  createPath,
   useInRouterContext,
 } from "react-router-dom";
 
@@ -26,5 +27,10 @@ export const Link = (props: LinkProps) => {
   if (isReactRouter) {
     return <RouterLink {...props} />;
   }
-  return <RawLink {...props} href={props.to.toString()} />;
+  return (
+    <RawLink
+      {...props}
+      href={typeof props.to === "string" ? props.to : createPath(props.to)}
+    />
+  );
 };

@@ -21,7 +21,7 @@ export function projectJson(name: string): string {
   return `/_index/${normalizeProjectName(name)}.json`;
 }
 
-export function project(p: docs.Project): string {
+export function project(p: Pick<docs.Project, "name">): string {
   return `/${p.name}`;
 }
 

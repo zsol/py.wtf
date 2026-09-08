@@ -15,17 +15,8 @@ import {
   flexRow,
 } from "@/components/core/layout/helpers";
 
-import {
-  IndexMetadata,
-  Project,
-  ProjectMetadata,
-  getIndexMetadata,
-} from "@/lib/docs";
-import {
-  SearchDescriptor,
-  SymbolType,
-  makeIndex,
-} from "@/lib/searchDescriptor";
+import { IndexMetadata, ProjectMetadata, getIndexMetadata } from "@/lib/docs";
+import { SearchDescriptor, makeIndex } from "@/lib/searchDescriptor";
 import * as url from "@/lib/url";
 
 const ProjectContainer = styled.div`
@@ -89,8 +80,8 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   const descriptors = projectNames.map((name) => ({
     name,
     fqname: name,
-    type: "project" as SymbolType,
-    url: url.project({ name } as Project),
+    type: "project" as const,
+    url: url.project({ name }),
   }));
   return {
     props: {
@@ -117,8 +108,8 @@ function useHomeData() {
         descriptors: data.all_project_names.map((name: string) => ({
           name,
           fqname: name,
-          type: "project" as SymbolType,
-          url: url.project({ name } as Project),
+          type: "project" as const,
+          url: url.project({ name }),
         })),
         generatedAt: data.generated_at,
       }
@@ -171,12 +162,12 @@ export default function Home({
           <ProjectTable
             title="Top Projects"
             symbols={topProjects}
-            url={(prj) => url.project(prj as Project)}
+            url={(prj) => url.project(prj)}
           />
           <ProjectTable
             title="Recent Projects"
             symbols={recentProjects}
-            url={(prj) => url.project(prj as Project)}
+            url={(prj) => url.project(prj)}
           />
         </ProjectTables>
         <TimestampFooter>
