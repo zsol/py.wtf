@@ -50,16 +50,71 @@ Just don't.
 
 ## Hacking
 
-Please do. Python 3.13, Node 18.
+Please do. Python 3.13 or 3.14, [uv](https://docs.astral.sh/uv/), and Node 24 LTS
+(24.9 or newer). The default Python version is pinned in `.python-version`.
 
 ```shell
 cd py.wtf
 YOUR_FAVORITE_PROJECT=click
-uv run py-wtf index --project-name $YOUR_FAVORITE_PROJECT www/public/_index/
+uv run --locked py-wtf index --project-name $YOUR_FAVORITE_PROJECT www/public/_index/
 cd www
-npm install
+npm ci
 npm run dev
 ```
+
+Run the Python checks from the repository root:
+
+```shell
+uv run --locked poe cov
+uv run --locked poe check-types
+uv run --locked ufmt check py_wtf scripts tests
+uv run --locked py-wtf generate-test-index www/__tests__/index
+git diff --exit-code -- www/__tests__/index
+```
+
+CI runs these checks on Python 3.13 and 3.14. To select a version locally, set
+`UV_PYTHON=3.13` or `UV_PYTHON=3.14`; this also selects the interpreter for the
+nested uv commands run by poe.
+
+Run the frontend checks from `www` after `npm ci`:
+
+```shell
+npm run check-types
+npm run lint -- --max-warnings=0
+npm run test-ci
+INDEX_PATH=./__tests__/index npm run build
+npm run check:export
+```
+
+The build exports the static site to `www/out`. It uses `www/public/_index` by
+default; `INDEX_PATH=./__tests__/index` selects the checked-in test data instead.
+The commands above use a POSIX shell. In PowerShell, set the build environment
+variable with `$env:INDEX_PATH = './__tests__/index'`, then run `npm run build`.
+
+Use `npm run build` (or `npm run export`) to produce the complete static site:
+it preserves `public/404.html` after Next generates its own 404 page. The static
+host serves that fallback for missing routes; it redirects to `/_spa.html`,
+where the original path, query, and hash are restored before hydration.
+`npm run check:export` verifies both scripts in the generated artifacts.
+
+To install the local hooks, run `uv tool run pre-commit install`. Check all files
+with `uv tool run pre-commit run --all-files`. The fixture hook installs uv and
+uses the project lockfile, including after Python dependency changes. It needs
+network access on its first run, so pre-commit.ci skips that hook; GitHub Actions
+verifies generated fixtures on both Python versions.
+
+The frontend uses Next.js 16, React 19, TypeScript 6.0.3, and ESLint 9. Docstrings
+use a focused parser built on markdown-it's public plugin and token APIs, followed
+by a typed render tree and React rendering. The
+[compatibility audit](www/benchmarks/compatibility.md) documents the legacy
+comparison, CommonMark profile, selected MyST conformance fixtures, rendering
+policies, and supported role/directive registry. Coverage is bounded to this
+docstring renderer; remaining Sphinx and document-building features are listed
+in the audit. The [benchmark notes](www/benchmarks/README.md) provide reproducible
+local measurements of tokenization and tree conversion. Those measurements
+exclude MathML generation, React rendering, network access, and layout, so they
+do not establish end-user page latency. Keep the parser, compatibility, and
+rendering regression suites in `www/__tests__` when changing MyST support.
 
 ## Acknowledgements
 

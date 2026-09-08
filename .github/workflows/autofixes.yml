@@ -3,6 +3,9 @@ name: Applying autofixes
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   fix:
     # Independent bot commits break a stack's linear history.
@@ -11,21 +14,26 @@ jobs:
       !github.event.pull_request.stack &&
       github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
-      - name: Run Python formatter
-        run: uv run ufmt format
-      - name: Set up nodejs
-        uses: actions/setup-node@v5
+        uses: astral-sh/setup-uv@v10.0.1
         with:
+          version: "0.12.10"
+      - name: Run Python formatter
+        run: uv run --locked ufmt format py_wtf scripts tests
+      - name: Set up nodejs
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24.x"
           cache: "npm"
           cache-dependency-path: "www/package-lock.json"
-      - run: npm install
+      - run: npm ci
         working-directory: www
       - name: Run prettier
         run: npx prettier -w .
@@ -68,6 +76,6 @@ jobs:
           JS
       - name: Commit changes
         if: steps.can-commit.outputs.allowed == 'true'
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v11
         with:
           default_author: github_actions

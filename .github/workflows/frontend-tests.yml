@@ -2,31 +2,33 @@ name: Frontend Tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-
+    defaults:
+      run:
+        working-directory: www
     steps:
-    - uses: actions/checkout@v5
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v5
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: 'www/package-lock.json'
-    - run: npm install
-      working-directory: www
-    - run: npm run check-types
-      working-directory: www
-    - run: npm run lint
-      working-directory: www
-    - run: npm run test-ci
-      working-directory: www
+      - uses: actions/checkout@v7
+      - name: Use Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24.x"
+          cache: "npm"
+          cache-dependency-path: "www/package-lock.json"
+      - run: npm ci
+      - run: npm run check-types
+      - run: npm run lint -- --max-warnings=0
+      - run: npm run test-ci
+      - name: Build static site with test fixtures
+        run: npm run build
+        env:
+          INDEX_PATH: ./__tests__/index
+      - name: Verify exported SPA fallback
+        run: npm run check:export

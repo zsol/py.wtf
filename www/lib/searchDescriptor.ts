@@ -5,12 +5,7 @@ import { Class, Func, Module, Project, Variable } from "./docs";
 import { mod as generateModuleUrl, symbol as generateSymbolUrl } from "./url";
 
 export type SymbolType =
-  | "module"
-  | "function"
-  | "variable"
-  | "class"
-  | "export"
-  | "project";
+  "module" | "function" | "variable" | "class" | "export" | "project";
 
 export type SearchDescriptor = {
   name: string;

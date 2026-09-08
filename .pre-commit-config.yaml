@@ -16,27 +16,12 @@ repos:
       - id: generate-test-fixtures
         name: Generate test fixtures
         language: python
-        types_or: [python, json]
-        entry: "python -m py_wtf generate-test-index www/__tests__/index"
+        files: '(\.(py|json|toml)$|^uv\.lock$|^\.python-version$)'
+        entry: "uv run --locked py-wtf generate-test-index www/__tests__/index"
         pass_filenames: false
         require_serial: true
-        additional_dependencies:
-          - aiofiles==0.8.0
-          - appdirs==1.4.4
-          - cattrs==22.1.0
-          - click>=8.1.3
-          - httpx==0.23.0
-          - keke>=0.1.0
-          - libcst>=1.1.0
-          - networkx>=3.3
-          - packaging>=21
-          - pytest
-          - rich>=12.5.1
-          - rst-to-myst[sphinx]==0.4.0
-          - stamina>=24.2.0
-          - trailrunner>=1.2.1
-          - types-aiofiles==0.8.0
-          - types-appdirs==1.4.3
+        additional_dependencies: ["uv==0.12.10"]
 
-default_language_version:
-  python: python3.12
+# pre-commit.ci runs hooks without network access; GitHub Actions verifies fixtures.
+ci:
+  skip: [generate-test-fixtures]

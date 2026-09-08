@@ -12,9 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout main
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.10"
       - id: auth
         uses: google-github-actions/auth@v3.0.0
         with:
@@ -23,7 +25,7 @@ jobs:
           project_id: pypinfo-214114
           export_environment_variables: true
       - name: Index
-        run: set -x; uv run py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" _index
+        run: uv run --locked py-wtf index-since --since "$(date -d '1hour ago' '+%Y-%m-%d %H:%M:%S')" _index
       - name: Compress index
         run: gzip -9 _index/*.json
       - name: Upload

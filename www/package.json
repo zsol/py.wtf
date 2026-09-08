@@ -3,8 +3,9 @@
   "scripts": {
     "bench:myst": "node benchmarks/myst.ts",
     "dev": "next dev",
-    "build": "next build",
-    "export": "next build",
+    "build": "next build && node -e \"require('node:fs').copyFileSync('public/404.html', 'out/404.html')\"",
+    "export": "npm run build",
+    "check:export": "node scripts/check-export.mjs",
     "start": "next start",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",

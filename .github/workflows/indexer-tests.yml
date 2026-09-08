@@ -5,14 +5,32 @@ on:
     branches: ["main"]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          version: "0.12.10"
+          # Sets UV_PYTHON so nested uv invocations by poe use the matrix version.
+          python-version: ${{ matrix.python-version }}
       - name: Run tests
-        run: uv run poe cov
+        run: uv run --locked poe cov
       - name: Type check
-        run: uv run poe check-types
+        run: uv run --locked poe check-types
+      - name: Check Python formatting
+        run: uv run --locked ufmt check py_wtf scripts tests
+      - name: Verify generated frontend fixtures
+        run: |
+          uv run --locked py-wtf generate-test-index www/__tests__/index
+          git diff --exit-code -- www/__tests__/index
+          test -z "$(git ls-files --others --exclude-standard -- www/__tests__/index)"
