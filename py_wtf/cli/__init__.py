@@ -4,12 +4,11 @@
 from __future__ import annotations
 
 import asyncio
-
 import json
 import logging
 import shutil
-
 import signal
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from functools import partial, wraps
@@ -36,7 +35,6 @@ from py_wtf.types import (
     ProjectName,
     SymbolTable,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +90,7 @@ async def index_top_pypi(directory: str, top: int) -> None:
     out_dir = Path(directory)
     out_dir.mkdir(parents=True, exist_ok=True)
     repo = ProjectRepository(out_dir)
-    if hasattr(signal, "SIGUSR1"):
+    if sys.platform != "win32":
         signal.signal(signal.SIGUSR1, lambda *_: repo.pending_items())
     loop = asyncio.get_running_loop()
     loop.call_later(60 * 10, schedule_pending_item_printer, repo)
@@ -199,7 +197,7 @@ async def index_since(directory: str, since: datetime, trace: IO[str] | None) ->
 
         logger.info("Fetched prod index")
         repo = ProjectRepository(out_dir)
-        if hasattr(signal, "SIGUSR1"):
+        if sys.platform != "win32":
             signal.signal(signal.SIGUSR1, lambda *_: repo.pending_items())
         loop = asyncio.get_running_loop()
         loop.call_later(60 * 10, schedule_pending_item_printer, repo)

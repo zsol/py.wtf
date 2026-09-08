@@ -7,7 +7,6 @@ from typing import AsyncIterable, cast, Iterable, Protocol
 
 import libcst as cst
 import trailrunner
-
 from keke import ktrace
 from libcst import matchers as m
 from libcst.codemod import CodemodContext
@@ -16,7 +15,6 @@ from libcst.helpers.expression import get_full_name_for_node
 from libcst.metadata import ParentNodeProvider
 
 from py_wtf.indexer.documentation import convert_to_myst
-
 from py_wtf.types import (
     Class,
     Documentation,
@@ -31,7 +29,6 @@ from py_wtf.types import (
     Variable,
     XRef,
 )
-
 from .annotation import index as extract_type
 
 logger = logging.getLogger(__name__)

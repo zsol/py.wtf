@@ -5,7 +5,6 @@ from zipfile import ZipFile
 
 import httpx
 import pytest
-
 from py_wtf.indexer.pypi import (
     _build_symbol_table,
     Artifact,
@@ -14,7 +13,6 @@ from py_wtf.indexer.pypi import (
     pick_artifact,
 )
 from py_wtf.types import FQName, Project
-
 from pytest_httpx import HTTPXMock
 
 
