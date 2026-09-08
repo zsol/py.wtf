@@ -20,7 +20,7 @@ describe("Static-host SPA fallback", () => {
     "https://py.wtf/project%252Fname/module%20name?x=1&x=2&empty=&plus=a+b&literal=~and~#escaped%23hash",
   ])("restores %s before hydration", (originalURL) => {
     const original = new URL(originalURL);
-    const replace = jest.fn();
+    const replace = jest.fn<void, [string]>();
     runInNewContext(fallbackScript, {
       window: {
         location: {
@@ -36,7 +36,7 @@ describe("Static-host SPA fallback", () => {
     });
 
     expect(replace).toHaveBeenCalledTimes(1);
-    const target = replace.mock.calls[0][0] as string;
+    const target = replace.mock.calls[0][0];
     expect(target.startsWith("/_spa.html?__py_wtf_spa=")).toBe(true);
     const redirected = new URL(target, original.origin);
     expect(redirected.origin).toBe(original.origin);
@@ -95,15 +95,15 @@ describe("Static-host SPA fallback", () => {
 
   it("ignores a malformed encoded envelope", () => {
     const replaceState = jest.fn();
-    expect(() =>
+    expect(() => {
       runInNewContext(restoreSPARouteScript, {
         URL,
         window: {
           location: new URL("https://py.wtf/_spa.html?__py_wtf_spa=%E0%A4"),
           history: { replaceState },
         },
-      }),
-    ).not.toThrow();
+      });
+    }).not.toThrow();
     expect(replaceState).not.toHaveBeenCalled();
   });
 });

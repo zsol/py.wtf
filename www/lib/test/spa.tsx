@@ -3,7 +3,6 @@ import { RenderResult, render, waitFor } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import { setupServer } from "msw/node";
 import { MemoryRouter } from "react-router-dom";
-import "whatwg-fetch";
 
 import { darkTheme } from "@/components/core/theme/theme";
 
